@@ -1,6 +1,6 @@
 # CLAUDE.md — instructions for coding agents
 
-This repo is a controller for a winter hydroponics shed. It is **vibe coded**: the owners
+This repo is a controller for an indoor hydroponics garden (grow tents in a finished basement). It is **vibe coded**: the owners
 direct and test, the AI writes the code. Optimize for **correctness, safety and readability**
 over cleverness.
 

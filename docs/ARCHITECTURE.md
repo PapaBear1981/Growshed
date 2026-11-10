@@ -22,15 +22,16 @@
 │         │          └───────────────────────────────────┘   │
 └─────────┼──────────────────────────────────────────────────┘
           │ MQTT over WiFi
-   ┌──────┼────────────────┬─────────────────────┐
-   ▼      ▼                ▼                     ▼
- climate node          water node          dosing node (Phase 4)
- (ESP32/ESPHome)       (ESP32/ESPHome)     (ESP32/ESPHome)
-  air T/RH, outdoor T,  reservoir T, pH, EC,  4× peristaltic pumps
-  lux, RTC, door        levels, leak
-  → heater, lights,     → water heater, air
-    fans, humidity        pump, RDWC pump,
-                          tower pump, top-off
+   ┌──────┼──────────────┬─────────────────────┬──────────────────┐
+   ▼      ▼              ▼                     ▼                  ▼
+ tent1 node        tent2..N nodes        water node          dosing node (Phase 4)
+ (ESP32/ESPHome)                         (ESP32/ESPHome)     (ESP32/ESPHome)
+  air T/RH, lux,                          reservoir T, pH, EC, 4× peristaltic pumps
+  RTC, leak, soil                         levels, leaks,
+  → lights, exhaust                       room T/RH
+    fan, (heater)                         → water heater, air
+                                            pump, RDWC pump,
+                                            tower pump, top-off
 ```
 
 ## 2. Responsibilities: who decides what
@@ -41,7 +42,7 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | Concern | Lives on | Notes |
 |---|---|---|
 | Interlocks (dry-heater cutoff, overtemp, leak, overflow) | **Node** | Always enforced, even under manual override. See SAFETY.md |
-| Air and water thermostats (closed loop) | **Node** | ESPHome `thermostat` climate component. Setpoints come from the Pi and persist in node flash |
+| Water thermostat, tent exhaust temp/RH control, (tent heater) | **Node** | ESPHome `thermostat`/threshold logic. Setpoints come from the Pi and persist in node flash |
 | Fallback schedules (lights, tower pump) | **Node** | Run only when the Pi heartbeat is lost |
 | Normal schedules, photoperiod, pump cycles | Pi | Sends ON/OFF commands |
 | Manual overrides and expiries | Pi | Expired overrides revert to AUTO |
@@ -56,10 +57,10 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 
 | Module | Purpose |
 |---|---|
-| `config` | Loads `config.yaml` (devices, sensors, zones, alert thresholds) + env vars |
+| `config` | Loads `config.yaml` (tents/zones, nodes, devices, sensors, circuits, alert thresholds) + env vars |
 | `db` | SQLite schema and migrations (Alembic or simple numbered SQL files) |
 | `mqtt` | `aiomqtt` client. Subscribes to `growshed/#` and publishes commands and heartbeat |
-| `ingest` | Parses ESPHome state topics → typed readings → DB + WebSocket broadcast |
+| `ingest` | Parses ESPHome state topics → typed readings → DB + WebSocket broadcast. Aggregates leak state → `growshed/hub/leak_alarm` |
 | `controller` | Device modes (AUTO/ON/OFF + expiry), schedules, setpoint publishing, heartbeat |
 | `alerts` | Rule evaluation (threshold, stale, offline, rate-of-change), dedupe/ack, ntfy delivery |
 | `dosing` | Phase 4. Dosing state machine with limits |
@@ -70,13 +71,13 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 ## 4. Data model (initial)
 
 ```
-zone(id, name, kind[air|rdwc|kratky|tower|soil])
+zone(id, name, kind[tent|room|rdwc|kratky|tower|soil], parent_zone_id)  -- systems live inside tents
 node(id, name, last_seen, rssi, firmware, mode)
 sensor(id, node_id, zone_id, key, kind, unit_si, display_name, enabled)
 reading(ts, sensor_id, value)                  -- raw, kept 30 days
 reading_5m(ts, sensor_id, min, max, avg)       -- kept 1 year
 reading_1h(ts, sensor_id, min, max, avg)       -- kept forever
-device(id, node_id, zone_id, key, kind[heater|light|pump|fan|valve|doser|humidity], display_name)
+device(id, node_id, zone_id, key, kind[heater|light|pump|fan|valve|doser], circuit, watts, display_name)
 device_state(device_id, ts, on, source[auto|manual|fallback|interlock])
 device_mode(device_id, mode[auto|on|off], expires_at)
 schedule(id, device_id, kind[daily_window|cycle], params_json, enabled)
@@ -104,10 +105,10 @@ and make all touch targets ≥ 44 px. The tablet runs in kiosk mode (e.g. Fully 
 Browser on Android) and should keep the screen awake.
 
 Pages:
-1. **Dashboard**: zone cards with current values, colored green/amber/red against targets, device on/off chips, active alerts banner, node mode (NORMAL/FALLBACK).
+1. **Dashboard**: one card per tent + a room card + the reservoir card, with current values, colored green/amber/red against targets, device on/off chips, active alerts banner, node mode (NORMAL/FALLBACK).
 2. **Controls**: each device with AUTO/ON/OFF + "for N hours", current state, the source of that state (auto/manual/fallback/interlock), and setpoints.
 3. **Schedules**: light photoperiod, pump cycles, fan cycles.
-4. **History**: multi-sensor charts with 6h/24h/7d/30d/custom ranges, and device on/off bands overlaid (e.g. heater duty vs temperature).
+4. **History**: multi-sensor charts with 6h/24h/7d/30d/custom ranges, and device on/off bands overlaid (e.g. lights/exhaust vs tent temperature).
 5. **Water**: pH/EC/temp/level trends, dosing log (manual entry now, auto later), calibration wizards.
 6. **Alerts**: active + history, acknowledge, rule thresholds editor.
 7. **Journal**: plants, notes, photos.
@@ -125,5 +126,5 @@ Pages:
 
 Everything above the nodes must be buildable and testable on a laptop:
 - `docker compose up` + `python -m simulator` produces realistic fake readings (day/night temperature swings, slowly drifting pH, a level that drops and gets topped off).
-- The simulator also obeys commands (e.g. heater ON → simulated temperature rises), so control logic can be tested end-to-end.
+- The simulator also obeys commands (lights ON → tent temperature rises, exhaust ON → tent RH falls), and can inject faults (leak, stuck sensor, node offline), so control and alert logic can be tested end-to-end.
 - Backend unit tests cover the controller, alerts and dosing logic (pytest).

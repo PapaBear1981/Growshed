@@ -4,104 +4,104 @@ Prices are rough 2026 ballparks to aid planning. Verify before buying.
 
 ## 1. Power budget
 
-Two 15 A / 120 V house circuits via 12 AWG outdoor cords. Plan continuous load at ≤ 80% (1,440 W).
+Basement circuits are typically 15 A / 120 V and often shared with lights and other outlets.
+**Map which outlets share a breaker** (flip breakers, note what goes dead) and keep the
+continuous load on each ≤ 80 % (1,440 W on 15 A, 1,920 W on 20 A).
 
-**Circuit A — Heat**
-| Load | Watts |
-|---|---|
-| Oil radiator | 1,500 max (most have 600/900/1500 settings) |
-
-**Circuit B — Everything else**
 | Load | Watts (est.) |
 |---|---|
-| Grow lights | **TBD — measure** (keep ≤ ~800 W) |
+| Grow lights (per tent) | **TBD — measure** (typ. 100–300 W for 2×2 to 3×3 tents, 300–650 W for 4×4) |
+| Inline exhaust fan (per tent) | 20–60 |
+| Clip-on circulation fan(s) (per tent) | 5–20 |
 | Aquarium heater (control bucket) | 100–300 |
 | Air pump(s) | 10–30 |
 | RDWC circulation pump | 20–40 |
 | Tower pump | 10–25 |
-| Fans | 20–60 |
-| Dehumidifier (if needed) | 200–300 (a small Peltier unit is much less) |
+| Room dehumidifier | 300–700 (usually on its own outlet/circuit) |
+| Small tent heater (only if needed) | 200–400 |
 | Pi, nodes, 12 V supply, tablet | ~30 |
 
-If the lights plus everything else exceed ~1,440 W, stagger loads (e.g. the backend never
-runs the dehumidifier and the water heater together) or reconsider. The backend gets a
-`circuit` field on each device so it can enforce a per-circuit load cap later.
+Each device in `config.yaml` gets a `circuit` field so the backend can show load per circuit
+(and later enforce a cap).
 
 ## 2. Hub
 
 | Item | Notes | ~$ |
 |---|---|---|
 | Raspberry Pi 4 8GB | Have | — |
-| USB 3 SSD (≥ 128 GB) + adapter | Boot drive; replaces the SD card | 30 |
-| Official PSU + small UPS (or UPS HAT) | Rides through blips; clean shutdown | 40–60 |
-| Case with fan | Shed humidity — keep it ventilated, not sealed | 15 |
+| USB 3 SSD (≥ 128 GB) + adapter | Boot drive | 30 |
+| Official PSU + small UPS | Rides through blips; clean shutdown | 40–60 |
+| Case with fan | | 15 |
+| Ethernet cable (if reachable) | More reliable than WiFi | — |
 
 ## 3. Nodes (ESP32 + ESPHome)
 
-Use **ESP32-WROOM DevKit** boards (or ESP32-S3) on screw-terminal breakout boards. Power each
-from 5 V USB, or from a 12 V → 5 V buck if it's near the dosing PSU.
+ESP32-WROOM DevKit (or ESP32-S3) on screw-terminal breakout boards, in a small enclosure
+mounted **outside** each tent (sensors go inside on cables through a tent port).
 
-### `climate` node
+### `tent<N>` node (one per tent)
 | Part | Interface | Purpose | ~$ |
 |---|---|---|---|
-| SHT45 breakout | I²C | Air temp/RH (accurate, low drift) | 15 |
-| BH1750 | I²C | Light level (confirms lights are actually on) | 5 |
-| DS3231 RTC | I²C | Keeps time for fallback schedules with no network | 5 |
-| DS18B20 waterproof | 1-Wire | Outdoor temperature | 3 |
-| Reed switch | GPIO | Door open | 5 |
+| SHT45 breakout | I²C | Tent air temp/RH, at canopy height, shaded from the light | 15 |
+| BH1750 | I²C | Light level (confirms the lights actually turned on) | 5 |
+| DS3231 RTC | I²C | Time for fallback schedules with no network | 5 |
+| Leak sensor (probe type) | GPIO | Tent floor tray | 10 |
+| Capacitive soil sensors ×N (if soil pots here) | ADC | Soil moisture | 3 each |
 | SCD41 (Phase 5) | I²C | CO₂ | 50 |
-| Outputs → relay boxes | GPIO | Air heater, lights, exhaust fan, circ fan, humidity device | — |
+| Outputs → relay boxes | GPIO | Lights, exhaust fan, (tent heater) | — |
 
-Mount the SHT45 at plant-canopy height, shaded from the lights, in a ventilated radiation shield.
-
-### `water` node
+### `water` node (near the RDWC control bucket)
 | Part | Interface | Purpose | ~$ |
 |---|---|---|---|
 | DS18B20 waterproof ×2 | 1-Wire | Control bucket + tower reservoir temp | 6 |
-| Vertical float switches ×3 | GPIO | Control bucket LOW/HIGH, tower LOW | 15 |
-| Water leak sensor (probe type) | GPIO | Floor leak | 10 |
+| Vertical float switches ×3–4 | GPIO | Control bucket LOW/HIGH, tower LOW, (top-off tank LOW) | 20 |
+| Leak sensors ×2 | GPIO | Under the control bucket and the top-off tank | 20 |
+| SHT45 | I²C | **Room** (basement) temp/RH, outside the tents | 15 |
 | Atlas EZO-pH + probe (Phase 3) | I²C, isolated carrier | pH | ~170 |
 | Atlas EZO-EC + K1.0 probe (Phase 3) | I²C, isolated carrier | EC | ~200 |
-| Capacitive soil sensors ×N | ADC (or ADS1115) | Soil pots | 3 each |
-| Outputs → relay boxes | GPIO | Water heater, air pump, RDWC pump, tower pump, top-off pump/valve | — |
+| Outputs → relay boxes / MOSFETs | GPIO | Water heater, air pump, RDWC pump, tower pump, top-off pump | — |
 
 **pH/EC isolation is mandatory:** two probes in the same water without isolation interfere
-with each other. Use Atlas's electrically isolated carrier boards for at least one of them
-(ideally both).
+with each other. Use Atlas's isolated carrier boards.
 
-**Budget alternative:** DFRobot Gravity pH/EC (~$60 total) works for spot checks, but the
-lab-grade probes drift when left submerged 24/7. Fine for learning; plan to upgrade before
-auto-dosing.
+**Budget alternative:** DFRobot Gravity pH/EC (~$60 total) works for learning, but those
+probes drift when left submerged 24/7. Upgrade before auto-dosing.
 
 ### `dosing` node (Phase 4)
 | Part | Purpose | ~$ |
 |---|---|---|
 | 12 V peristaltic pumps ×4 | pH down, pH up, nutrient A, nutrient B | 60 |
-| 4-channel logic-level MOSFET board (with flyback diodes) | Drive the pumps | 10 |
+| 4-ch logic-level MOSFET board (flyback diodes) | Drive pumps | 10 |
 | 12 V 3 A supply | Pumps | 15 |
+| Leak sensor | Dosing tray | 10 |
 
 ## 4. Mains switching
 
 **Digital Loggers "IoT Power Relay" (or equivalent pre-built box)**: a 3–48 V signal from an
 ESP32 GPIO switches its outlets. Each box has normally-OFF, normally-ON and always-ON outlets.
-Confirm the rating covers the radiator (≥ 12.5 A resistive).
 
 Suggested grouping (one box per signal):
-1. Air heater (radiator), on Circuit A
-2. Lights
-3. Water heater
-4. RDWC pump + air pump: **normally-ON** outlets (fail running)
-5. Tower pump
-6. Fans / humidity device
+- Per tent: **lights**, **exhaust fan** (two boxes per tent, or lights on a box + exhaust on a 12 V/low-voltage relay if it's a DC fan)
+- Water heater
+- RDWC pump + air pump: **normally-ON** outlets (fail running)
+- Tower pump
 
-Small 12 V loads (fans, top-off pump) can run from a MOSFET or low-voltage relay instead.
+Small 12 V loads (top-off pump, DC fans) can run from a MOSFET or low-voltage relay.
+
+**Inline fans:** many popular inline fans use proprietary controllers. For Phase 2 we switch
+fan power on/off (set the fan's own speed knob to a sensible level). Variable speed is Phase 5.
+
+**Dehumidifier:** let it run on its own humidistat. We only *monitor* room RH. Choose a model
+that auto-restarts after a power loss.
 
 ## 5. Other
-- Titanium aquarium heater, 200–300 W, in the control bucket (sized to total water volume).
-- Plug-in watt meter (Kill-A-Watt style) to measure the lights and the radiator.
-- Waterproof junction/project boxes, cable glands, drip loops.
-- Old tablet + wall mount + always-on charger (consider a smart-plug charge cycle to spare the battery).
-- Foam board insulation, weatherstripping (see PLAN.md §3).
+- Grow tents with waterproof floor liners; spill trays sized to each reservoir's full volume.
+- Titanium aquarium heater, 100–300 W, sized to the total water volume.
+- Plug-in watt meter to measure the lights.
+- Fresh-water top-off tank (e.g. 5–7 gal jug) with its own tray.
+- Carbon filter per tent (if smell matters).
+- Smoke detector for the grow area.
+- Old tablet + wall mount + charger.
 
 ## 6. Pin assignments
 

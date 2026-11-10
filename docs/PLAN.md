@@ -1,9 +1,12 @@
 # Growshed — Project Plan
 
-A controller for a winter hydroponics garden in an uninsulated wooden backyard shed.
-It monitors and controls the water, air temperature, humidity, lights, air pumps,
-heaters and (later) nutrient dosing. The GUI works on phones, a laptop and a
-wall-mounted old tablet.
+A controller for an indoor hydroponics garden in a **finished basement**, using **grow tents**.
+It monitors and controls the water, air temperature, humidity, lights, fans, air pumps and
+(later) nutrient dosing. The GUI works on phones, a laptop and a wall-mounted old tablet.
+
+> History: originally planned for an uninsulated backyard shed, then moved to the basement.
+> Freeze protection, extension cords and insulation planning were dropped. Water-damage and
+> household-humidity protection took their place.
 
 Read with: [ARCHITECTURE.md](ARCHITECTURE.md), [SAFETY.md](SAFETY.md),
 [HARDWARE.md](HARDWARE.md), [MQTT.md](MQTT.md).
@@ -16,98 +19,109 @@ Read with: [ARCHITECTURE.md](ARCHITECTURE.md), [SAFETY.md](SAFETY.md),
 |---|---|---|
 | **RDWC** | One central "control" bucket (reservoir) feeding several DWC buckets, with a return pump | Fully monitored. Water heat, air and top-off are controlled. pH/EC is monitored now and auto-dosed later |
 | **Kratky** | Passive jars/totes, no pumps | Monitoring only (optional level/temp) |
-| **Strawberry tower** | Vertical tower with its own small reservoir and a pump on a cycle timer | Pump cycles, level monitoring |
+| **Strawberry tower** | Vertical tower with its own small reservoir and a pump on a cycle timer | Pump cycles, level monitoring. **Needs a tall tent** (tower height + ~18" for light) |
 | **Soil pots** | Ordinary potted plants | Moisture sensing, hand watering |
+
+Each grow tent is a **zone** with its own climate, lights and exhaust. The system is
+config-driven for **N tents** (assume 2 until decided). Which crops go in which tent is
+still open (see §5). Crops with different light schedules or temperature needs belong in
+separate tents.
 
 ## 2. Decisions made
 
 | Topic | Decision | Reason |
 |---|---|---|
+| Location | Finished basement, grow tents | Unused space, stable temperatures, inside the house |
 | Brain | Raspberry Pi 4 (8GB), booting from a **USB SSD** | SD cards die under constant database writes |
-| Field nodes | **ESP32 boards running ESPHome** | Declarative YAML, proven sensor drivers, OTA updates, native MQTT. Much less hand-written code in the safety-critical layer, which matters for a vibe-coded project |
-| Messaging | MQTT (Mosquitto on the Pi) | Standard and debuggable. Matches ESPHome's MQTT conventions |
+| Field nodes | **ESP32 boards running ESPHome**: one node per tent + one water node (+ dosing node later) | Declarative YAML, proven drivers, OTA, native MQTT. A node per tent avoids I²C address clashes and isolates failures |
+| Messaging | MQTT (Mosquitto on the Pi) | Standard and debuggable. Matches ESPHome conventions |
 | Backend | Python 3.11+, FastAPI, asyncio, `aiomqtt`, SQLite | Readable and needs no extra servers |
-| Frontend | Svelte + Vite (static build) + **uPlot** charts | Small bundles and fast charts. Must run on an **old tablet** |
-| Mains switching | **Pre-built relay outlet boxes** (Digital Loggers IoT Power Relay or equivalent), driven by ESP32 GPIO | No DIY mains wiring. The ESP32 can switch loads with the Pi down |
-| Heat | Oil-filled radiator (air) + titanium aquarium heater in the control bucket (water) | Oil radiators are the safest common choice. Their thermal mass suits on/off control |
-| Power | Two heavy-gauge outdoor extension cords from **two different house circuits** | Heater gets its own circuit (see HARDWARE.md §1) |
+| Frontend | Svelte + Vite (static build) + **uPlot** charts | Small bundles. Must run on an **old tablet** |
+| Mains switching | **Pre-built relay outlet boxes** (Digital Loggers IoT Power Relay or equivalent), driven by ESP32 GPIO | No DIY mains wiring. Nodes can switch loads with the Pi down |
+| Tent climate | Lights are the main heat source. An inline exhaust fan per tent (with optional carbon filter) controls temp/RH. A small tent heater only if measurements show it's needed | A basement is typically 60–68 °F; lights add 5–15 °F inside a tent |
+| Room humidity | A basement dehumidifier keeps the **room** ≤ 55–60 % RH | Tents exhaust moisture into the house. A finished basement has drywall and carpet/flooring to protect |
+| Water heat | Titanium aquarium heater in the control bucket | Basement water may sit ~60 °F. DWC roots want 65–68 °F |
+| Power | Existing basement circuits, **GFCI-protected**, mapped and budgeted (HARDWARE.md §1) | No extension-cord runs to an outbuilding anymore |
+| Water containment | Every reservoir/bucket sits in a **spill tray sized for its full volume**. Leak sensors in every tent | A leak now damages the house, not a shed floor |
+| Top-off source | A **fresh-water tank/jug**, never a direct connection to house plumbing | A stuck valve on a house line is a flood |
 | Dosing | Manual for now. Auto-dosing in Phase 4 | Bad auto-dosing kills plants overnight |
-| GUI devices | Phone, laptop, old tablet in kiosk mode | One responsive web app serves all three |
+| GUI devices | Phone, laptop, old tablet in kiosk mode | One responsive web app |
 | Remote access | Tailscale (no router port-forwarding) | Secure and zero-config |
-| Alerts | ntfy push notifications (ntfy.sh or self-hosted on the Pi) | Free and works on Android and iOS |
-| Units | Stored internally in **SI (°C, µS/cm, mL, L)**. Displayed in **°F** by default (user setting) | One canonical unit avoids conversion bugs |
+| Alerts | ntfy push notifications | Free and works on Android and iOS |
+| Units | Stored internally in **SI**. Displayed in **°F** by default (user setting) | One canonical unit avoids conversion bugs |
 
-## 3. The big physical issue: insulation
+## 3. Basement-specific considerations
 
-The shed is uninsulated wood. Rough estimate for an ~8×10×8 ft shed:
-
-- Uninsulated (~R-1 walls/roof): heat loss is about **450 BTU/hr per °F** of indoor/outdoor difference, before drafts.
-- A 1500 W oil radiator puts out about **5,100 BTU/hr**, which holds only about **10–15 °F above outdoor temperature**.
-- 1" rigid foam board (R-5) on walls and ceiling plus weatherstripping cuts losses roughly **5×**. The same heater could then hold about **50 °F+ above outside**.
-- The grow lights add useful heat while they're on.
-
-**Recommendation:** foam-board the walls and ceiling, put something under the floor, and seal the gaps before winter. That will matter more than anything in the code. The system will log indoor vs outdoor temperature and heater duty cycle, so you'll see exactly how well the shed holds heat.
+1. **Water damage is the #1 risk.** Spill trays, leak sensors, automatic pump/top-off shutoff, no plumbing connections. A floor drain nearby is a bonus.
+2. **Household humidity and mold.** Tents push humid air into the basement. Monitor **room** RH, not just tent RH, and alert above 60 %.
+3. **Smell and pests.** Carbon filters on exhaust if needed. Soil pots bring fungus gnats; consider bottom-watering and sticky traps.
+4. **Noise.** Air pumps and inline fans run 24/7 inside the house. Choose quiet models and put pumps on foam pads.
+5. **Fire.** Lights and electrical loads in fabric tents. Use a **smoke detector in the grow area** (interconnected with the house if possible) and no daisy-chained power strips.
+6. **Light leaks and schedules.** Each tent has its own photoperiod.
+7. **WiFi in the basement.** Confirm signal strength where the nodes will sit. The Pi should use Ethernet if a cable is nearby.
 
 ## 4. Phases
 
 Each phase ends with a working, useful system. **Do not start a phase until the previous one meets its "done when" criteria.**
 
 ### Phase 0 — Foundations
-- Repo skeleton (`backend/`, `frontend/`, `firmware/`, `deploy/`, `docs/`).
+- Repo skeleton (`backend/`, `frontend/`, `firmware/`, `deploy/`, `simulator/`, `docs/`).
 - Pi setup script: 64-bit Raspberry Pi OS Lite, SSD boot, Docker, Tailscale.
-- `docker-compose.yml` with Mosquitto, backend and ESPHome dashboard (for flashing nodes).
-- Backend skeleton: config loading, SQLite migrations, MQTT client, health endpoint.
+- `docker-compose.yml` with Mosquitto, backend and ESPHome dashboard.
+- Backend skeleton: config loading (tents/zones/devices from `config.yaml`), SQLite migrations, MQTT client, health endpoint.
 - Frontend skeleton: layout, navigation, WebSocket connection, °F/°C setting.
-- **Simulator**: a script that publishes fake sensor data over MQTT in ESPHome topic format, so the backend and GUI can be built and tested with no hardware.
-- **Done when:** `docker compose up` on a laptop + simulator shows live fake data on a dashboard.
+- **Simulator**: fakes N tent nodes + the water node over MQTT in ESPHome topic format, reacting to commands (lights ON → tent temp rises, exhaust ON → RH falls).
+- **Done when:** `docker compose up` on a laptop + simulator shows live fake data for 2 tents on a dashboard.
 
 ### Phase 1 — Monitor
-- `climate` node: air temp/RH (SHT45), outdoor temp (DS18B20), light level (BH1750), RTC (DS3231).
-- `water` node: reservoir temp (DS18B20), reservoir level (floats), tower reservoir level, floor leak sensor.
+- `tent<N>` nodes: air temp/RH (SHT45), light level (BH1750), RTC (DS3231), leak sensor.
+- `water` node: reservoir temp, reservoir level floats, tower reservoir level, leak sensor(s), **room** temp/RH.
 - Backend stores readings, downsamples them, and evaluates alert rules.
-- GUI: Dashboard, History charts, Alerts, System Health (node online/offline, WiFi RSSI, last-seen).
-- Alerts: freeze risk, reservoir low, leak, node offline, sensor stale.
-- **Done when:** one week of real data in the charts, and a deliberately triggered alert (e.g. probe in ice water) reaches both phones.
+- GUI: Dashboard (per tent + room), History charts, Alerts, System Health.
+- Alerts: leak, reservoir low, tent too hot/cold, room RH high, node offline, sensor stale.
+- **Done when:** one week of real data, and a deliberately triggered leak alert (wet the sensor) reaches both phones within 30 s.
 
 ### Phase 2 — Control
-- Relay outlet boxes connected to node GPIOs (heater, water heater, lights, fans, tower pump, air pump, humidity device).
-- Node-local thermostats for air heat and water heat, with setpoints pushed from the Pi.
-- Pi schedules: light photoperiod, tower pump cycle, fan cycles.
-- Manual override for each device: `AUTO` / `ON` / `OFF`, with an optional expiry ("off for 2 hours").
-- Fallback mode on the nodes when the Pi heartbeat is lost (see SAFETY.md).
-- All interlocks in SAFETY.md implemented **on the nodes**.
-- **Done when:** unplugging the Pi for 30 minutes leaves the heaters regulating, lights on schedule and pumps cycling, and the GUI shows what happened once the Pi is back.
+- Relay boxes connected to node GPIOs: lights and exhaust fan per tent, water heater, RDWC + air pumps, tower pump, top-off pump.
+- Node-local water thermostat with a setpoint pushed from the Pi. Node-local tent exhaust control on temp/RH thresholds.
+- Pi schedules: per-tent photoperiod, tower pump cycle.
+- Manual override for each device: `AUTO` / `ON` / `OFF`, with an optional expiry.
+- Fallback mode on the nodes when the Pi heartbeat is lost. All interlocks in SAFETY.md implemented **on the nodes**.
+- **Done when:** unplugging the Pi for 30 minutes leaves lights on schedule, exhaust and water heat regulating and pumps cycling, and wetting a leak sensor stops every water pump within seconds.
 
 ### Phase 3 — Water chemistry (manual dosing)
 - Atlas Scientific EZO pH + EC with isolated carriers in the control bucket.
-- Guided **calibration wizards** in the GUI (pH 4/7/10, EC dry/low/high), recording calibration dates.
+- Guided **calibration wizards** in the GUI, recording calibration dates.
 - Target ranges per crop profile. Out-of-range alerts.
-- **Dosing log**: you record manual doses (what, how much, when) and see them on the pH/EC charts.
-- Grow journal (basic): plants, location, start date, notes, photos.
-- **Done when:** a week of stable pH/EC readings that agree with a handheld meter, and manual doses show on the chart.
+- **Dosing log**: you record manual doses and see them on the pH/EC charts.
+- Grow journal (basic): plants, tent, start date, notes, photos.
+- **Done when:** a week of pH/EC readings that agree with a handheld meter.
 
 ### Phase 4 — Auto dosing
-- `dosing` node: 4 peristaltic pumps (pH down, pH up, nutrient A, nutrient B), 12 V, MOSFET-driven.
+- `dosing` node: 4 peristaltic pumps (pH down, pH up, nutrient A, nutrient B).
 - Pump calibration (mL/second) wizard.
-- Dosing controller on the Pi: small doses, a mixing wait, re-measure, repeat. Strict limits (see SAFETY.md §4).
-- Modes: `OFF` / `SUGGEST` (tells you what it would dose; you approve in the GUI) / `AUTO`.
+- Dosing controller on the Pi with strict limits (SAFETY.md §4).
+- Modes: `OFF` / `SUGGEST` (you approve each dose in the GUI) / `AUTO`.
 - **Done when:** two weeks in `SUGGEST` mode whose suggestions you agree with, then `AUTO` for a week without hitting a limit.
 
 ### Phase 5 — Extras (pick and choose)
-- Pi camera: periodic photos, timelapse, live snapshot in the GUI.
-- CO₂ sensor (SCD41) and humidity/CO₂-driven exhaust.
-- Power monitoring for each circuit (PZEM-004T) and cost tracking.
-- Light sunrise/sunset, if dimmable lights are ever added.
-- Richer grow journal: harvest weights, crop profiles, reminders ("change reservoir water", "recalibrate pH").
+- Pi/USB cameras per tent: snapshots, timelapse.
+- CO₂ sensor (SCD41) per tent.
+- Power monitoring per circuit (PZEM-004T or metering smart plugs) and electricity cost tracking.
+- Variable-speed exhaust (0–10 V or PWM inline fans) instead of on/off.
+- Dimmable lights with sunrise/sunset.
+- Richer journal: harvest weights, crop profiles, reminders.
 - Data export (CSV).
 
 ## 5. Open questions / TBD
 
-- [ ] **Location / typical winter lows**: decides the heater/insulation plan and alert thresholds.
-- [ ] **Shed dimensions**: refines the heat-loss estimate.
-- [ ] **Grow light wattage**: measure with a plug-in watt meter. Needed for the circuit budget (HARDWARE.md §1).
+- [ ] **Number and size of tents**, and which crops go in each (the strawberry tower needs height).
+- [ ] **Basement winter temperature and humidity**: measure for a few days (a $10 hygrometer is fine).
+- [ ] **Existing dehumidifier?** If buying one, pick a model that resumes running after a power loss.
+- [ ] **Floor type** (carpet, LVP, tile, concrete) and whether there's a floor drain.
+- [ ] **Basement circuits**: which outlets share a breaker, and what else is on them.
+- [ ] **Grow light wattage**: measure with a plug-in watt meter.
 - [ ] **Number of DWC buckets** and the control bucket's volume.
-- [ ] **Does the strawberry tower have its own reservoir?** (Assumed yes.)
-- [ ] **Old tablet: make, model and OS version**: decides the frontend browser target.
+- [ ] **WiFi strength** where the tents will be. Is Ethernet available for the Pi?
+- [ ] **Old tablet: make, model and OS version**.
 - [ ] **Budget**: mainly decides Atlas (lab grade) vs cheaper pH/EC probes.
-- [ ] Will the plugs at the house end of the extension cords be GFCI-protected? (They must be. See SAFETY.md.)
