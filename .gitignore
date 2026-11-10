@@ -1,0 +1,12 @@
+.env
+firmware/secrets.yaml
+firmware/.esphome/
+data/
+*.db
+*.db-wal
+*.db-shm
+__pycache__/
+.venv/
+node_modules/
+frontend/dist/
+.DS_Store
