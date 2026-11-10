@@ -1,0 +1,125 @@
+"""Site configuration (config.yaml) and runtime settings (environment variables).
+
+config.yaml describes the physical garden: zones (tents, room, reservoirs), the ESP32
+nodes, and which MQTT entities are sensors or switchable devices. Keeping this in one
+reviewed file means adding a tent is a config change, not a code change.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Literal
+
+import yaml
+from pydantic import BaseModel, model_validator
+
+ZoneKind = Literal["tent", "room", "rdwc", "kratky", "tower", "soil"]
+DeviceKind = Literal["heater", "light", "pump", "fan", "valve", "doser"]
+
+
+class Zone(BaseModel):
+    id: str
+    name: str
+    kind: ZoneKind
+    parent: str | None = None  # e.g. the tower lives inside the tower tent
+
+
+class Node(BaseModel):
+    id: str
+    name: str
+
+
+class Sensor(BaseModel):
+    node: str
+    key: str  # ESPHome entity id, e.g. "air_temp"
+    component: Literal["sensor", "binary_sensor"] = "sensor"
+    zone: str
+    kind: str  # temperature, humidity, illuminance, leak, level_low, level_high
+    unit: str = ""  # SI unit as published on MQTT
+    name: str
+
+    @property
+    def state_key(self) -> str:
+        return f"{self.node}/{self.component}/{self.key}"
+
+
+class Device(BaseModel):
+    node: str
+    key: str  # ESPHome switch id, e.g. "lights"
+    zone: str
+    kind: DeviceKind
+    name: str
+    circuit: str | None = None  # which house breaker feeds it (for load budgeting)
+    watts: float | None = None
+
+    @property
+    def state_key(self) -> str:
+        return f"{self.node}/switch/{self.key}"
+
+
+class SiteConfig(BaseModel):
+    zones: list[Zone]
+    nodes: list[Node]
+    sensors: list[Sensor] = []
+    devices: list[Device] = []
+
+    @model_validator(mode="after")
+    def _check_references(self) -> SiteConfig:
+        zone_ids = [z.id for z in self.zones]
+        node_ids = [n.id for n in self.nodes]
+        for label, ids in (("zone", zone_ids), ("node", node_ids)):
+            dupes = {i for i in ids if ids.count(i) > 1}
+            if dupes:
+                raise ValueError(f"duplicate {label} id(s): {sorted(dupes)}")
+        for zone in self.zones:
+            if zone.parent is not None and zone.parent not in zone_ids:
+                raise ValueError(f"zone {zone.id!r}: unknown parent {zone.parent!r}")
+        seen: set[str] = set()
+        for item in [*self.sensors, *self.devices]:
+            if item.zone not in zone_ids:
+                raise ValueError(f"{item.state_key}: unknown zone {item.zone!r}")
+            if item.node not in node_ids:
+                raise ValueError(f"{item.state_key}: unknown node {item.node!r}")
+            if item.state_key in seen:
+                raise ValueError(f"duplicate entity {item.state_key}")
+            seen.add(item.state_key)
+        return self
+
+
+def load_config(path: str | Path) -> SiteConfig:
+    with open(path, encoding="utf-8") as fh:
+        return SiteConfig.model_validate(yaml.safe_load(fh))
+
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+@dataclass
+class Settings:
+    """Runtime settings. Every field can be overridden with a GROWSHED_* env var."""
+
+    config_path: Path = _REPO_ROOT / "config" / "config.yaml"
+    db_path: Path = _REPO_ROOT / "data" / "growshed.db"
+    static_dir: Path = _REPO_ROOT / "frontend" / "dist"
+    mqtt_enabled: bool = True
+    mqtt_host: str = "localhost"
+    mqtt_port: int = 1883
+    mqtt_user: str | None = None
+    mqtt_password: str | None = None
+    heartbeat_interval_s: float = 30.0
+
+    @classmethod
+    def from_env(cls) -> Settings:
+        env = os.environ
+        s = cls()
+        s.config_path = Path(env.get("GROWSHED_CONFIG_PATH", s.config_path))
+        s.db_path = Path(env.get("GROWSHED_DB_PATH", s.db_path))
+        s.static_dir = Path(env.get("GROWSHED_STATIC_DIR", s.static_dir))
+        s.mqtt_enabled = env.get("GROWSHED_MQTT_ENABLED", "1") not in ("0", "false", "no")
+        s.mqtt_host = env.get("GROWSHED_MQTT_HOST", s.mqtt_host)
+        s.mqtt_port = int(env.get("GROWSHED_MQTT_PORT", s.mqtt_port))
+        s.mqtt_user = env.get("GROWSHED_MQTT_USER") or None
+        s.mqtt_password = env.get("GROWSHED_MQTT_PASSWORD") or None
+        return s

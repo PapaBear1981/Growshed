@@ -1,0 +1,66 @@
+# Growshed hub.
+#   docker compose up -d --build                  hub only (broker + backend/GUI)
+#   docker compose --profile sim up -d --build    ...plus fake nodes, for trying it with no hardware
+#   docker compose --profile esphome up -d        ...plus the ESPHome dashboard for flashing nodes
+# Needs a .env file: copy .env.example to .env and set the two passwords.
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    entrypoint: ["sh", "/growshed/entrypoint.sh"]
+    environment:
+      MQTT_BACKEND_PASSWORD: ${MQTT_BACKEND_PASSWORD:?copy .env.example to .env and set the passwords}
+      MQTT_NODE_PASSWORD: ${MQTT_NODE_PASSWORD:?copy .env.example to .env and set the passwords}
+    volumes:
+      - ./deploy/mosquitto:/growshed:ro
+      - mosquitto-data:/mosquitto/data
+    ports:
+      - "1883:1883" # the ESP32 nodes connect here over WiFi
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    environment:
+      GROWSHED_MQTT_HOST: mosquitto
+      GROWSHED_MQTT_USER: backend
+      GROWSHED_MQTT_PASSWORD: ${MQTT_BACKEND_PASSWORD}
+    volumes:
+      - ./config:/config:ro
+      - ./data:/data
+    ports:
+      - "${GROWSHED_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  simulator:
+    profiles: ["sim"]
+    build:
+      context: .
+      dockerfile: simulator/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    environment:
+      GROWSHED_MQTT_HOST: mosquitto
+      GROWSHED_MQTT_USER: node
+      GROWSHED_MQTT_PASSWORD: ${MQTT_NODE_PASSWORD}
+
+  esphome:
+    profiles: ["esphome"]
+    image: ghcr.io/esphome/esphome:stable
+    restart: unless-stopped
+    volumes:
+      - ./firmware:/config
+    ports:
+      - "6052:6052"
+
+volumes:
+  mosquitto-data:

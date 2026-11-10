@@ -1,0 +1,47 @@
+/* Plain CSS that old tablet browsers understand: no flex gap, no inset, no aspect-ratio. */
+:root {
+  --bg: #f3f5f1;
+  --card: #ffffff;
+  --line: #dde3da;
+  --text: #17231c;
+  --muted: #5f6f65;
+  --accent: #2f7d4f;
+  --good: #2f7d4f;
+  --warn: #b26a00;
+  --bad: #c0392b;
+  --bad-bg: #fbe9e7;
+  --on-bg: #e3f2e8;
+  --off-bg: #eceeea;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1713;
+    --card: #18241d;
+    --line: #2a3a30;
+    --text: #e8efe9;
+    --muted: #94a69a;
+    --accent: #6fcf97;
+    --good: #6fcf97;
+    --warn: #f2b25c;
+    --bad: #ff8a7a;
+    --bad-bg: #3a1d1a;
+    --on-bg: #1f3a2a;
+    --off-bg: #222e27;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+button {
+  font: inherit;
+  color: inherit;
+}

@@ -66,9 +66,10 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | `dosing` | Phase 4. Dosing state machine with limits |
 | `api` | REST routes + `/ws` WebSocket for live updates |
 | `journal` | Plants, notes, photos, harvests |
-| `simulator` | Standalone script that fakes nodes over MQTT for hardware-free development |
 
-## 4. Data model (initial)
+## 4. Data model (target)
+
+Tables are added by numbered migrations as each phase needs them. Phase 0 created only `setting`.
 
 ```
 zone(id, name, kind[tent|room|rdwc|kratky|tower|soil], parent_zone_id)  -- systems live inside tents
@@ -96,7 +97,8 @@ runs in WAL mode.
 
 ## 5. Frontend (`frontend/`)
 
-Svelte + Vite, built to static files that the backend serves. Live data comes over one
+Svelte 4 + Vite, built to static files that the backend serves. (Svelte 4, not 5: version 5's
+runtime needs newer browsers than the old tablet may have.) Live data comes over one
 WebSocket. Charts use uPlot.
 
 **Old-tablet constraint:** set the Vite build target conservatively (decide once the
@@ -116,8 +118,8 @@ Pages:
 
 ## 6. Deployment (`deploy/`)
 
-- `docker-compose.yml`: `mosquitto`, `backend` (also serves the frontend), `esphome` (dashboard on port 6052).
-- Mosquitto runs with username/password auth (nodes and backend each get credentials from a `.env` file that is not committed).
+- `docker-compose.yml` (repo root): `mosquitto` and `backend` (also serves the frontend) always; `simulator` with `--profile sim`; `esphome` (dashboard on port 6052) with `--profile esphome`.
+- Mosquitto runs with username/password auth: users `backend` and `node`, passwords from a `.env` file that is not committed. The broker's password file is rebuilt from `.env` on every start.
 - Persistent volumes: `data/` (SQLite, photos), `mosquitto/`, `esphome/` (node YAML lives in the repo under `firmware/` and is mounted).
 - Nightly SQLite backup (`.backup` command) to a second location.
 - `pi-setup.sh`: OS packages, Docker, Tailscale, hardware watchdog enabled, log rotation.
@@ -125,6 +127,6 @@ Pages:
 ## 7. Development without hardware
 
 Everything above the nodes must be buildable and testable on a laptop:
-- `docker compose up` + `python -m simulator` produces realistic fake readings (day/night temperature swings, slowly drifting pH, a level that drops and gets topped off).
+- `docker compose --profile sim up` (or `python -m simulator` against any broker) produces realistic fake readings (day/night temperature swings, slowly drifting pH, a level that drops and gets topped off).
 - The simulator also obeys commands (lights ON → tent temperature rises, exhaust ON → tent RH falls), and can inject faults (leak, stuck sensor, node offline), so control and alert logic can be tested end-to-end.
 - Backend unit tests cover the controller, alerts and dosing logic (pytest).

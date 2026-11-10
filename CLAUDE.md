@@ -24,16 +24,17 @@ over cleverness.
 ## Stack
 - `firmware/`: ESPHome YAML, one file per node (`tent1.yaml`, `tent2.yaml`, `tent3.yaml`, `water.yaml`, `dosing.yaml`) sharing `common/` packages (tent nodes share one tent package). Secrets in `firmware/secrets.yaml` (gitignored).
 - `backend/`: Python 3.11+, FastAPI, aiomqtt, SQLite (WAL), pytest. Formatting: ruff.
-- `frontend/`: Svelte + Vite, uPlot for charts. Conservative browser target (old Android tablet). Touch targets ≥ 44 px.
-- `deploy/`: docker-compose (mosquitto, backend, esphome), Pi setup script.
+- `frontend/`: **Svelte 4** (not 5) + Vite, uPlot for charts. No `gap` on flexbox, `inset`, or `aspect-ratio` in CSS. Conservative browser target (old Android tablet). Touch targets ≥ 44 px.
+- `docker-compose.yml` (root) + `deploy/`: mosquitto, backend, and the `sim` / `esphome` profiles; Pi setup script.
+- `config/config.yaml`: zones, nodes, sensors, devices. Adding a tent is a config change.
 - `simulator/`: fake nodes over MQTT that also react to commands.
 - `hardware/enclosure/`: 3D-printable node enclosure (OpenSCAD source + exported STLs). Re-export the STLs whenever the `.scad` changes.
 
 ## Definition of done (every task)
-- Backend: `pytest` passes; `ruff check` is clean. New control/alert/dosing logic has unit tests, including failure cases.
+- Backend: `pytest` and `ruff check .` pass (run both from the repo root). New control/alert/dosing logic has unit tests, including failure cases.
 - Frontend: `npm run build` succeeds; the page works at phone width and tablet width.
 - Firmware: `esphome config firmware/<node>.yaml` validates.
-- End-to-end: `docker compose up` + simulator shows the feature working.
+- End-to-end: `docker compose --profile sim up -d --build` shows the feature working in a browser.
 - Docs updated if behavior, topics or the data model changed.
 
 ## Never commit

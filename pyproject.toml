@@ -1,0 +1,16 @@
+# Tooling config only. Dependencies live in backend/requirements*.txt and simulator/requirements.txt.
+[tool.pytest.ini_options]
+testpaths = ["backend/tests", "simulator/tests"]
+pythonpath = ["backend", "."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["growshed", "simulator"]

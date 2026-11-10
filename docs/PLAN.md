@@ -45,7 +45,7 @@ The system is config-driven for **N tents**. Starting layout:
 | Field nodes | **ESP32 boards running ESPHome**: one node per tent + one water node (+ dosing node later) | Declarative YAML, proven drivers, OTA, native MQTT. A node per tent avoids I²C address clashes and isolates failures |
 | Messaging | MQTT (Mosquitto on the Pi) | Standard and debuggable. Matches ESPHome conventions |
 | Backend | Python 3.11+, FastAPI, asyncio, `aiomqtt`, SQLite | Readable and needs no extra servers |
-| Frontend | Svelte + Vite (static build) + **uPlot** charts | Small bundles. Must run on an **old tablet** |
+| Frontend | Svelte 4 + Vite (static build) + **uPlot** charts | Small bundles. Must run on an **old tablet** |
 | Mains switching | **Pre-built relay outlet boxes** (Digital Loggers IoT Power Relay or equivalent), driven by ESP32 GPIO | No DIY mains wiring. Nodes can switch loads with the Pi down |
 | Tent climate | Lights are the main heat source. An inline exhaust fan per tent (with optional carbon filter) controls temp/RH. A small tent heater only if measurements show it's needed | A basement is typically 60–68 °F; lights add 5–15 °F inside a tent |
 | Room humidity | A basement dehumidifier keeps the **room** ≤ 55–60 % RH | Tents exhaust moisture into the house. A finished basement has drywall and carpet/flooring to protect |
@@ -73,14 +73,15 @@ The system is config-driven for **N tents**. Starting layout:
 
 Each phase ends with a working, useful system. **Do not start a phase until the previous one meets its "done when" criteria.**
 
-### Phase 0 — Foundations
+### Phase 0 — Foundations ✅ built
 - Repo skeleton (`backend/`, `frontend/`, `firmware/`, `deploy/`, `simulator/`, `docs/`; `hardware/` already holds the printable node enclosure).
 - Pi setup script: 64-bit Raspberry Pi OS Lite, SSD boot, Docker, Tailscale.
 - `docker-compose.yml` with Mosquitto, backend and ESPHome dashboard.
 - Backend skeleton: config loading (tents/zones/devices from `config.yaml`), SQLite migrations, MQTT client, health endpoint.
 - Frontend skeleton: layout, navigation, WebSocket connection, °F/°C setting.
 - **Simulator**: fakes N tent nodes + the water node over MQTT in ESPHome topic format, reacting to commands (lights ON → tent temp rises, exhaust ON → RH falls).
-- **Done when:** `docker compose up` on a laptop + simulator shows live fake data for 3 tents on a dashboard.
+- **Done when:** `docker compose --profile sim up` on a laptop shows live fake data for 3 tents on a dashboard.
+- **Status:** done and verified in Docker. Not yet done: running `deploy/pi-setup.sh` on the real Pi.
 
 ### Phase 1 — Monitor
 - `tent<N>` nodes: air temp/RH (SHT45), light level (BH1750), RTC (DS3231), leak sensor.

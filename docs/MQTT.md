@@ -52,7 +52,19 @@ directly, without MQTT.
 | water | `res_temp`, `room_temp`, `room_rh`, `ph`, `ec` | `res_low`, `res_high`, `topoff_tank_low`, `leak_res`, `leak_topoff` | `water_heater`, `air_pump`, `rdwc_pump`, `top_off`; number `water_setpoint` |
 | dosing | — | `leak` | `dose_ph_down`, `dose_ph_up`, `dose_a`, `dose_b` (commands are **mL amounts** via `number`; the node converts mL → run time with a hard timeout) |
 
+## Simulator-only topics
+
+```
+growshed/sim/<node>/fault     leak on|off, sensor_fail on|off, offline, online,
+                              tower_low on|off (tent3), drain (water)
+```
+
+Real nodes ignore these. They exist so alerts and interlocks can be tested with no hardware.
+
 ## Rules
+
+- **Binary sensors are ON when the named condition is true**: `leak` ON = wet, `res_low` ON = level is low, `res_high` ON = full.
+- A sensor that fails to read publishes `nan`. The backend stores that as "no value", never as a number.
 
 - Units on the wire are **SI**: °C, %RH, lux, ppm, pH, µS/cm, mL, seconds.
 - Setpoint and schedule `number` entities use `restore_value: true` so they survive node reboots.

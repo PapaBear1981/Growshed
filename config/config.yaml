@@ -1,0 +1,55 @@
+# Growshed site configuration: what exists in the basement and how it maps to MQTT.
+# Topic for each entry: growshed/<node>/<component>/<key>/state   (see docs/MQTT.md)
+# Units are SI, exactly as the nodes publish them. The GUI converts for display.
+# Binary sensors are ON when the named condition is true (leak = wet, level_low = level is low).
+
+zones:
+  - {id: tent1, name: "Tent 1", kind: tent}
+  - {id: tent2, name: "Tent 2", kind: tent}
+  - {id: tent3, name: "Tower tent", kind: tent}
+  - {id: tower, name: "Strawberry tower", kind: tower, parent: tent3}
+  - {id: rdwc, name: "RDWC reservoir", kind: rdwc}
+  - {id: room, name: "Basement", kind: room}
+
+nodes:
+  - {id: tent1, name: "Tent 1 node"}
+  - {id: tent2, name: "Tent 2 node"}
+  - {id: tent3, name: "Tower tent node"}
+  - {id: water, name: "Water node"}
+
+sensors:
+  - {node: tent1, key: air_temp, zone: tent1, kind: temperature, unit: "°C", name: "Air temperature"}
+  - {node: tent1, key: air_rh, zone: tent1, kind: humidity, unit: "%", name: "Humidity"}
+  - {node: tent1, key: light_lux, zone: tent1, kind: illuminance, unit: "lx", name: "Light"}
+  - {node: tent1, key: leak, component: binary_sensor, zone: tent1, kind: leak, name: "Floor leak"}
+  - {node: tent2, key: air_temp, zone: tent2, kind: temperature, unit: "°C", name: "Air temperature"}
+  - {node: tent2, key: air_rh, zone: tent2, kind: humidity, unit: "%", name: "Humidity"}
+  - {node: tent2, key: light_lux, zone: tent2, kind: illuminance, unit: "lx", name: "Light"}
+  - {node: tent2, key: leak, component: binary_sensor, zone: tent2, kind: leak, name: "Floor leak"}
+  - {node: tent3, key: air_temp, zone: tent3, kind: temperature, unit: "°C", name: "Air temperature"}
+  - {node: tent3, key: air_rh, zone: tent3, kind: humidity, unit: "%", name: "Humidity"}
+  - {node: tent3, key: light_lux, zone: tent3, kind: illuminance, unit: "lx", name: "Light"}
+  - {node: tent3, key: leak, component: binary_sensor, zone: tent3, kind: leak, name: "Floor leak"}
+  - {node: tent3, key: tower_temp, zone: tower, kind: temperature, unit: "°C", name: "Water temperature"}
+  - {node: tent3, key: tower_low, component: binary_sensor, zone: tower, kind: level_low, name: "Reservoir low"}
+  - {node: water, key: res_temp, zone: rdwc, kind: temperature, unit: "°C", name: "Water temperature"}
+  - {node: water, key: res_low, component: binary_sensor, zone: rdwc, kind: level_low, name: "Reservoir low"}
+  - {node: water, key: res_high, component: binary_sensor, zone: rdwc, kind: level_high, name: "Reservoir full"}
+  - {node: water, key: leak_res, component: binary_sensor, zone: rdwc, kind: leak, name: "Leak under reservoir"}
+  - {node: water, key: leak_topoff, component: binary_sensor, zone: rdwc, kind: leak, name: "Leak under top-off tank"}
+  - {node: water, key: room_temp, zone: room, kind: temperature, unit: "°C", name: "Air temperature"}
+  - {node: water, key: room_rh, zone: room, kind: humidity, unit: "%", name: "Humidity"}
+
+# circuit / watts are filled in once the basement breakers are mapped and loads measured.
+devices:
+  - {node: tent1, key: lights, zone: tent1, kind: light, name: "Lights"}
+  - {node: tent1, key: exhaust_fan, zone: tent1, kind: fan, name: "Exhaust fan"}
+  - {node: tent2, key: lights, zone: tent2, kind: light, name: "Lights"}
+  - {node: tent2, key: exhaust_fan, zone: tent2, kind: fan, name: "Exhaust fan"}
+  - {node: tent3, key: lights, zone: tent3, kind: light, name: "Lights"}
+  - {node: tent3, key: exhaust_fan, zone: tent3, kind: fan, name: "Exhaust fan"}
+  - {node: tent3, key: tower_pump, zone: tower, kind: pump, name: "Tower pump"}
+  - {node: water, key: water_heater, zone: rdwc, kind: heater, name: "Water heater"}
+  - {node: water, key: air_pump, zone: rdwc, kind: pump, name: "Air pump"}
+  - {node: water, key: rdwc_pump, zone: rdwc, kind: pump, name: "Circulation pump"}
+  - {node: water, key: top_off, zone: rdwc, kind: pump, name: "Top-off pump"}
