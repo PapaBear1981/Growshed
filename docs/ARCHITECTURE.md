@@ -30,8 +30,8 @@
   RTC, leak, soil                         levels, leaks,
   → lights, exhaust                       room T/RH
     fan, (heater)                         → water heater, air
-                                            pump, RDWC pump,
-                                            tower pump, top-off
+  (tower tent node also:                    pump, RDWC pump,
+   tower level/temp → tower pump)           top-off
 ```
 
 ## 2. Responsibilities: who decides what

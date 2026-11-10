@@ -17,7 +17,7 @@ growshed/<node>/text_sensor/<id>/state         string
 growshed/<node>/climate/<id>/...               ESPHome thermostat topics
 ```
 
-Nodes: `tent1`, `tent2`, … `tentN`, `water`, `dosing`.
+Nodes: `tent1`, `tent2`, `tent3` (tower tent), … `tentN`, `water`, `dosing`.
 
 ## Required diagnostic entities per node
 
@@ -48,7 +48,8 @@ directly, without MQTT.
 | Node | Sensors | Binary sensors | Switches / numbers |
 |---|---|---|---|
 | tent*N* | `air_temp`, `air_rh`, `light_lux`, `soil_1..n`, (`co2`) | `leak` | `lights`, `exhaust_fan`, (`heater`); numbers `light_on_minute`, `light_off_minute`, `max_temp`, `max_rh`, (`heat_setpoint`) |
-| water | `res_temp`, `tower_temp`, `room_temp`, `room_rh`, `ph`, `ec` | `res_low`, `res_high`, `tower_low`, `topoff_tank_low`, `leak_res`, `leak_topoff` | `water_heater`, `air_pump`, `rdwc_pump`, `tower_pump`, `top_off`; numbers `water_setpoint`, `tower_on_s`, `tower_off_s` |
+| tent3 (tower tent) adds | `tower_temp` | `tower_low` | `tower_pump`; numbers `tower_on_s`, `tower_off_s` |
+| water | `res_temp`, `room_temp`, `room_rh`, `ph`, `ec` | `res_low`, `res_high`, `topoff_tank_low`, `leak_res`, `leak_topoff` | `water_heater`, `air_pump`, `rdwc_pump`, `top_off`; number `water_setpoint` |
 | dosing | — | `leak` | `dose_ph_down`, `dose_ph_up`, `dose_a`, `dose_b` (commands are **mL amounts** via `number`; the node converts mL → run time with a hard timeout) |
 
 ## Rules

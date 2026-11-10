@@ -22,10 +22,19 @@ Read with: [ARCHITECTURE.md](ARCHITECTURE.md), [SAFETY.md](SAFETY.md),
 | **Strawberry tower** | Vertical tower with its own small reservoir and a pump on a cycle timer | Pump cycles, level monitoring. **Needs a tall tent** (tower height + ~18" for light) |
 | **Soil pots** | Ordinary potted plants | Moisture sensing, hand watering |
 
-Each grow tent is a **zone** with its own climate, lights and exhaust. The system is
-config-driven for **N tents** (assume 2 until decided). Which crops go in which tent is
-still open (see §5). Crops with different light schedules or temperature needs belong in
-separate tents.
+Each grow tent is a **zone** with its own climate, lights and exhaust, and its own node.
+The system is config-driven for **N tents**. Starting layout:
+
+| Tent | Size | Contents | Node |
+|---|---|---|---|
+| Tent 1 | 4×4 ft | TBD (RDWC / Kratky / soil) | `tent1` |
+| Tent 2 | 4×4 ft | TBD (RDWC / Kratky / soil) | `tent2` |
+| Tower tent | **TBD** (see below) | Strawberry tower + its reservoir and pump | `tent3` |
+
+**Sizing the tower tent:** decide after choosing the tower.
+- Footprint: tower's widest point + 8–12" clear on every side (room to reach the back plants and for airflow). One tower up to ~16" wide fits a 2×2; a **3×3 is much easier to work in** and leaves the corners free for lights.
+- Height: tower height including its reservoir base + 12" if lit from the sides, or + 24" if lit from above. Most 5 ft towers need a 72–80" tall tent.
+- Lighting: a single overhead light starves the lower tiers. Plan on 2–4 **vertical LED bars** in the tent corners.
 
 ## 2. Decisions made
 
@@ -65,17 +74,18 @@ separate tents.
 Each phase ends with a working, useful system. **Do not start a phase until the previous one meets its "done when" criteria.**
 
 ### Phase 0 — Foundations
-- Repo skeleton (`backend/`, `frontend/`, `firmware/`, `deploy/`, `simulator/`, `docs/`).
+- Repo skeleton (`backend/`, `frontend/`, `firmware/`, `deploy/`, `simulator/`, `docs/`; `hardware/` already holds the printable node enclosure).
 - Pi setup script: 64-bit Raspberry Pi OS Lite, SSD boot, Docker, Tailscale.
 - `docker-compose.yml` with Mosquitto, backend and ESPHome dashboard.
 - Backend skeleton: config loading (tents/zones/devices from `config.yaml`), SQLite migrations, MQTT client, health endpoint.
 - Frontend skeleton: layout, navigation, WebSocket connection, °F/°C setting.
 - **Simulator**: fakes N tent nodes + the water node over MQTT in ESPHome topic format, reacting to commands (lights ON → tent temp rises, exhaust ON → RH falls).
-- **Done when:** `docker compose up` on a laptop + simulator shows live fake data for 2 tents on a dashboard.
+- **Done when:** `docker compose up` on a laptop + simulator shows live fake data for 3 tents on a dashboard.
 
 ### Phase 1 — Monitor
 - `tent<N>` nodes: air temp/RH (SHT45), light level (BH1750), RTC (DS3231), leak sensor.
-- `water` node: reservoir temp, reservoir level floats, tower reservoir level, leak sensor(s), **room** temp/RH.
+- `tent3` (tower tent) also reads the tower reservoir level and temperature.
+- `water` node: RDWC reservoir temp, reservoir level floats, leak sensor(s), **room** temp/RH.
 - Backend stores readings, downsamples them, and evaluates alert rules.
 - GUI: Dashboard (per tent + room), History charts, Alerts, System Health.
 - Alerts: leak, reservoir low, tent too hot/cold, room RH high, node offline, sensor stale.
@@ -115,7 +125,7 @@ Each phase ends with a working, useful system. **Do not start a phase until the 
 
 ## 5. Open questions / TBD
 
-- [ ] **Number and size of tents**, and which crops go in each (the strawberry tower needs height).
+- [ ] **Which strawberry tower** (height and width) → tower tent size. Which crops go in each 4×4.
 - [ ] **Basement winter temperature and humidity**: measure for a few days (a $10 hygrometer is fine).
 - [ ] **Existing dehumidifier?** If buying one, pick a model that resumes running after a power loss.
 - [ ] **Floor type** (carpet, LVP, tile, concrete) and whether there's a floor drain.

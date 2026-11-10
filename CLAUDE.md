@@ -22,11 +22,12 @@ over cleverness.
 - Keep files small and modules focused. Write docstrings explaining *why* for any control logic.
 
 ## Stack
-- `firmware/`: ESPHome YAML, one file per node (`climate.yaml`, `water.yaml`, `dosing.yaml`) + `common/` packages. Secrets in `firmware/secrets.yaml` (gitignored).
+- `firmware/`: ESPHome YAML, one file per node (`tent1.yaml`, `tent2.yaml`, `tent3.yaml`, `water.yaml`, `dosing.yaml`) sharing `common/` packages (tent nodes share one tent package). Secrets in `firmware/secrets.yaml` (gitignored).
 - `backend/`: Python 3.11+, FastAPI, aiomqtt, SQLite (WAL), pytest. Formatting: ruff.
 - `frontend/`: Svelte + Vite, uPlot for charts. Conservative browser target (old Android tablet). Touch targets ≥ 44 px.
 - `deploy/`: docker-compose (mosquitto, backend, esphome), Pi setup script.
 - `simulator/`: fake nodes over MQTT that also react to commands.
+- `hardware/enclosure/`: 3D-printable node enclosure (OpenSCAD source + exported STLs). Re-export the STLs whenever the `.scad` changes.
 
 ## Definition of done (every task)
 - Backend: `pytest` passes; `ruff check` is clean. New control/alert/dosing logic has unit tests, including failure cases.

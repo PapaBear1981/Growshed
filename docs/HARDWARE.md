@@ -21,6 +21,10 @@ continuous load on each ≤ 80 % (1,440 W on 15 A, 1,920 W on 20 A).
 | Small tent heater (only if needed) | 200–400 |
 | Pi, nodes, 12 V supply, tablet | ~30 |
 
+**Two 4×4 tents:** a typical 4×4 LED is 400–480 W, so two tents of lights alone are ~900 W,
+plus fans, pumps, the water heater and the tower tent. Expect to **split the tents across two
+circuits**, with the dehumidifier on a third if possible.
+
 Each device in `config.yaml` gets a `circuit` field so the backend can show load per circuit
 (and later enforce a cap).
 
@@ -36,8 +40,34 @@ Each device in `config.yaml` gets a `circuit` field so the backend can show load
 
 ## 3. Nodes (ESP32 + ESPHome)
 
-ESP32-WROOM DevKit (or ESP32-S3) on screw-terminal breakout boards, in a small enclosure
-mounted **outside** each tent (sensors go inside on cables through a tent port).
+ESP32-WROOM DevKit (or ESP32-S3) on screw-terminal breakout boards, in the 3D-printed
+enclosure from [`hardware/enclosure/`](../hardware/enclosure/README.md), mounted **outside**
+each tent with the cable slots facing down (sensors go inside on cables through a tent port).
+
+### Node power
+
+Every node is powered the same way, from one **UL-listed 12 V DC wall adapter**
+(2 A for tent nodes, 3–5 A for the water and dosing nodes, which also run 12 V pumps):
+
+```
+12 V adapter → barrel jack → 2 A inline fuse ─┬─ buck converter (12 V → 5 V) → ESP32 5V/VIN pin
+                                              └─ 12 V rail → MOSFET board → 12 V pumps/fans
+                                   (all grounds joined)
+```
+
+| Part | Notes | ~$ |
+|---|---|---|
+| 12 V wall adapter | UL/ETL listed, 5.5×2.1 mm barrel | 10 |
+| Panel-mount DC barrel jack | Measure its thread; the enclosure hole is parametric | 2 |
+| Inline blade fuse holder + 2 A fuse | On the 12 V input | 3 |
+| Buck converter 12 V → 5 V | A **fixed 5 V** module is safest. If using an adjustable LM2596, set it to 5.0–5.1 V with a multimeter **before** connecting the ESP32 | 3 |
+| 470–1000 µF capacitor across 5 V | Optional; rides through pump-start dips | 1 |
+
+Rules:
+- **Never connect USB and the 5 V buck at the same time.** Unplug 12 V when flashing over USB; after the first flash, update over WiFi (OTA).
+- Sensors run from the ESP32's 3.3 V pin. Relay-box signal inputs connect straight to GPIOs (they are opto-isolated and accept 3.3 V).
+- A tent node with no 12 V loads can instead run from a good 5 V USB charger: the USB cable drops into one of the cable slots.
+- Nodes need no battery backup. On power return they boot, restore their setpoints and resume.
 
 ### `tent<N>` node (one per tent)
 | Part | Interface | Purpose | ~$ |
@@ -49,17 +79,18 @@ mounted **outside** each tent (sensors go inside on cables through a tent port).
 | Capacitive soil sensors ×N (if soil pots here) | ADC | Soil moisture | 3 each |
 | SCD41 (Phase 5) | I²C | CO₂ | 50 |
 | Outputs → relay boxes | GPIO | Lights, exhaust fan, (tent heater) | — |
+| **Tower tent only:** DS18B20 + float switch + relay output | 1-Wire, GPIO | Tower reservoir temp, tower LOW, tower pump | 10 |
 
 ### `water` node (near the RDWC control bucket)
 | Part | Interface | Purpose | ~$ |
 |---|---|---|---|
-| DS18B20 waterproof ×2 | 1-Wire | Control bucket + tower reservoir temp | 6 |
-| Vertical float switches ×3–4 | GPIO | Control bucket LOW/HIGH, tower LOW, (top-off tank LOW) | 20 |
+| DS18B20 waterproof | 1-Wire | Control bucket temp | 3 |
+| Vertical float switches ×2–3 | GPIO | Control bucket LOW/HIGH, (top-off tank LOW) | 15 |
 | Leak sensors ×2 | GPIO | Under the control bucket and the top-off tank | 20 |
 | SHT45 | I²C | **Room** (basement) temp/RH, outside the tents | 15 |
 | Atlas EZO-pH + probe (Phase 3) | I²C, isolated carrier | pH | ~170 |
 | Atlas EZO-EC + K1.0 probe (Phase 3) | I²C, isolated carrier | EC | ~200 |
-| Outputs → relay boxes / MOSFETs | GPIO | Water heater, air pump, RDWC pump, tower pump, top-off pump | — |
+| Outputs → relay boxes / MOSFETs | GPIO | Water heater, air pump, RDWC pump, top-off pump | — |
 
 **pH/EC isolation is mandatory:** two probes in the same water without isolation interfere
 with each other. Use Atlas's isolated carrier boards.
@@ -84,7 +115,7 @@ Suggested grouping (one box per signal):
 - Per tent: **lights**, **exhaust fan** (two boxes per tent, or lights on a box + exhaust on a 12 V/low-voltage relay if it's a DC fan)
 - Water heater
 - RDWC pump + air pump: **normally-ON** outlets (fail running)
-- Tower pump
+- Tower pump (switched by the tower tent's node)
 
 Small 12 V loads (top-off pump, DC fans) can run from a MOSFET or low-voltage relay.
 
