@@ -1,0 +1,18 @@
+# Dosing node: four peristaltic pumps for pH down, pH up and nutrients A and B.
+substitutions:
+  node_id: dosing
+  node_name: "Dosing node"
+  # Hard limits enforced on this node (docs/SAFETY.md §4). The hub's own limits in
+  # config/config.yaml must not be higher than these.
+  dose_max_ml: "2.0"
+  dose_day_ml: "20.0"
+
+packages:
+  # Change this one line to match the board you are flashing (see firmware/README.md).
+  board: !include boards/esp32.yaml
+  base: !include common/base.yaml
+  ph_down: !include { file: common/chem_pump.yaml, vars: { dev: ph_down, pin: "${pin_out1}" } }
+  ph_up: !include { file: common/chem_pump.yaml, vars: { dev: ph_up, pin: "${pin_out2}" } }
+  nutrient_a: !include { file: common/chem_pump.yaml, vars: { dev: nutrient_a, pin: "${pin_out3}" } }
+  nutrient_b: !include { file: common/chem_pump.yaml, vars: { dev: nutrient_b, pin: "${pin_out4}" } }
+  dosing_control: !include common/dosing_control.yaml

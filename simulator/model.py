@@ -368,11 +368,100 @@ class WaterModel(NodeModel):
         ] + self.control_entities()
 
 
+class DosingModel(NodeModel):
+    """Four peristaltic pumps that change the reservoir's chemistry (firmware: dosing.yaml)."""
+
+    PUMPS = ("ph_down", "ph_up", "nutrient_a", "nutrient_b")
+    TRUE_ML_PER_S = 1.2  # what the simulated pumps really deliver
+    limits = {f"{p}_ml_per_s": (0, 5) for p in PUMPS}
+
+    def __init__(self, seed: int = 0, reservoir: WaterModel | None = None) -> None:
+        super().__init__(seed)
+        self.reservoir = reservoir
+        self.numbers = {f"{p}_ml_per_s": 0.0 for p in self.PUMPS}  # 0 = not calibrated
+        self.ml_dosers = {p: c.MlDoser(2.0, 20.0, 300000) for p in self.PUMPS}
+        self.primers = {p: c.Primer() for p in self.PUMPS}
+        self.prime_requests: dict[str, float] = {}
+        self.since = {"ph_down": 1e12, "ph_up": 1e12}  # ms since each last ran
+        self.empty: set[str] = set()  # pumps whose bottle has run dry
+        self.dispensed = dict.fromkeys(self.PUMPS, 0.0)  # mL that really reached the reservoir
+        self.leak = False
+        for p in self.PUMPS:
+            self.state[p] = False
+            self.source[p] = "idle"
+
+    def request_dose(self, device: str, amount: float) -> bool:
+        if device not in self.ml_dosers:
+            return False
+        self.requests[device] = amount
+        return True
+
+    def request_prime(self, device: str, seconds: float) -> bool:
+        if device not in self.primers:
+            return False
+        self.prime_requests[device] = seconds
+        return True
+
+    def fault(self, text: str) -> bool:
+        if text in ("leak on", "leak off"):
+            self.leak = text.endswith("on")
+            return True
+        word, _, pump = text.partition(" ")
+        if word in ("empty", "refill") and pump in self.PUMPS:
+            (self.empty.add if word == "empty" else self.empty.discard)(pump)
+            return True
+        return super().fault(text)
+
+    def _dispense(self, pump: str, ml: float) -> None:
+        self.dispensed[pump] += ml
+        water = self.reservoir
+        if water is None or pump in self.empty:
+            return
+        if pump == "ph_down":
+            water.ph -= 0.08 * ml
+        elif pump == "ph_up":
+            water.ph += 0.08 * ml
+        else:
+            water.ec += 12.0 * ml
+
+    def step(self, dt_s: float, hour: float) -> None:
+        dt_ms = dt_s * 1000
+        common = first((self.leak or self.hub_leak, "I-10"), (self.fallback, "fallback"))
+        for name in self.since:
+            self.since[name] = min(1e12, self.since[name] + dt_ms)
+        for pump in self.PUMPS:
+            others = any(self.state[p] for p in self.PUMPS if p != pump)
+            opposing = {"ph_down": "ph_up", "ph_up": "ph_down"}.get(pump)
+            block = common or first(
+                (others, "busy"),
+                (opposing is not None and self.since.get(opposing, 1e12) < 3600000, "opposing-ph"),
+            )
+            doser = self.ml_dosers[pump]
+            before = doser.day_ml
+            rate = self.numbers[f"{pump}_ml_per_s"]
+            ran = doser.step(self.requests.pop(pump, 0), rate, block, dt_ms)
+            if doser.day_ml > before and pump in self.since:
+                self.since[pump] = 0.0
+            prime = self.prime_requests.pop(pump, 0)
+            primed = 0.0 if ran else self.primers[pump].step(prime, 30, block, dt_ms)
+            if ran:
+                self._dispense(pump, ran / 1000 * self.TRUE_ML_PER_S)
+            on = ran > 0 or primed > 0
+            source = "priming" if primed else doser.status(ran > 0)
+            self._report(pump, on, source, None if on else doser.refused)
+
+    def entities(self) -> list[Entity]:
+        return [("binary_sensor", "leak", on_off(self.leak))] + self.control_entities()
+
+
 def build_models(seed: int = 0) -> dict[str, NodeModel]:
-    """The default garden: two 4x4 tents (soil pots in tent 2), the tower tent, the water node."""
+    """The default garden: two 4x4 tents (soil pots in tent 2), the tower tent, the water
+    node, and the dosing node that feeds the water node's reservoir."""
+    water = WaterModel(seed + 4)
     return {
         "tent1": TentModel(seed + 1),
         "tent2": TentModel(seed + 2, soil_pots=4),
         "tent3": TentModel(seed + 3, has_tower=True),
-        "water": WaterModel(seed + 4),
+        "water": water,
+        "dosing": DosingModel(seed + 5, reservoir=water),
     }

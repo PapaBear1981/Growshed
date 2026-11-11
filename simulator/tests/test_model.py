@@ -1,4 +1,6 @@
-from simulator.model import TentModel, WaterModel, approach, build_models
+import pytest
+
+from simulator.model import DosingModel, TentModel, WaterModel, approach, build_models
 
 
 def run(model, seconds, hour, dt=30):
@@ -231,9 +233,91 @@ def test_unplugged_soil_sensor_reads_dry_whatever_the_pump_does():
     assert float(payloads(tent)["soil_1"]) > 2.55  # still "bone dry"
 
 
+def dosing_pair():
+    water = WaterModel()
+    dosing = DosingModel(reservoir=water)
+    for pump in DosingModel.PUMPS:
+        dosing.set_number(f"{pump}_ml_per_s", 1.2)
+    return dosing, water
+
+
+def run_ms(model, seconds):
+    for _ in range(int(seconds * 10)):
+        model.step(0.1, 12)
+
+
+def test_dosing_changes_the_reservoir_within_hard_limits():
+    dosing, water = dosing_pair()
+    ph = water.ph
+    assert dosing.request_dose("ph_down", 50)  # asks for far too much
+    run_ms(dosing, 10)
+    assert dosing.dispensed["ph_down"] == pytest.approx(2.0, abs=0.15)  # capped at 2 mL
+    assert water.ph == pytest.approx(ph - 0.16, abs=0.02)
+    ec = water.ec
+    dosing.request_dose("nutrient_a", 2)
+    run_ms(dosing, 10)
+    assert water.ec > ec + 20
+    assert not dosing.request_dose("bleach", 1)
+
+
+def test_uncalibrated_pump_never_doses_but_can_be_primed():
+    water = WaterModel()
+    dosing = DosingModel(reservoir=water)
+    ph = water.ph
+    dosing.request_dose("ph_down", 1)
+    run_ms(dosing, 5)
+    assert dosing.dispensed["ph_down"] == 0 and dosing.source["ph_down"] == "refused"
+    assert dosing.request_prime("ph_down", 500)
+    dosing.step(0.1, 12)
+    assert dosing.state["ph_down"] and dosing.source["ph_down"] == "priming"
+    run_ms(dosing, 40)
+    assert not dosing.state["ph_down"]  # stops by itself after 30 s at most
+    assert water.ph == ph  # priming goes into a cup, not the reservoir
+
+
+def test_no_ph_up_within_an_hour_of_ph_down_and_one_pump_at_a_time():
+    dosing, _ = dosing_pair()
+    dosing.request_dose("ph_down", 1)
+    dosing.step(0.1, 12)
+    dosing.request_dose("nutrient_a", 1)  # while pH down is still running
+    dosing.step(0.1, 12)
+    assert dosing.ml_dosers["nutrient_a"].refused == "busy"
+    run_ms(dosing, 10)
+    dosing.request_dose("ph_up", 1)
+    run_ms(dosing, 5)
+    assert dosing.dispensed["ph_up"] == 0 and dosing.last_interlock == "opposing-ph ph_up"
+    for _ in range(3700):
+        dosing.step(1, 12)
+    dosing.request_dose("ph_up", 1)
+    run_ms(dosing, 5)
+    assert dosing.dispensed["ph_up"] > 0.8
+
+
+def test_dosing_refused_on_leak_fallback_and_empty_bottle_does_nothing():
+    for setup, rule in ((lambda d: d.fault("leak on"), "I-10"),
+                        (lambda d: setattr(d, "hub_leak", True), "I-10"),
+                        (lambda d: setattr(d, "fallback", True), "fallback")):  # fmt: skip
+        dosing, water = dosing_pair()
+        setup(dosing)
+        dosing.request_dose("ph_down", 1)
+        dosing.request_prime("ph_up", 5)
+        run_ms(dosing, 3)
+        assert dosing.dispensed["ph_down"] == 0 and not dosing.state["ph_up"]
+        assert dosing.last_interlock == f"{rule} ph_down"
+
+    dosing, water = dosing_pair()
+    ph = water.ph
+    assert dosing.fault("empty ph_down")
+    dosing.request_dose("ph_down", 1)
+    run_ms(dosing, 5)
+    assert water.ph == ph  # the pump ran, nothing came out
+    assert dosing.fault("refill ph_down") and not dosing.fault("empty bleach")
+
+
 def test_default_garden_has_three_tents_and_water():
     models = build_models()
-    assert sorted(models) == ["tent1", "tent2", "tent3", "water"]
+    assert sorted(models) == ["dosing", "tent1", "tent2", "tent3", "water"]
+    assert models["dosing"].reservoir is models["water"]
     assert "tower_pump" in models["tent3"].devices
     assert len(models["tent2"].soil) == 4 and models["tent1"].soil == []
     assert "water_4" in models["tent2"].dosers and "top_off" in models["water"].dosers

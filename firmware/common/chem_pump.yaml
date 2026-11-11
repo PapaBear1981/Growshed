@@ -1,0 +1,60 @@
+# One chemical dosing pump (Phase 4). Include once per pump from dosing.yaml:
+#
+#   ph_down: !include { file: common/chem_pump.yaml, vars: { dev: ph_down, pin: "${pin_out1}" } }
+#
+# The hub asks for a dose in MILLILITRES on   growshed/<node>/dose/<dev>/command
+# and for a priming run in seconds on         growshed/<node>/prime/<dev>/command
+# The pump's measured flow rate (mL per second) is stored here on the node, so the node
+# itself can enforce the millilitre limits. A pump with no rate set refuses to dose.
+
+switch:
+  - platform: gpio
+    id: relay_${dev}
+    pin: ${pin}
+    internal: true
+    restore_mode: ALWAYS_OFF
+  - platform: template
+    id: ${dev}
+    name: ${dev}
+    state_topic: growshed/${node_id}/switch/${dev}/state
+    lambda: return id(relay_${dev}).state;
+    turn_on_action: []
+    turn_off_action: []
+
+globals:
+  - id: ${dev}_request_ml
+    type: float
+    initial_value: "0"
+  - id: ${dev}_prime_s
+    type: int
+    initial_value: "0"
+
+mqtt:
+  on_message:
+    - topic: growshed/${node_id}/dose/${dev}/command
+      then:
+        - lambda: id(${dev}_request_ml) = atof(x.c_str());
+    - topic: growshed/${node_id}/prime/${dev}/command
+      then:
+        - lambda: id(${dev}_prime_s) = atoi(x.c_str());
+
+number:
+  # Flow rate from the calibration wizard in the GUI. 0 = not calibrated yet.
+  - platform: template
+    id: ${dev}_ml_per_s
+    name: ${dev}_ml_per_s
+    min_value: 0
+    max_value: 5
+    step: 0.01
+    initial_value: 0
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/${dev}_ml_per_s/state
+    command_topic: growshed/${node_id}/number/${dev}_ml_per_s/command
+
+text_sensor:
+  # idle | dosing | priming | refused
+  - platform: template
+    id: ${dev}_source
+    name: ${dev}_source
+    state_topic: growshed/${node_id}/text_sensor/${dev}_source/state

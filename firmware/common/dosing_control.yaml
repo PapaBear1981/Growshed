@@ -1,0 +1,118 @@
+# Dosing node control (Phase 4): four peristaltic pumps. Rules: docs/SAFETY.md §4.
+#
+# The hub decides WHAT to dose and when (it has the probes and the calibrations). This node
+# enforces the hard limits whatever it is told:
+#   - at most ${dose_max_ml} mL per dose and ${dose_day_ml} mL per pump per day
+#   - a 5-minute rest per pump, and only one pump running at a time
+#   - never pH up within an hour of pH down, or the other way round
+#   - nothing during a leak (I-10) and nothing without the hub (fallback)
+#   - a pump whose flow rate was never measured does not dose at all
+
+binary_sensor:
+  # Leak probe in the tray under the pumps and bottles. ON = wet.
+  - platform: gpio
+    id: leak
+    name: leak
+    state_topic: growshed/${node_id}/binary_sensor/leak/state
+    pin:
+      number: ${pin_in1}
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 500ms
+      - delayed_off: 10s
+
+interval:
+  - interval: 100ms
+    then:
+      - lambda: |-
+          const long dt = 100;
+          const bool fallback = id(heartbeat_age_s) > 180;
+          const char *common = (id(leak).state || id(hub_leak)) ? "I-10" : fallback ? "fallback" : nullptr;
+          static gs::Since since_down, since_up;
+          since_down.tick(dt);
+          since_up.tick(dt);
+          static gs::MlDoser ph_down_doser(${dose_max_ml}, ${dose_day_ml}, 300000);
+          static gs::Primer ph_down_primer;
+          static std::string ph_down_prev;
+          static gs::MlDoser ph_up_doser(${dose_max_ml}, ${dose_day_ml}, 300000);
+          static gs::Primer ph_up_primer;
+          static std::string ph_up_prev;
+          static gs::MlDoser nutrient_a_doser(${dose_max_ml}, ${dose_day_ml}, 300000);
+          static gs::Primer nutrient_a_primer;
+          static std::string nutrient_a_prev;
+          static gs::MlDoser nutrient_b_doser(${dose_max_ml}, ${dose_day_ml}, 300000);
+          static gs::Primer nutrient_b_primer;
+          static std::string nutrient_b_prev;
+          const bool any_running = id(relay_ph_down).state || id(relay_ph_up).state ||
+                                   id(relay_nutrient_a).state || id(relay_nutrient_b).state;
+
+          {
+            // One pump at a time: a request arriving while another pump runs is refused.
+            const char *block = common != nullptr ? common
+                                : (any_running && !id(relay_ph_down).state) ? "busy" : since_up.within(3600000) ? "opposing-ph" : nullptr;
+            const float request = id(ph_down_request_ml);
+            id(ph_down_request_ml) = 0;
+            const int prime = id(ph_down_prime_s);
+            id(ph_down_prime_s) = 0;
+            const float before = ph_down_doser.day_ml;
+            const bool dosing = ph_down_doser.step(request, id(ph_down_ml_per_s).state, block, dt);
+            if (ph_down_doser.accepted_now(before)) since_down.reset();
+            // Priming is only for filling the tube or measuring flow: never while dosing.
+            const bool priming = !dosing && ph_down_primer.step(prime, 30, block, dt);
+            gs::apply(id(relay_ph_down), dosing || priming);
+            gs::report(id(ph_down_source), id(last_interlock), priming ? "priming" : ph_down_doser.status(dosing),
+                       (dosing || priming) ? nullptr : ph_down_doser.refused, "ph_down", ph_down_prev);
+          }
+
+          {
+            // One pump at a time: a request arriving while another pump runs is refused.
+            const char *block = common != nullptr ? common
+                                : (any_running && !id(relay_ph_up).state) ? "busy" : since_down.within(3600000) ? "opposing-ph" : nullptr;
+            const float request = id(ph_up_request_ml);
+            id(ph_up_request_ml) = 0;
+            const int prime = id(ph_up_prime_s);
+            id(ph_up_prime_s) = 0;
+            const float before = ph_up_doser.day_ml;
+            const bool dosing = ph_up_doser.step(request, id(ph_up_ml_per_s).state, block, dt);
+            if (ph_up_doser.accepted_now(before)) since_up.reset();
+            // Priming is only for filling the tube or measuring flow: never while dosing.
+            const bool priming = !dosing && ph_up_primer.step(prime, 30, block, dt);
+            gs::apply(id(relay_ph_up), dosing || priming);
+            gs::report(id(ph_up_source), id(last_interlock), priming ? "priming" : ph_up_doser.status(dosing),
+                       (dosing || priming) ? nullptr : ph_up_doser.refused, "ph_up", ph_up_prev);
+          }
+
+          {
+            // One pump at a time: a request arriving while another pump runs is refused.
+            const char *block = common != nullptr ? common
+                                : (any_running && !id(relay_nutrient_a).state) ? "busy" : nullptr;
+            const float request = id(nutrient_a_request_ml);
+            id(nutrient_a_request_ml) = 0;
+            const int prime = id(nutrient_a_prime_s);
+            id(nutrient_a_prime_s) = 0;
+            const float before = nutrient_a_doser.day_ml;
+            const bool dosing = nutrient_a_doser.step(request, id(nutrient_a_ml_per_s).state, block, dt);
+            // Priming is only for filling the tube or measuring flow: never while dosing.
+            const bool priming = !dosing && nutrient_a_primer.step(prime, 30, block, dt);
+            gs::apply(id(relay_nutrient_a), dosing || priming);
+            gs::report(id(nutrient_a_source), id(last_interlock), priming ? "priming" : nutrient_a_doser.status(dosing),
+                       (dosing || priming) ? nullptr : nutrient_a_doser.refused, "nutrient_a", nutrient_a_prev);
+          }
+
+          {
+            // One pump at a time: a request arriving while another pump runs is refused.
+            const char *block = common != nullptr ? common
+                                : (any_running && !id(relay_nutrient_b).state) ? "busy" : nullptr;
+            const float request = id(nutrient_b_request_ml);
+            id(nutrient_b_request_ml) = 0;
+            const int prime = id(nutrient_b_prime_s);
+            id(nutrient_b_prime_s) = 0;
+            const float before = nutrient_b_doser.day_ml;
+            const bool dosing = nutrient_b_doser.step(request, id(nutrient_b_ml_per_s).state, block, dt);
+            // Priming is only for filling the tube or measuring flow: never while dosing.
+            const bool priming = !dosing && nutrient_b_primer.step(prime, 30, block, dt);
+            gs::apply(id(relay_nutrient_b), dosing || priming);
+            gs::report(id(nutrient_b_source), id(last_interlock), priming ? "priming" : nutrient_b_doser.status(dosing),
+                       (dosing || priming) ? nullptr : nutrient_b_doser.refused, "nutrient_b", nutrient_b_prev);
+          }

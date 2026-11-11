@@ -132,3 +132,61 @@ class Doser:
 
     def status(self, on: bool) -> str:
         return "dosing" if on else ("refused" if self.refused else "idle")
+
+
+class MlDoser:
+    """Port of gs::MlDoser: a chemical dosing pump, in millilitres and milliseconds."""
+
+    MAX_RUN_MS = 60000
+
+    def __init__(self, max_ml: float, max_day_ml: float, rest_ms: float) -> None:
+        self.max_ml, self.max_day_ml, self.rest_ms = max_ml, max_day_ml, rest_ms
+        self.remaining_ms = self.resting_ms = self.window_ms = 0.0
+        self.day_ml = 0.0
+        self.refused: str | None = None
+
+    def step(self, request_ml: float, ml_per_s: float, block: str | None, dt_ms: float) -> float:
+        """Returns how many milliseconds the pump ran during this step."""
+        self.window_ms += dt_ms
+        if self.window_ms >= 86400000:
+            self.window_ms, self.day_ml = 0.0, 0.0
+        self.resting_ms = max(0.0, self.resting_ms - dt_ms)
+        if request_ml > 0:
+            ml = min(request_ml, self.max_ml)
+            if block is not None:
+                self.refused = block
+            elif not ml_per_s > 0:
+                self.refused = "uncalibrated"
+            elif self.remaining_ms > 0 or self.resting_ms > 0:
+                self.refused = "busy"
+            elif self.day_ml + ml > self.max_day_ml:
+                self.refused = "daily-cap"
+            else:
+                self.remaining_ms = min(ml / ml_per_s * 1000, self.MAX_RUN_MS)
+                self.resting_ms = self.rest_ms
+                self.day_ml += ml
+                self.refused = None
+        if self.remaining_ms > 0 and block is not None:
+            self.remaining_ms = 0.0
+            self.refused = block
+        ran = min(self.remaining_ms, dt_ms) if self.remaining_ms > 0 else 0.0
+        self.remaining_ms -= ran
+        return ran
+
+    def status(self, on: bool) -> str:
+        return "dosing" if on else ("refused" if self.refused else "idle")
+
+
+class Primer:
+    def __init__(self) -> None:
+        self.remaining_ms = 0.0
+
+    def step(self, request_s: float, max_s: float, block: str | None, dt_ms: float) -> float:
+        if block is not None:
+            self.remaining_ms = 0.0
+            return 0.0
+        if request_s > 0 and self.remaining_ms <= 0:
+            self.remaining_ms = 1000 * min(request_s, max_s)
+        ran = min(self.remaining_ms, dt_ms) if self.remaining_ms > 0 else 0.0
+        self.remaining_ms -= ran
+        return ran

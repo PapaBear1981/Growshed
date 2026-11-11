@@ -87,6 +87,8 @@ class SimNode:
                     ok = self.model.set_number(entity, float(text))
                 elif component == "dose":
                     ok = self.model.request_dose(entity, float(text))
+                elif component == "prime":
+                    ok = getattr(self.model, "request_prime", lambda *a: False)(entity, float(text))
                 else:
                     ok = False  # like the firmware, direct switch commands are ignored
             except ValueError:
@@ -119,7 +121,7 @@ class SimNode:
                     will=will,
                 ) as client:
                     await client.publish(f"{self.base}/status", "online", qos=1, retain=True)
-                    for component in ("select", "number", "dose"):
+                    for component in ("select", "number", "dose", "prime"):
                         await client.subscribe(f"{self.base}/{component}/+/command")
                     await client.subscribe(LEAK_ALARM_TOPIC)
                     await client.subscribe(f"{PREFIX}/sim/{self.id}/fault")

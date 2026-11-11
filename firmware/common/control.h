@@ -177,6 +177,94 @@ struct Doser {
   const char *status(bool on) const { return on ? "dosing" : (refused != nullptr ? "refused" : "idle"); }
 };
 
+// A chemical dosing pump (SAFETY.md §4): asked for in millilitres, timed in milliseconds.
+// Whatever the hub asks for, the node enforces: a calibrated pump, a maximum single dose,
+// a maximum per day, a rest between doses, and an absolute limit on run time.
+struct MlDoser {
+  float max_ml;
+  float max_day_ml;
+  long rest_ms;
+  long remaining_ms = 0;
+  long resting_ms = 0;
+  long window_ms = 0;
+  float day_ml = 0;
+  const char *refused = nullptr;
+
+  static constexpr long MAX_RUN_MS = 60000;  // no single dose may run longer than this
+
+  MlDoser(float max_dose_ml, float max_per_day_ml, long rest_between_ms)
+      : max_ml(max_dose_ml), max_day_ml(max_per_day_ml), rest_ms(rest_between_ms) {}
+
+  // Call every `dt_ms`. request_ml > 0 asks for a dose; ml_per_s is the pump's measured
+  // flow rate (0 = never calibrated). Returns true while the pump should run.
+  bool step(float request_ml, float ml_per_s, const char *block, long dt_ms) {
+    window_ms += dt_ms;
+    if (window_ms >= 86400000L) {
+      window_ms = 0;
+      day_ml = 0;
+    }
+    if (resting_ms > 0) resting_ms -= dt_ms;
+    if (request_ml > 0) {
+      const float ml = request_ml < max_ml ? request_ml : max_ml;
+      if (block != nullptr) {
+        refused = block;
+      } else if (!(ml_per_s > 0)) {
+        refused = "uncalibrated";  // without a flow rate, millilitres mean nothing
+      } else if (remaining_ms > 0 || resting_ms > 0) {
+        refused = "busy";
+      } else if (day_ml + ml > max_day_ml) {
+        refused = "daily-cap";
+      } else {
+        long run = (long) (ml / ml_per_s * 1000.0f);
+        remaining_ms = run < MAX_RUN_MS ? run : MAX_RUN_MS;
+        resting_ms = rest_ms;
+        day_ml += ml;
+        refused = nullptr;
+      }
+    }
+    if (remaining_ms > 0 && block != nullptr) {
+      remaining_ms = 0;  // abort at once if an interlock appears mid-dose
+      refused = block;
+    }
+    if (remaining_ms > 0) {
+      remaining_ms -= dt_ms;
+      return true;
+    }
+    return false;
+  }
+
+  bool accepted_now(float day_ml_before) const { return day_ml > day_ml_before; }
+  const char *status(bool on) const { return on ? "dosing" : (refused != nullptr ? "refused" : "idle"); }
+};
+
+// Runs a pump for a few seconds on request, to fill its tube or measure its flow rate.
+// The outlet must be in a measuring cup, not the reservoir: this is not a counted dose.
+struct Primer {
+  long remaining_ms = 0;
+  bool step(int request_s, int max_s, const char *block, long dt_ms) {
+    if (block != nullptr) {
+      remaining_ms = 0;
+      return false;
+    }
+    if (request_s > 0 && remaining_ms <= 0) remaining_ms = 1000L * (request_s < max_s ? request_s : max_s);
+    if (remaining_ms > 0) {
+      remaining_ms -= dt_ms;
+      return true;
+    }
+    return false;
+  }
+};
+
+// Milliseconds since something last happened, saturating (never wraps around).
+struct Since {
+  long ms = 2000000000L;
+  void tick(long dt_ms) {
+    if (ms < 2000000000L) ms += dt_ms;
+  }
+  void reset() { ms = 0; }
+  bool within(long window_ms) const { return ms < window_ms; }
+};
+
 // Drive a relay to match a decision. Templated so tests can pass a fake switch.
 template<typename SwitchT> void apply(SwitchT *relay, bool on) {
   if (on != relay->state) {

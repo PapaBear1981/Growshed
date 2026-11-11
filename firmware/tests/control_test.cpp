@@ -120,6 +120,62 @@ static void test_doser() {
   assert(run(e, -4, nullptr, 5) == 0);              // nonsense requests do nothing
 }
 
+static int run_ml(MlDoser &d, float request, float rate, const char *block, int ms) {
+  int on = 0;
+  for (int t = 0; t < ms; t += 100) on += d.step(t == 0 ? request : 0, rate, block, 100) ? 100 : 0;
+  return on;
+}
+
+static void test_ml_doser() {
+  MlDoser d(2.0f, 5.0f, 300000);
+  assert(run_ml(d, 1.0f, 0.5f, nullptr, 10000) == 2000);     // 1 mL at 0.5 mL/s = 2 s
+  assert(run_ml(d, 1.0f, 0.5f, nullptr, 10000) == 0);        // must rest
+  assert(std::strcmp(d.refused, "busy") == 0);
+  run_ml(d, 0, 0.5f, nullptr, 300000);
+  assert(run_ml(d, 50.0f, 0.5f, nullptr, 20000) == 4000);    // capped at 2 mL per dose
+  run_ml(d, 0, 0.5f, nullptr, 300000);
+  assert(run_ml(d, 2.0f, 0.5f, nullptr, 20000) == 4000);     // 1 + 2 + 2 = 5 mL today
+  run_ml(d, 0, 0.5f, nullptr, 300000);
+  assert(run_ml(d, 0.5f, 0.5f, nullptr, 20000) == 0);        // would exceed the daily 5 mL
+  assert(std::strcmp(d.refused, "daily-cap") == 0);
+  run_ml(d, 0, 0.5f, nullptr, 86400000);                     // next day
+  float before = d.day_ml;
+  assert(run_ml(d, 0.5f, 0.5f, nullptr, 5000) == 1000 && d.accepted_now(before));
+
+  MlDoser u(2.0f, 20.0f, 1000);
+  assert(run_ml(u, 1.0f, 0.0f, nullptr, 5000) == 0);         // never calibrated: refuse
+  assert(std::strcmp(u.refused, "uncalibrated") == 0 && u.day_ml == 0);
+  assert(run_ml(u, 1.0f, -1.0f, nullptr, 5000) == 0);
+  assert(run_ml(u, 1.0f, 1.0f, "I-10", 5000) == 0 && std::strcmp(u.refused, "I-10") == 0);
+  assert(u.day_ml == 0);                                     // refused doses are not counted
+  assert(run_ml(u, 2.0f, 0.001f, nullptr, 200000) == 60000); // absurdly slow pump: 60 s at most
+  // an interlock mid-dose stops it immediately
+  MlDoser m(2.0f, 20.0f, 1000);
+  assert(m.step(2.0f, 0.2f, nullptr, 100) && m.step(0, 0.2f, nullptr, 100));
+  assert(!m.step(0, 0.2f, "fallback", 100) && !m.step(0, 0.2f, nullptr, 100));
+  assert(run_ml(m, -3.0f, 1.0f, nullptr, 2000) == 0);        // nonsense request
+}
+
+static void test_primer_and_since() {
+  Primer p;
+  int on = 0;
+  for (int t = 0; t < 60000; t += 100) on += p.step(t == 0 ? 500 : 0, 30, nullptr, 100) ? 100 : 0;
+  assert(on == 30000);                                       // never longer than the maximum
+  assert(p.step(10, 30, nullptr, 100));
+  assert(!p.step(0, 30, "I-10", 100) && !p.step(0, 30, nullptr, 100));  // a leak cancels it
+  assert(!p.step(10, 30, "fallback", 100));
+
+  Since s;
+  assert(!s.within(3600000));                                // "never happened"
+  s.reset();
+  for (int i = 0; i < 35999; i++) s.tick(100);
+  assert(s.within(3600000));
+  s.tick(100);
+  assert(!s.within(3600000));
+  for (long i = 0; i < 30000000L; i++) s.tick(100);          // far beyond: must not wrap
+  assert(!s.within(3600000) && s.ms > 0);
+}
+
 struct FakeSwitch {
   bool state = false;
   int toggles = 0;
@@ -157,6 +213,8 @@ int main() {
   test_cycle();
   test_held_and_overtemp();
   test_doser();
+  test_ml_doser();
+  test_primer_and_since();
   test_apply_and_report();
   std::puts("control.h: all tests passed");
   return 0;
