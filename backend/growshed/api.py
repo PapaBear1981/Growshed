@@ -44,10 +44,8 @@ class PotModeBody(BaseModel):
 
 class CalibrationBody(BaseModel):
     key: str
-    point: Literal["dry", "wet"]
-
-
-FRESH_S = 180  # a calibration point must come from a reading this recent
+    label: Literal["dry", "wet", "ph", "ec", "offset"]
+    ref: float | None = None  # buffer pH, solution EC (µS/cm) or the reference reading
 
 
 def _settings(request_or_ws) -> dict[str, str]:
@@ -83,7 +81,7 @@ async def get_history(
     # History stores raw readings; apply today's calibration on the way out.
     cal = request.app.state.calibrations
     for key in wanted:
-        if cal.needs_calibration(key):
+        if cal.uses(key):
             result["series"][key] = [cal.apply(key, v) for v in result["series"][key]]
     return result
 
@@ -95,23 +93,41 @@ async def get_calibration(request: Request) -> dict:
 
 @router.post("/api/calibration")
 async def set_calibration(body: CalibrationBody, request: Request) -> dict:
-    """Store the sensor's CURRENT raw reading as its dry or wet point.
+    """Capture a calibration point from the sensor's own recent readings.
 
-    The hub takes the reading itself (rather than trusting a number from the browser) so
-    a stale screen cannot save an old value.
+    The hub takes the reading itself (rather than trusting a number from the browser)
+    and only once it is steady. While it is not, the answer is {"status": "waiting"} and
+    the GUI asks again.
     """
     state = request.app.state
     cal = state.calibrations
-    if not cal.needs_calibration(body.key):
+    if not cal.uses(body.key):
         raise HTTPException(404, "that sensor does not use calibration")
-    entry = state.live.values.get(body.key)
-    now = time.time()
-    if entry is None or entry.get("raw") is None or now - entry["ts"] > FRESH_S:
-        raise HTTPException(409, "no fresh reading from that sensor; check that it is connected")
-    cal.set_point(body.key, body.point, entry["raw"], now)
-    await state.ingest.publish(body.key, entry["raw"], entry["ts"])  # show the new % at once
-    await state.hub.broadcast({"type": "calibration", "calibration": cal.summary()})
-    return cal.summary()[body.key]
+    try:
+        result = cal.capture(body.key, body.label, body.ref, time.time())
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    if result["status"] == "saved":
+        await _refresh_calibrated(state, body.key)
+    return result
+
+
+@router.delete("/api/calibration")
+async def clear_calibration(key: str, request: Request) -> dict:
+    state = request.app.state
+    if not state.calibrations.uses(key):
+        raise HTTPException(404, "that sensor does not use calibration")
+    state.calibrations.clear(key)
+    await _refresh_calibrated(state, key)
+    return {"status": "cleared"}
+
+
+async def _refresh_calibrated(state, key: str) -> None:
+    """After a calibration change, show the new value at once on every screen."""
+    entry = state.live.values.get(key)
+    if entry is not None and entry.get("raw") is not None:
+        await state.ingest.publish(key, entry["raw"], entry["ts"])
+    await state.hub.broadcast({"type": "calibration", "calibration": state.calibrations.summary()})
 
 
 async def _control(request: Request, action) -> dict:

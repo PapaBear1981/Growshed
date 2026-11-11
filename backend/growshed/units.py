@@ -16,4 +16,8 @@ def format_value(kind: str, value: float, display_units: str) -> str:
         return f"{value:.0f} %"
     if kind == "illuminance":
         return f"{value:.0f} lx"
+    if kind == "ph":
+        return f"pH {value:.1f}"
+    if kind == "ec":
+        return f"{value / 1000:.2f} mS/cm"
     return f"{value:g}"

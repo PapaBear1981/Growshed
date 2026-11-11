@@ -31,6 +31,11 @@ class Ingest:
             return
         value = topics.parse_payload(entity.component, payload)
         self.state.touch_node(entity.node, ts)
+        cal = self.calibrations
+        if cal is not None and cal.uses(entity.key):
+            value = cal.prepare(entity.key, value)  # e.g. EC referred to 25 °C
+            if value is not None:
+                cal.observe(entity.key, value, ts)
         if self.recorder is not None:
             self.recorder.add(entity.key, value, ts)  # history keeps the raw reading
         await self.publish(entity.key, value, ts)
@@ -38,7 +43,7 @@ class Ingest:
     async def publish(self, key: str, raw, ts: float) -> None:
         """Update live state and the GUIs with one reading, applying any calibration."""
         message = {"type": "value", "key": key, "value": raw, "ts": ts}
-        if self.calibrations is not None and self.calibrations.needs_calibration(key):
+        if self.calibrations is not None and self.calibrations.uses(key):
             message["value"] = self.calibrations.apply(key, raw)
             message["raw"] = raw
         self.state.set_value(key, message["value"], ts, raw=message.get("raw"))
