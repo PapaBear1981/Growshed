@@ -14,7 +14,6 @@
       help: 'These work without calibration. If one disagrees with a thermometer or hygrometer you trust, enter the trusted reading. Waterproof probes can use ice water: a glass packed with ice and topped up with water is exactly 32 °F (0 °C).' },
   ];
   const BUFFERS = [4.0, 6.86, 7.0, 9.18, 10.0];
-  const UNIT = { ph: 'V', ec: 'V', soil_moisture: 'V', temperature: '°C', humidity: '%' };
 
   let busy = {}; // key -> status text while waiting
   let note = {}; // key -> last result text
@@ -84,15 +83,27 @@
   function age(cal) {
     const stamps = Object.keys(cal.points || {}).map((label) => cal.points[label].ts);
     if (!stamps.length || !cal.calibrated) return null;
-    return Math.floor(($now - Math.min.apply(null, stamps)) / 86400);
+    return Math.max(0, Math.floor(($now - Math.min.apply(null, stamps)) / 86400));
   }
   const show = (sensor, entry) => {
     if (!entry || entry.value === null || entry.value === undefined) return '—';
     const r = formatReading(sensor, entry.value, $settings.display_units);
     return r.text + ' ' + r.unit;
   };
-  const rawText = (sensor, entry) =>
-    !entry || entry.raw === null || entry.raw === undefined ? '—' : entry.raw.toFixed(sensor.kind === 'humidity' ? 0 : 2) + ' ' + UNIT[sensor.kind];
+  // What the sensor itself says, before calibration. Temperatures follow the display units.
+  const rawText = (sensor, entry) => {
+    if (!entry || entry.raw === null || entry.raw === undefined) return '—';
+    if (sensor.kind === 'temperature' || sensor.kind === 'humidity') {
+      const r = formatReading(sensor, entry.raw, $settings.display_units);
+      return r.text + ' ' + r.unit;
+    }
+    return entry.raw.toFixed(2) + ' V';
+  };
+  // Ice-water calibration only makes sense for the waterproof probes.
+  const inWater = (sensor) => {
+    const zone = $config.zones.find((z) => z.id === sensor.zone);
+    return zone && (zone.kind === 'rdwc' || zone.kind === 'tower');
+  };
 </script>
 
 {#each GROUPS as group (group.title)}
@@ -134,7 +145,7 @@
                 <input type="number" step="0.1" placeholder={sensor.kind === 'ec' ? '1413' : ''} bind:value={ref[key]} />
               </label>
               <button disabled={!!busy[key]} on:click={() => captureRef(sensor, key)}>{sensor.kind === 'ec' ? 'Capture' : 'Match'}</button>
-              {#if sensor.kind === 'temperature'}
+              {#if sensor.kind === 'temperature' && inWater(sensor)}
                 <button disabled={!!busy[key]} on:click={() => capture(key, 'offset', 0)}>In ice water</button>
               {/if}
             {/if}

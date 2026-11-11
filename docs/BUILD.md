@@ -33,7 +33,7 @@ Per node:
 |---|---|---|---|---|
 | ESP32 DevKit + screw-terminal breakout board | 1 | 1 | 1 | Buy the breakout that matches your DevKit's pin count (30 or 38) |
 | USB charger (1 A or more) + USB cable | 1 | 1 | 1 | A data-capable cable; charge-only cables can't flash |
-| SHT45 temperature/humidity board | 1 | 1 | 1 | |
+| Air temperature/humidity board: SHT40/41/45, AHT20 or BME280 | 1 | 1 | 1 | Set the matching `air:` line in the node file. The steps below say SHT45; the others wire the same way |
 | BH1750 light sensor board | 1 | 1 | — | |
 | DS3231 clock module + CR2032 battery | 1 | 1 | — | |
 | Leak sensor module (see below) | 1 | 1 | 2 | |
@@ -82,7 +82,9 @@ Do this for each node before anything goes in an enclosure.
 
    | Address | Device |
    |---|---|
-   | `0x44` | SHT45 |
+   | `0x44` | SHT40 / SHT41 / SHT45 |
+   | `0x38` | AHT20 |
+   | `0x76` | BME280 |
    | `0x23` | BH1750 |
    | `0x68` | DS3231 |
 
@@ -192,3 +194,43 @@ Use the Controls page, with the load plugged in:
 - [ ] Measure what one dose delivers (catch it in a cup) and adjust `dose_s` in `config/config.yaml` so a dose suits the pot size.
 - [ ] Unplug the Pi for 5 minutes: lights follow their schedule, the heater keeps regulating, and the System page shows the nodes went into fallback when the Pi is back.
 - [ ] Leave auto-watering **Off** for a pot until its sensor is calibrated and you have watched its readings for a few days.
+
+## 9. Phase 3: pH and EC probes
+
+Diagram: [water node, pH and EC](wiring/water-chemistry.svg).
+
+**What to buy (cheap is fine):** an analog pH kit (a BNC probe plus a small amplifier board
+with an analog output pin, often marked `Po`), and an analog "TDS meter" board with its
+two-pin probe. For calibration: pH 4.0 and 6.86 or 7.0 buffer (powder sachets are cheapest)
+and a bottle of 1413 µS/cm EC solution.
+
+1. **pH board power.** If the board is rated for 3.3 V, wire `V+` to 3V3. If it is 5 V-only
+   (the common PH-4502C is), power it from the node's 5 V pin and put a **voltage divider** on
+   its output so the ESP32 never sees more than 3.3 V: a 10 kΩ resistor from `Po` to the
+   analog terminal, and a 20 kΩ resistor from the analog terminal to GND. The calibration
+   absorbs the divider, so the readings stay correct.
+2. **pH output** `Po` (or the divider's midpoint) goes to Analog 1.
+3. **EC board:** `A` to Analog 2, `GND` to GND, and `VCC` to **Output 5**, not to 3V3. The
+   node switches the board on for a couple of seconds per reading so it cannot disturb the pH
+   probe.
+4. Keep the boards in the enclosure and the probe cables away from mains cables. Hang the
+   probes in the control bucket at least a hand's width apart, tips submerged, caps off.
+5. **Calibrate** on the System page, in this order:
+   - **pH:** rinse the probe, stand it in the 7.0 (or 6.86) buffer, choose that buffer and
+     press **Capture**. The hub waits until the reading is steady, which can take a minute.
+     Rinse, then repeat in the 4.0 buffer. A third buffer (9.18 or 10) is optional.
+   - **EC:** stand the probe in the 1413 solution, type `1413`, press **Capture**.
+   - If the page says the points do not fall on a line, the probe is dirty or worn out.
+6. Check against a handheld meter if you have one. Expect about ±0.2 pH and ±10 % EC.
+7. The System page shows how old each calibration is, and an alert reminds you when pH (30
+   days) or EC (90 days) is due.
+
+Troubleshooting:
+
+| Symptom | Likely cause |
+|---|---|
+| pH reading wanders or jumps when the EC reading updates | EC board wired to 3V3 instead of Output 5 |
+| pH never settles during capture | Air bubble on the bulb, a dry or old probe, or a loose BNC connector |
+| pH volts barely change between buffers | Probe dead or still capped; on a PH-4502C, the offset trimmer turned to an extreme |
+| EC shows `—` | The reservoir temperature probe is not reporting (EC needs it), or EC is not calibrated |
+| EC stuck near its maximum | Solution stronger than the cheap board can measure (about 2 mS/cm) |

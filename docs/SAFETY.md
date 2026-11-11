@@ -74,7 +74,8 @@ Enforced on **both** the Pi (controller) and the dosing node (hard cap).
 - Max per pump per 24 h: default **20 mL**. On hitting it: lockout + alert, and a human must reset it.
 - After any dose, wait at least **15 min** with circulation running before measuring again or dosing again.
 - Never dose pH up and pH down within the same hour.
-- Don't dose if: a probe calibration is > 60 days old, a reading is stale or noisy, circulation is off, the level is low, or a leak alarm is active.
+- Don't dose if: the pH calibration is > 30 days old or the EC calibration is > 90 days old (the limits the hub already uses for its "calibration is due" reminders; cheap probes drift), a reading is stale or noisy, circulation is off, the level is low, or a leak alarm is active.
+- **Cheap probes:** with hobby-grade pH and EC probes, auto-dosing must default to `SUGGEST` mode (a person approves each dose), and `AUTO` must also refuse to act on a reading that jumped by more than 0.5 pH or 30 % EC since the previous one.
 - Nutrient A and B are dosed in **equal amounts, A first, with a gap of ≥ 60 s**.
 - Each dosing pump runs for at most `ceil(max_dose / ml_per_sec) + 1` seconds per command (hard timeout on the node).
 - Concentrated acids/bases are stored in their own spill tray, away from electronics.

@@ -73,7 +73,7 @@ Rules:
 ### `tent<N>` node (one per tent)
 | Part | Interface | Purpose | ~$ |
 |---|---|---|---|
-| SHT45 breakout | I²C | Tent air temp/RH, at canopy height, shaded from the light | 15 |
+| Air temperature/humidity sensor: SHT40/41/45 (best), AHT20 (cheapest) or BME280 | I²C | Tent air temp/RH, at canopy height, shaded from the light. The firmware supports all three; pick per node | 2–8 |
 | BH1750 | I²C | Light level (confirms the lights actually turned on) | 5 |
 | DS3231 RTC | I²C | Time for fallback schedules with no network | 5 |
 | Leak sensor module (sensing plate + comparator board with a `DO` pin) | GPIO | Tent floor tray. Bare two-wire probes only trigger reliably in conductive water | 5 |
@@ -90,15 +90,19 @@ Rules:
 | Vertical float switches ×2–3 | GPIO | Control bucket LOW/HIGH, (top-off tank LOW) | 15 |
 | Leak sensor modules ×2 | GPIO | Under the control bucket and the top-off tank | 10 |
 | SHT45 | I²C | **Room** (basement) temp/RH, outside the tents | 15 |
-| Atlas EZO-pH + probe (Phase 3) | I²C, isolated carrier | pH | ~170 |
-| Atlas EZO-EC + K1.0 probe (Phase 3) | I²C, isolated carrier | EC | ~200 |
+| Analog pH kit (BNC probe + amplifier board with an analog output) | Analog input | pH. Prefer a board that runs on 3.3 V | 15–30 |
+| Analog "TDS meter" board with probe | Analog input + one output pin for its power | EC (nutrient strength) | 8–15 |
+| pH buffer powders or solutions (4.0 and 6.86 or 7.0), EC calibration solution (1413 µS/cm) | — | Calibration | 10 |
 | Outputs → relay boxes / MOSFETs | GPIO | Water heater, air pump, RDWC pump, top-off pump | — |
 
-**pH/EC isolation is mandatory:** two probes in the same water without isolation interfere
-with each other. Use Atlas's isolated carrier boards.
+**This project uses cheap hobby probes on purpose, and is built around their limits:**
 
-**Budget alternative:** DFRobot Gravity pH/EC (~$60 total) works for learning, but those
-probes drift when left submerged 24/7. Upgrade before auto-dosing.
+- **They disturb each other.** Two non-isolated probes in one bucket interfere. The firmware powers the EC board only for the few seconds it is being read, and reads pH with it off.
+- **They differ and drift.** Both report a raw voltage; the hub converts it with a calibration you make in the GUI, and reminds you when it is due (pH monthly, EC every three months).
+- **EC changes with temperature.** The hub corrects it to 25 °C using the reservoir's temperature probe.
+- **Expect about ±0.2 pH and ±10 % EC** when freshly calibrated. That is fine for seeing trends and catching problems. Keep a handheld pen meter to cross-check now and then.
+- **The cheap TDS board tops out near 2 mS/cm** and gets less accurate above ~1.5. Fine for lettuce, herbs and strawberries; heavy feeders running stronger solutions would need a real EC probe.
+- **Hobby pH probes are not made to live in the reservoir.** Left submerged they typically last 6–12 months. Budget for replacements, or lift the probe out and store it in storage solution between checks.
 
 ### `dosing` node (Phase 4)
 | Part | Purpose | ~$ |

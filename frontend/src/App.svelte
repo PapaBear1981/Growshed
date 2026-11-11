@@ -4,6 +4,8 @@
   import Dashboard from './routes/Dashboard.svelte';
   import Controls from './routes/Controls.svelte';
   import History from './routes/History.svelte';
+  import Water from './routes/Water.svelte';
+  import Journal from './routes/Journal.svelte';
   import Alerts from './routes/Alerts.svelte';
   import System from './routes/System.svelte';
 
@@ -11,7 +13,9 @@
   const pages = [
     { hash: '#/', label: 'Dashboard', component: Dashboard },
     { hash: '#/controls', label: 'Controls', component: Controls },
+    { hash: '#/water', label: 'Water', component: Water },
     { hash: '#/history', label: 'History', component: History },
+    { hash: '#/journal', label: 'Journal', component: Journal },
     { hash: '#/alerts', label: 'Alerts', component: Alerts },
     { hash: '#/system', label: 'System', component: System },
   ];

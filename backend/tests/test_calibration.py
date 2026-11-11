@@ -204,13 +204,10 @@ def test_api_soil_flow_values_history_and_alert(client):
     feed(client, topic, ["2.600", "2.601", "2.599"], now)
     assert live.values[SOIL]["value"] is None and live.values[SOIL]["raw"] == 2.599
     assert client.post("/api/calibration", json=body).json() == {"status": "saved"}
-    feed(client, topic, ["1.200", "1.201", "1.199"], now + 20)
-    # The window still holds the dry readings: not steady yet, so nothing is saved.
-    assert (
-        client.post("/api/calibration", json={"key": SOIL, "label": "wet"}).json()["status"]
-        == "waiting"
-    )
-    app.state.calibrations.recent[SOIL].clear()
+    feed(client, topic, ["1.900", "1.300"], now + 20)
+    # Just moved into the water: the newest readings disagree, so nothing is saved yet.
+    waiting = client.post("/api/calibration", json={"key": SOIL, "label": "wet"}).json()
+    assert waiting["status"] == "waiting"
     feed(client, topic, ["1.200", "1.201", "1.199"], now + 40)
     assert client.post("/api/calibration", json={"key": SOIL, "label": "wet"}).json() == {
         "status": "saved"

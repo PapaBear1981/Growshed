@@ -1,0 +1,81 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 920 685' width='920' height='685' role='img' aria-label='Water node (RDWC reservoir): pH and EC probes wiring'><rect width='920' height='685' fill='#ffffff'/><text x='30' y='30' font-size='19' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Water node (RDWC reservoir): pH and EC probes</text>
+<line x1='262' y1='158' x2='262' y2='360' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='184' x2='293' y2='542' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='324' y1='210' x2='324' y2='412' stroke='#d95f02' stroke-width='3'/>
+<line x1='355' y1='236' x2='355' y2='568' stroke='#a6761d' stroke-width='3'/>
+<line x1='386' y1='262' x2='386' y2='516' stroke='#8e44ad' stroke-width='3'/>
+<line x1='262' y1='360' x2='553' y2='360' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='360' x2='553' y2='360' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='386' x2='553' y2='386' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='386' x2='553' y2='386' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='324' y1='412' x2='553' y2='412' stroke='#ffffff' stroke-width='7'/>
+<line x1='324' y1='412' x2='553' y2='412' stroke='#d95f02' stroke-width='3'/>
+<line x1='386' y1='516' x2='553' y2='516' stroke='#ffffff' stroke-width='7'/>
+<line x1='386' y1='516' x2='553' y2='516' stroke='#8e44ad' stroke-width='3'/>
+<line x1='293' y1='542' x2='553' y2='542' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='542' x2='553' y2='542' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='355' y1='568' x2='553' y2='568' stroke='#ffffff' stroke-width='7'/>
+<line x1='355' y1='568' x2='553' y2='568' stroke='#a6761d' stroke-width='3'/>
+<line x1='227' y1='158' x2='262' y2='158' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='158' x2='262' y2='158' stroke='#d62828' stroke-width='3'/>
+<line x1='227' y1='184' x2='293' y2='184' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='184' x2='293' y2='184' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='227' y1='210' x2='324' y2='210' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='210' x2='324' y2='210' stroke='#d95f02' stroke-width='3'/>
+<line x1='227' y1='236' x2='355' y2='236' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='236' x2='355' y2='236' stroke='#a6761d' stroke-width='3'/>
+<line x1='227' y1='262' x2='386' y2='262' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='262' x2='386' y2='262' stroke='#8e44ad' stroke-width='3'/>
+<circle cx='262' cy='360' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='386' r='4.5' fill='#1a1a1a'/>
+<circle cx='324' cy='412' r='4.5' fill='#d95f02'/>
+<circle cx='386' cy='516' r='4.5' fill='#8e44ad'/>
+<circle cx='293' cy='542' r='4.5' fill='#1a1a1a'/>
+<circle cx='355' cy='568' r='4.5' fill='#a6761d'/>
+<circle cx='262' cy='158' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='184' r='4.5' fill='#1a1a1a'/>
+<circle cx='324' cy='210' r='4.5' fill='#d95f02'/>
+<circle cx='355' cy='236' r='4.5' fill='#a6761d'/>
+<circle cx='386' cy='262' r='4.5' fill='#8e44ad'/>
+<rect x='560' y='302' width='340' height='142' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='322' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Analog pH board (BNC probe)</text>
+<text x='572' y='338' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>board in the enclosure, probe in the control bucket</text>
+<rect x='553' y='353' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='364' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>V+</text>
+<rect x='553' y='379' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='390' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>G</text>
+<rect x='553' y='405' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='574' y='416' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Po</text>
+<text x='572' y='435' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>For 3.3 V boards. A 5 V-only board needs a divider (BUILD.md).</text>
+<rect x='560' y='458' width='340' height='142' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='478' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Analog TDS / EC board</text>
+<text x='572' y='494' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>board in the enclosure, probe in the control bucket</text>
+<rect x='553' y='509' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='574' y='520' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='535' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='546' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='561' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
+<text x='574' y='572' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>A</text>
+<text x='572' y='591' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Powered from an output pin so it is only on while being read.</text>
+<rect x='30' y='96' width='190' height='184' rx='8' fill='#e8f1ea' stroke='#2f7d4f' stroke-width='2'/>
+<text x='42' y='116' font-size='13' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>ESP32 DevKit (WROOM-32)</text>
+<text x='42' y='132' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>screw-terminal breakout</text>
+<text x='206' y='162' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>3V3</text>
+<rect x='213' y='151' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='206' y='188' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='213' y='177' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='206' y='214' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO34</text>
+<rect x='213' y='203' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='206' y='240' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO35</text>
+<rect x='213' y='229' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
+<text x='206' y='266' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO23</text>
+<rect x='213' y='255' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='266' y='88' font-size='11' fill='#d62828' font-weight='bold' transform='rotate(-55 266 88)' font-family='Helvetica, Arial, sans-serif'>3.3 V</text>
+<text x='297' y='88' font-size='11' fill='#1a1a1a' font-weight='bold' transform='rotate(-55 297 88)' font-family='Helvetica, Arial, sans-serif'>Ground</text>
+<text x='328' y='88' font-size='11' fill='#d95f02' font-weight='bold' transform='rotate(-55 328 88)' font-family='Helvetica, Arial, sans-serif'>Analog 1</text>
+<text x='359' y='88' font-size='11' fill='#a6761d' font-weight='bold' transform='rotate(-55 359 88)' font-family='Helvetica, Arial, sans-serif'>Analog 2</text>
+<text x='390' y='88' font-size='11' fill='#8e44ad' font-weight='bold' transform='rotate(-55 390 88)' font-family='Helvetica, Arial, sans-serif'>Output 5</text>
+<text x='30' y='622' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Wires join only where there is a dot. Lines that simply cross are not connected.</text>
+<text x='30' y='641' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Power the board from a USB charger. Never connect 5 V to any of these pins.</text>
+<text x='30' y='660' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Keep the two probes at least a hand&#x27;s width apart in the bucket.</text>
+</svg>

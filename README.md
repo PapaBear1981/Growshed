@@ -6,7 +6,8 @@ and alerts. ESP32 nodes running ESPHome handle sensors, relays and local failsaf
 
 **Status:** Phase 0 (foundations) is built: the hub, a live dashboard and a simulator that
 stands in for the hardware. The software for Phase 1 (history, alerts,
-phone notifications, soil sensors) and Phase 2 (control of lights, fans, heater and pumps,
+phone notifications, soil sensors), Phase 3 (pH/EC with cheap probes, sensor calibration,
+dosing log, grow journal) and Phase 2 (control of lights, fans, heater and pumps,
 automatic soil watering, safety cutoffs on the nodes) is built too. It has only run against
 the simulator so far; no real node has been built yet. See [the plan](docs/PLAN.md) for what comes next.
 
@@ -35,7 +36,8 @@ docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshe
 ```
 
 Faults: `leak on|off`, `sensor_fail on|off`, `offline`, `online`; `tower_low on|off` (tent3);
-`drain` (water); `soil_dry`, `soil_water`, `soil_unplug`, `soil_replug`, `tank_low on|off` (tent2). Ask a node for a device mode the way the hub does (`auto`, `on` or `off`):
+`drain` (water); `soil_dry`, `soil_water`, `soil_unplug`, `soil_replug`, `tank_low on|off` (tent2); `ph_buffer 7|off`, `ec_solution 1413|off`, `ph_set 7.4`,
+`ec_set 500` (water). Ask a node for a device mode the way the hub does (`auto`, `on` or `off`):
 
 ```bash
 docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshed/tent2/select/lights_mode/command -m on

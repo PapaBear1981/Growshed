@@ -221,7 +221,10 @@ class Calibrations:
         simply asks again every few seconds until it is saved.
         """
         kind = self.kinds.get(key)
+        # Judge only the newest few readings: after a probe is moved to another solution,
+        # the older ones describe the previous solution and must not hold things up.
         samples = [raw for ts, raw in self.recent.get(key, ()) if now - ts <= WINDOW_S]
+        samples = samples[-MIN_SAMPLES:]
         if len(samples) < MIN_SAMPLES:
             return {
                 "status": "waiting",

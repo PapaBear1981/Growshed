@@ -89,13 +89,16 @@ growshed/hub/leak_alarm                        ON | OFF  (retained)
 growshed/sim/<node>/fault     leak on|off, sensor_fail on|off, offline, online,
                               tower_low on|off (tent3), drain (water),
                               soil_dry, soil_water, soil_unplug, soil_replug,
-                              tank_low on|off (tent2)
+                              tank_low on|off (tent2),
+                              ph_buffer <pH>|off, ec_solution <µS/cm>|off,
+                              ph_set <pH>, ec_set <µS/cm> (water)
 ```
 
 Real nodes ignore these. They exist so alerts and interlocks can be tested with no hardware.
 
 ## Rules
 
+- **pH and EC (`ph`, `ec` on the water node) are published as raw volts**, like soil moisture. The hub converts them with calibrations made in the GUI, refers EC to 25 °C using the reservoir temperature, and stores the raw (for EC: temperature-corrected) volts. Calibrated EC is in µS/cm.
 - **Soil moisture (`soil_N`) is published as raw volts.** The hub converts to percent with a per-sensor two-point calibration (air = 0 %, water = 100 %) and stores the raw volts, so recalibrating also corrects history. An uncalibrated sensor has no value.
 
 - **Binary sensors are ON when the named condition is true**: `leak` ON = wet, `res_low` ON = level is low, `res_high` ON = full.

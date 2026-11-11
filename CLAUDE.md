@@ -26,7 +26,8 @@ over cleverness.
 - `backend/`: Python 3.11+, FastAPI, aiomqtt, SQLite (WAL), pytest. Formatting: ruff.
 - `frontend/`: **Svelte 4** (not 5) + Vite, uPlot for charts. No `gap` on flexbox, `inset`, or `aspect-ratio` in CSS. Conservative browser target (old Android tablet). Touch targets ≥ 44 px.
 - `docker-compose.yml` (root) + `deploy/`: mosquitto, backend, and the `sim` / `esphome` profiles; Pi setup script.
-- `config/config.yaml`: zones, nodes, sensors, devices, alert rules. Adding a tent is a config change.
+- **Cheap hobby sensors by design** (docs/HARDWARE.md §3): probes publish raw values, the hub calibrates them (`backend/growshed/calibration.py`), and an uncalibrated soil/pH/EC sensor has no value. Never show or act on a guessed number.
+- `config/config.yaml`: zones, nodes, sensors, devices, settings, watering pots, alert rules. Adding a tent is a config change.
 - `firmware/boards/`: one profile per supported board (chip + pin names). Node packages use only the pin names, never raw GPIO numbers. Validate every node against every profile when changing shared packages.
 - `tools/`: setup helpers (`python -m tools.detect_boards`, `python -m tools.wiring_diagrams`). Standard library only.
 - `docs/wiring/*.svg` are generated from the board profiles by `python -m tools.wiring_diagrams`. Regenerate and update `docs/BUILD.md` whenever a pin, sensor or node role changes (a test fails if they are stale).

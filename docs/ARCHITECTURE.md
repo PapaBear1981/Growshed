@@ -65,7 +65,8 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | `ingest` | Parses ESPHome state topics → typed readings → live state, recorder and WebSocket broadcast. (Phase 2: aggregates leak state → `growshed/hub/leak_alarm`) |
 | `recorder` | Buffers and stores numeric readings; 5-minute and hourly rollups; retention; history queries on a shared time grid |
 | `notify` | ntfy delivery and the optional dead man's ping (standard library only) |
-| `calibration` | Two-point calibrations (soil moisture: volts → percent), applied to live values, history output and therefore alerts |
+| `calibration` | Calibration for soil (dry/wet), pH (2–3 buffers, fitted line), EC (one solution, temperature-corrected) and optional temperature/humidity offsets. Captures points itself once readings are steady. Applied to live values, history output and therefore alerts |
+| `journal` | Manual dosing log, plants, notes and photos (record-keeping only) |
 | `background` | The periodic loop: alert ticks, notification retries, flush, rollup, pruning |
 | `control` | Device modes (auto/on/off + expiry), node settings, dose requests, the latched leak alarm |
 | `watering` | Automatic soil watering per pot: soak wait, response check, strike lockout, daily cap |
@@ -77,7 +78,7 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 ## 4. Data model (target)
 
 Tables are added by numbered migrations as each phase needs them. Built so far: `setting`
-(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1); `device_override`, `dose_event`, `watering_pot` (Phase 2). Readings
+(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1); `device_override`, `dose_event`, `watering_pot` (Phase 2); `calibration_point` (replacing `calibration`), `dose_log`, `plant`, `journal_entry` (Phase 3). Readings
 are keyed by a `series` row per MQTT entity instead of the `sensor` table sketched below, and
 alert rules live in `config.yaml`, not in an `alert_rule` table.
 

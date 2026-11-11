@@ -227,6 +227,29 @@ DIAGRAMS += [
 ]
 
 
+DIAGRAMS += [
+    Diagram(
+        "water-chemistry",
+        "Water node (RDWC reservoir): pH and EC probes",
+        [
+            Part(
+                "Analog pH board (BNC probe)",
+                "board in the enclosure, probe in the control bucket",
+                [("V+", "3V3"), ("G", "GND"), ("Po", "ADC1")],
+                "For 3.3 V boards. A 5 V-only board needs a divider (BUILD.md).",
+            ),  # fmt: skip
+            Part(
+                "Analog TDS / EC board",
+                "board in the enclosure, probe in the control bucket",
+                [("VCC", "OUT5"), ("GND", "GND"), ("A", "ADC2")],
+                "Powered from an output pin so it is only on while being read.",
+            ),  # fmt: skip
+        ],
+        COMMON_NOTES + ["Keep the two probes at least a hand's width apart in the bucket."],
+    ),
+]
+
+
 def read_profile(board: str) -> dict[str, str]:
     """The substitutions block of a board profile (kept dependency-free: no YAML library)."""
     text = (REPO_ROOT / "firmware" / "boards" / f"{board}.yaml").read_text(encoding="utf-8")

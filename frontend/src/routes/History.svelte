@@ -10,6 +10,8 @@
     { kind: 'humidity', label: 'Humidity' },
     { kind: 'illuminance', label: 'Light' },
     { kind: 'soil_moisture', label: 'Soil moisture' },
+    { kind: 'ph', label: 'pH' },
+    { kind: 'ec', label: 'EC' },
   ];
   const RANGES = [
     { hours: 6, label: '6 h' },
@@ -32,11 +34,34 @@
   $: sensors = $config.sensors.filter((s) => s.component === 'sensor' && s.kind === kind);
   // Only offer measures that have sensors in config.yaml.
   $: measures = MEASURES.filter((m) => $config.sensors.some((s) => s.kind === m.kind));
-  $: unit = kind === 'temperature' ? ($settings.display_units === 'imperial' ? '°F' : '°C') : kind === 'illuminance' ? 'lx' : '%';
-  $: convert = kind === 'temperature' && $settings.display_units === 'imperial' ? (v) => (v * 9) / 5 + 32 : (v) => v;
+  $: unit = kind === 'temperature' ? ($settings.display_units === 'imperial' ? '°F' : '°C') : kind === 'illuminance' ? 'lx' : kind === 'ph' ? 'pH' : kind === 'ec' ? 'mS/cm' : '%';
+  $: decimals = kind === 'illuminance' ? 0 : kind === 'ph' || kind === 'ec' ? 2 : 1;
+  $: chemistry = kind === 'ph' || kind === 'ec';
+  let doses = []; // manual additions inside the charted range, drawn as markers
+  // EC is stored in µS/cm and charted in mS/cm.
+  $: convert = kind === 'temperature' && $settings.display_units === 'imperial' ? (v) => (v * 9) / 5 + 32 : kind === 'ec' ? (v) => v / 1000 : (v) => v;
 
   function css(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  // A dashed vertical line at each logged addition, so its effect on the curve is visible.
+  function drawDoses(u) {
+    if (!chemistry || !doses.length) return;
+    const ctx = u.ctx;
+    ctx.save();
+    ctx.strokeStyle = css('--muted');
+    ctx.lineWidth = Math.max(1, devicePixelRatio || 1);
+    ctx.setLineDash([6, 6]);
+    doses.forEach((d) => {
+      const x = Math.round(u.valToPos(d.ts, 'x', true));
+      if (x < u.bbox.left || x > u.bbox.left + u.bbox.width) return;
+      ctx.beginPath();
+      ctx.moveTo(x, u.bbox.top);
+      ctx.lineTo(x, u.bbox.top + u.bbox.height);
+      ctx.stroke();
+    });
+    ctx.restore();
   }
 
   function draw(body) {
@@ -47,6 +72,8 @@
     const hasData = data.slice(1).some((col) => col.some((v) => v !== null));
     status = hasData ? '' : kind === 'soil_moisture'
         ? 'No soil history to show. Soil sensors appear here once they are calibrated (System page).'
+        : chemistry
+        ? 'Nothing to show. pH and EC appear here once the probes are calibrated (System page).'
         : 'No history for this range yet. Readings are saved from the moment the hub starts.';
     if (plot) plot.destroy();
     plot = null;
@@ -57,6 +84,7 @@
         width: host.clientWidth,
         height: Math.max(240, Math.min(420, Math.round(window.innerHeight * 0.5))),
         cursor: { points: { size: 9 } },
+        hooks: { draw: [drawDoses] },
         scales: { x: { time: true } },
         axes: [axis, Object.assign({ size: 56, values: (u, ticks) => ticks.map((t) => t + ' ' + unit) }, axis)],
         series: [{}].concat(
@@ -66,7 +94,7 @@
             width: 2,
             spanGaps: false,
             points: { show: false },
-            value: (u, v) => (v === null || v === undefined ? '—' : v.toFixed(kind === 'illuminance' ? 0 : 1) + ' ' + unit),
+            value: (u, v) => (v === null || v === undefined ? '—' : v.toFixed(decimals) + ' ' + unit),
           }))
         ),
       },
@@ -87,6 +115,12 @@
       const res = await fetch('/api/history?keys=' + encodeURIComponent(keys) + '&start=' + (end - hours * 3600) + '&end=' + end);
       if (!res.ok) throw new Error('bad response');
       const body = await res.json();
+      doses = [];
+      if (chemistry) {
+        const zones = sensors.map((s) => s.zone);
+        const all = await (await fetch('/api/doses?since=' + (end - hours * 3600))).json();
+        doses = all.filter((d) => zones.indexOf(d.zone) >= 0);
+      }
       if (mine === requestId) draw(body); // ignore answers to an older selection
     } catch (err) {
       if (mine === requestId) status = 'Could not load history from the hub.';
@@ -127,6 +161,9 @@
 <section class="card">
   {#if status}<p class="status">{status}</p>{/if}
   <div class="chart" bind:this={host}></div>
+  {#if chemistry && doses.length}
+    <p class="hint">Dashed lines mark what you added: {doses.slice(0, 6).map((d) => d.product + ' ' + d.amount + ' ' + d.unit).join(', ')}{doses.length > 6 ? ', …' : ''}.</p>
+  {/if}
   <p class="hint">Touch or hover the chart to read values. Tap a name in the legend to hide or show that line.</p>
 </section>
 

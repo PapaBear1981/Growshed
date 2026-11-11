@@ -126,13 +126,23 @@ proven in simulation. No tent heater (I-6). Device on/off history is not charted
 - Fallback mode on the nodes when the Pi heartbeat is lost. All interlocks in SAFETY.md implemented **on the nodes**.
 - **Done when:** unplugging the Pi for 30 minutes leaves lights on schedule, exhaust and water heat regulating and pumps cycling, and wetting a leak sensor stops every water pump within seconds.
 
-### Phase 3 — Water chemistry (manual dosing)
-- Atlas Scientific EZO pH + EC with isolated carriers in the control bucket.
-- Guided **calibration wizards** in the GUI, recording calibration dates.
-- Target ranges per crop profile. Out-of-range alerts.
-- **Dosing log**: you record manual doses and see them on the pH/EC charts.
-- Grow journal (basic): plants, tent, start date, notes, photos.
-- **Done when:** a week of pH/EC readings that agree with a handheld meter.
+### Phase 3 — Water chemistry and calibration (software built; waiting on hardware)
+
+Decision: **cheap hobby sensors throughout** (this is a home garden, not a business). The
+system is built around their limits: see HARDWARE.md §3.
+
+Built and tested against the simulator:
+- Firmware for an analog pH kit and an analog TDS/EC board in the control bucket, with the EC board powered only while it is read (compiled for the ESP32 DevKit).
+- A general **calibration system** in the GUI (System page): pH against 2–3 buffers, EC against one solution, soil dry/wet, and optional temperature/humidity offsets. The hub captures each point itself once the reading is steady, corrects EC for water temperature, and reminds you when pH or EC calibration is due.
+- pH and EC on the dashboard, a Water page, history charts, and out-of-range alerts (limits in `config.yaml`).
+- A **dosing log** for what you add by hand, shown as markers on the pH and EC charts.
+- A grow **journal**: plants, where they are, days growing, notes and photos.
+- Air sensor choice per node: SHT4x, AHT20 or BME280.
+
+**Not done:** nothing has run on real probes. Per-crop target profiles (limits are one set of
+alert rules for now). pH is not temperature-compensated (the error is small at room temperature).
+
+- **Done when:** a week of pH/EC readings that agree with a handheld meter to within about 0.2 pH and 10 % EC.
 
 ### Phase 4 — Auto dosing
 - `dosing` node: 4 peristaltic pumps (pH down, pH up, nutrient A, nutrient B).
@@ -161,4 +171,4 @@ proven in simulation. No tent heater (I-6). Device on/off history is not charted
 - [ ] **Number of DWC buckets** and the control bucket's volume.
 - [ ] **WiFi strength** where the tents will be. Is Ethernet available for the Pi?
 - [ ] **Old tablet: make, model and OS version**.
-- [ ] **Budget**: mainly decides Atlas (lab grade) vs cheaper pH/EC probes.
+- [x] **Budget**: cheap hobby sensors throughout.

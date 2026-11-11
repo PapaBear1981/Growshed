@@ -7,7 +7,7 @@ One small file per node (`tent1.yaml`, `tent2.yaml`, `tent3.yaml`, `water.yaml`)
 
 The same node file works on any supported board: you change one line.
 
-**Status: Phases 1 and 2 (sensors and control).** `tent1`, `tent2`, `tent3` and `water` pass
+**Status: Phases 1 to 3 (sensors, control, water chemistry).** `tent1`, `tent2`, `tent3` and `water` pass
 `esphome config` and **compile** for the ESP32 DevKit; the other board profiles are
 config-checked only. Nothing has run on real hardware yet.
 
@@ -110,6 +110,13 @@ node, delete the `*_control` (and watering) lines from the node file.
 **Soil pots:** `tent2.yaml` includes one `soil_sensor` line per pot. Delete lines, or move them
 to another tent's file, to match where your pots are; a board supports as many pots as it has
 analog pins in the table above. Each sensor's `AOUT` goes to its analog pin.
+
+**Air sensor type:** each node file has one `air:` line. Change `air_sht4x.yaml` to
+`air_aht20.yaml` or `air_bme280.yaml` to match the sensor you bought; the wiring is identical.
+
+**pH and EC (water node):** the pH board's output goes to Analog 1, the TDS/EC board's output
+to Analog 2, and the TDS/EC board's **power** to Output 5, so the firmware can switch it off
+between readings. See [`docs/BUILD.md`](../docs/BUILD.md).
 
 I²C devices: SHT45 (air temperature/humidity), BH1750 (light), DS3231 (clock) on tent nodes;
 SHT45 (room climate) on the water node. All share the same two I²C wires.
