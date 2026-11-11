@@ -1,6 +1,6 @@
 <script>
   import { config, nodes, values, now } from '../lib/stores.js';
-  import { isStale } from '../lib/format.js';
+  import { nodeDown } from '../lib/format.js';
   import ZoneSection from './ZoneSection.svelte';
 
   export let zone;
@@ -14,7 +14,7 @@
   $: alarm = $config.sensors.some((s) => {
     if (family.indexOf(s.zone) < 0 || (s.kind !== 'leak' && s.kind !== 'level_low')) return false;
     const entry = $values[s.node + '/binary_sensor/' + s.key];
-    return !isStale(entry, $now) && entry.value === true;
+    return entry && entry.value === true && !nodeDown($nodes[s.node], $now);
   });
 
   $: nodeIds = Array.from(
@@ -25,7 +25,7 @@
         .map((item) => item.node)
     )
   );
-  $: offline = nodeIds.filter((id) => !$nodes[id] || $nodes[id].status !== 'online');
+  $: offline = nodeIds.filter((id) => nodeDown($nodes[id], $now));
 </script>
 
 <section class="card" class:alarm>

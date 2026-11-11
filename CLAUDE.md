@@ -27,13 +27,15 @@ over cleverness.
 - `frontend/`: **Svelte 4** (not 5) + Vite, uPlot for charts. No `gap` on flexbox, `inset`, or `aspect-ratio` in CSS. Conservative browser target (old Android tablet). Touch targets ≥ 44 px.
 - `docker-compose.yml` (root) + `deploy/`: mosquitto, backend, and the `sim` / `esphome` profiles; Pi setup script.
 - `config/config.yaml`: zones, nodes, sensors, devices. Adding a tent is a config change.
+- `firmware/boards/`: one profile per supported board (chip + pin names). Node packages use only the pin names, never raw GPIO numbers. Validate every node against every profile when changing shared packages.
+- `tools/`: setup helpers (`python -m tools.detect_boards`). Standard library only.
 - `simulator/`: fake nodes over MQTT that also react to commands.
 - `hardware/enclosure/`: 3D-printable node enclosure (OpenSCAD source + exported STLs). Re-export the STLs whenever the `.scad` changes.
 
 ## Definition of done (every task)
 - Backend: `pytest` and `ruff check .` pass (run both from the repo root). New control/alert/dosing logic has unit tests, including failure cases.
 - Frontend: `npm run build` succeeds; the page works at phone width and tablet width.
-- Firmware: `esphome config firmware/<node>.yaml` validates.
+- Firmware: `esphome config firmware/<node>.yaml` validates (use the `ghcr.io/esphome/esphome:stable` Docker image).
 - End-to-end: `docker compose --profile sim up -d --build` shows the feature working in a browser.
 - Docs updated if behavior, topics or the data model changed.
 

@@ -1,0 +1,93 @@
+# Shared by every node: WiFi, MQTT, over-the-air updates and the diagnostics the hub expects.
+# Topic contract: docs/MQTT.md. Every entity sets state_topic explicitly so the topic never
+# depends on how ESPHome turns a display name into an id.
+
+esphome:
+  name: growshed-${node_id}
+  friendly_name: ${node_name}
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # SAFETY: a node must keep running its sensors and local logic with no network.
+  # ESPHome's default is to reboot after 15 minutes offline; 0s disables that.
+  reboot_timeout: 0s
+
+mqtt:
+  broker: !secret mqtt_broker
+  port: 1883
+  username: node
+  password: !secret mqtt_node_password
+  topic_prefix: growshed/${node_id}
+  discovery: false
+  reboot_timeout: 0s # SAFETY: same reason as wifi.reboot_timeout
+  birth_message:
+    topic: growshed/${node_id}/status
+    payload: online
+    retain: true
+  will_message:
+    topic: growshed/${node_id}/status
+    payload: offline
+    retain: true
+  on_message:
+    - topic: growshed/hub/heartbeat
+      then:
+        - globals.set:
+            id: heartbeat_age_s
+            value: "0"
+
+globals:
+  # Seconds since the hub's last heartbeat (counts from boot until the first one).
+  # A counter rather than a millis() difference, so it can never wrap around.
+  - id: heartbeat_age_s
+    type: int
+    initial_value: "0"
+
+interval:
+  - interval: 10s
+    then:
+      - lambda: |-
+          if (id(heartbeat_age_s) < 1000000) id(heartbeat_age_s) += 10;
+
+sensor:
+  - platform: wifi_signal
+    name: wifi_rssi
+    state_topic: growshed/${node_id}/sensor/wifi_rssi/state
+    update_interval: 60s
+  - platform: uptime
+    name: uptime
+    state_topic: growshed/${node_id}/sensor/uptime/state
+    update_interval: 60s
+  - platform: template
+    name: heartbeat_age
+    state_topic: growshed/${node_id}/sensor/heartbeat_age/state
+    unit_of_measurement: s
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: return id(heartbeat_age_s);
+
+text_sensor:
+  # NORMAL while the hub is heard from; FALLBACK after 3 minutes of silence (docs/SAFETY.md §2).
+  - platform: template
+    name: mode
+    state_topic: growshed/${node_id}/text_sensor/mode/state
+    update_interval: 30s
+    lambda: |-
+      return std::string(id(heartbeat_age_s) > 180 ? "fallback" : "normal");
+  # Lets the hub show which kind of board each node is.
+  - platform: template
+    name: board
+    state_topic: growshed/${node_id}/text_sensor/board/state
+    update_interval: 300s
+    lambda: |-
+      return std::string("${board_label}");
+  - platform: version
+    name: firmware
+    state_topic: growshed/${node_id}/text_sensor/firmware/state
+    hide_timestamp: true

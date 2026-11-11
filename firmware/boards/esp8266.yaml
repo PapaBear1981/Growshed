@@ -1,0 +1,14 @@
+# Board profile: ESP8266 (D1 mini / NodeMCU)
+# Pin names used by the node packages in ../common. Edit here if you wire differently.
+substitutions:
+  board_label: "ESP8266 (D1 mini / NodeMCU)"
+  pin_sda: GPIO4
+  pin_scl: GPIO5
+  pin_onewire: GPIO2
+  pin_in1: GPIO14
+  pin_in2: GPIO12
+  pin_in3: GPIO13
+  # No pin_in4: an ESP8266 has too few safe input pins for the water node.
+  # Use it for tent nodes only (compiling water.yaml with this profile fails on purpose).
+esp8266:
+  board: d1_mini

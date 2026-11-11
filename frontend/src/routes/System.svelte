@@ -1,11 +1,20 @@
 <script>
   import { config, nodes, values, settings, link, now, saveUnits } from '../lib/stores.js';
-  import { formatDuration, isStale } from '../lib/format.js';
+  import { formatDuration, nodeDown } from '../lib/format.js';
 
   const diag = (all, node, component, entity) => {
     const entry = all[node + '/' + component + '/' + entity];
     return entry ? entry.value : null;
   };
+  // Configured nodes first, then any board that showed up by itself (auto-discovery).
+  $: allNodes = $config.nodes
+    .map((n) => ({ id: n.id, name: n.name, isNew: false }))
+    .concat(
+      Object.keys($nodes)
+        .filter((id) => !$config.nodes.some((n) => n.id === id))
+        .sort()
+        .map((id) => ({ id, name: id, isNew: true }))
+    );
   const options = [
     { id: 'imperial', label: '°F' },
     { id: 'metric', label: '°C' },
@@ -38,17 +47,19 @@
 
 <section class="card">
   <h2>Nodes</h2>
-  {#each $config.nodes as node (node.id)}
+  {#each allNodes as node (node.id)}
     {@const info = $nodes[node.id]}
-    {@const online = info && info.status === 'online'}
+    {@const online = !nodeDown(info, $now)}
     {@const mode = diag($values, node.id, 'text_sensor', 'mode')}
     {@const rssi = diag($values, node.id, 'sensor', 'wifi_rssi')}
     <div class="node">
       <div class="node-head">
-        <b>{node.name}</b>
-        <span class="chip" class:online class:bad={!online}>{online ? 'online' : info ? info.status : 'never seen'}</span>
+        <b>{node.name}{#if node.isNew}<span class="new">new, not in config.yaml</span>{/if}</b>
+        <span class="chip" class:online class:bad={!online}>{online ? 'online' : info ? 'offline' : 'never seen'}</span>
       </div>
       <dl>
+        <div><dt>Board</dt><dd>{diag($values, node.id, 'text_sensor', 'board') || '—'}</dd></div>
+        <div><dt>Firmware</dt><dd>{diag($values, node.id, 'text_sensor', 'firmware') || '—'}</dd></div>
         <div><dt>Mode</dt><dd class:warn={mode === 'fallback'}>{mode || '—'}</dd></div>
         <div><dt>WiFi</dt><dd>{rssi === null ? '—' : rssi.toFixed(0) + ' dBm'}</dd></div>
         <div><dt>Uptime</dt><dd>{formatDuration(diag($values, node.id, 'sensor', 'uptime'))}</dd></div>
@@ -131,6 +142,14 @@
     font-size: 0.8rem;
     font-weight: 600;
     background: var(--off-bg);
+  }
+  .new {
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: var(--warn);
+    color: #fff;
   }
   .chip.online {
     background: var(--on-bg);

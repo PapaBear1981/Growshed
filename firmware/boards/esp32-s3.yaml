@@ -1,0 +1,15 @@
+# Board profile: ESP32-S3 DevKitC
+# Pin names used by the node packages in ../common. Edit here if you wire differently.
+substitutions:
+  board_label: "ESP32-S3 DevKitC"
+  pin_sda: GPIO8
+  pin_scl: GPIO9
+  pin_onewire: GPIO4
+  pin_in1: GPIO5
+  pin_in2: GPIO6
+  pin_in3: GPIO7
+  pin_in4: GPIO15
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf

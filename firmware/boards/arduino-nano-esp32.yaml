@@ -1,0 +1,15 @@
+# Board profile: Arduino Nano ESP32
+# Pin names used by the node packages in ../common. Edit here if you wire differently.
+substitutions:
+  board_label: "Arduino Nano ESP32"
+  pin_sda: GPIO11
+  pin_scl: GPIO12
+  pin_onewire: GPIO5
+  pin_in1: GPIO6
+  pin_in2: GPIO7
+  pin_in3: GPIO8
+  pin_in4: GPIO9
+esp32:
+  board: arduino_nano_esp32
+  framework:
+    type: esp-idf

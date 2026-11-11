@@ -40,7 +40,8 @@ Each device in `config.yaml` gets a `circuit` field so the backend can show load
 
 ## 3. Nodes (ESP32 + ESPHome)
 
-ESP32-WROOM DevKit (or ESP32-S3) on screw-terminal breakout boards, in the 3D-printed
+Any supported board (see the table in [`firmware/README.md`](../firmware/README.md); the
+ESP32-WROOM DevKit is the recommended one) on screw-terminal breakout boards, in the 3D-printed
 enclosure from [`hardware/enclosure/`](../hardware/enclosure/README.md), mounted **outside**
 each tent with the cable slots facing down (sensors go inside on cables through a tent port).
 
@@ -136,4 +137,5 @@ that auto-restarts after a power loss.
 
 ## 6. Pin assignments
 
-To be defined per node in `firmware/<node>.yaml` and mirrored in a table here once wiring is decided.
+Pins depend on the board. They are defined in the board profiles (`firmware/boards/*.yaml`)
+and listed per board in [`firmware/README.md`](../firmware/README.md#wiring-pins-per-board-profile).

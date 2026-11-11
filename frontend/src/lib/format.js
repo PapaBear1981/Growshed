@@ -6,6 +6,33 @@ export function isStale(entry, nowS) {
   return !entry || nowS - entry.ts > STALE_AFTER_S;
 }
 
+// A node is "down" when it said goodbye (offline) or has gone quiet.
+// On/off states (leak, float, relay) are only re-sent when they change, so their age
+// says nothing. They are trusted for as long as their node is alive.
+export function nodeDown(info, nowS) {
+  return !info || info.status === 'offline' || !info.last_seen || nowS - info.last_seen > STALE_AFTER_S;
+}
+
+// Entities every node publishes about itself. Not garden readings.
+const DIAGNOSTICS = ['mode', 'wifi_rssi', 'uptime', 'heartbeat_age', 'board', 'firmware', 'last_interlock'];
+
+export function isDiagnostic(entity) {
+  return DIAGNOSTICS.indexOf(entity) >= 0 || /_source$/.test(entity);
+}
+
+// For readings that are not in config.yaml yet: guess a sensible display from the name.
+export function formatUnknown(component, entity, value, displayUnits) {
+  if (value === null || value === undefined) return '—';
+  if (typeof value === 'boolean') return value ? 'ON' : 'OFF';
+  if (typeof value !== 'number') return String(value);
+  const kind = /temp/.test(entity) ? 'temperature' : /(_rh|humid)/.test(entity) ? 'humidity' : '';
+  if (kind) {
+    const shown = formatReading({ kind: kind, unit: '' }, value, displayUnits);
+    return shown.text + ' ' + shown.unit;
+  }
+  return String(Math.round(value * 100) / 100);
+}
+
 // -> { text, unit } for a numeric sensor reading.
 export function formatReading(sensor, value, displayUnits) {
   if (value === null || value === undefined) return { text: '—', unit: '' };

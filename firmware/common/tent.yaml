@@ -1,0 +1,53 @@
+# Tent node, Phase 1 (monitoring only): air temperature/humidity, light level, floor leak, clock.
+
+i2c:
+  sda: ${pin_sda}
+  scl: ${pin_scl}
+  scan: true # the boot log lists every I2C device found, handy for checking wiring
+
+sensor:
+  - platform: sht4x
+    update_interval: 30s
+    temperature:
+      name: air_temp
+      state_topic: growshed/${node_id}/sensor/air_temp/state
+    humidity:
+      name: air_rh
+      state_topic: growshed/${node_id}/sensor/air_rh/state
+  - platform: bh1750
+    name: light_lux
+    state_topic: growshed/${node_id}/sensor/light_lux/state
+    update_interval: 30s
+
+binary_sensor:
+  # Leak probe between the pin and GND: water bridges the probes and pulls the pin low.
+  # ON = wet. Quick to trip, slow to clear, so a brief splash still gets noticed.
+  - platform: gpio
+    name: leak
+    state_topic: growshed/${node_id}/binary_sensor/leak/state
+    pin:
+      number: ${pin_in1}
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 500ms
+      - delayed_off: 10s
+
+# The DS3231 keeps time through power and network outages (needed for the Phase 2
+# fallback light schedule). It is set from the internet whenever that is available.
+time:
+  - platform: ds1307
+    id: rtc_time
+    update_interval: never
+  - platform: sntp
+    id: sntp_time
+    on_time_sync:
+      then:
+        - ds1307.write_time:
+            id: rtc_time
+
+esphome:
+  on_boot:
+    then:
+      - ds1307.read_time:
+          id: rtc_time

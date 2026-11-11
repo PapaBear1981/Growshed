@@ -41,6 +41,14 @@ function handle(msg) {
       all[msg.key] = { value: msg.value, ts: msg.ts };
       return all;
     });
+    // Any message from a node proves it is alive. This is also how a board that is
+    // not in config.yaml first shows up (auto-discovery).
+    const nodeId = msg.key.split('/')[0];
+    nodes.update((all) => {
+      const known = all[nodeId] || { status: 'unknown' };
+      all[nodeId] = { status: known.status, last_seen: msg.ts };
+      return all;
+    });
   } else if (msg.type === 'node') {
     nodes.update((all) => {
       all[msg.id] = { status: msg.status, last_seen: msg.last_seen };

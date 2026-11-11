@@ -1,0 +1,15 @@
+# Board profile: ESP32 DevKit (WROOM-32)
+# Pin names used by the node packages in ../common. Edit here if you wire differently.
+substitutions:
+  board_label: "ESP32 DevKit (WROOM-32)"
+  pin_sda: GPIO21
+  pin_scl: GPIO22
+  pin_onewire: GPIO4
+  pin_in1: GPIO32
+  pin_in2: GPIO33
+  pin_in3: GPIO25
+  pin_in4: GPIO26
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf

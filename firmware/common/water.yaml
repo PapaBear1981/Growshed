@@ -1,0 +1,70 @@
+# Water node, Phase 1 (monitoring only): RDWC reservoir temperature and level, leak
+# sensors, and the basement room climate.
+
+i2c:
+  sda: ${pin_sda}
+  scl: ${pin_scl}
+  scan: true
+
+one_wire:
+  - platform: gpio
+    pin: ${pin_onewire}
+
+sensor:
+  - platform: dallas_temp
+    name: res_temp
+    state_topic: growshed/${node_id}/sensor/res_temp/state
+    update_interval: 30s
+  - platform: sht4x
+    update_interval: 30s
+    temperature:
+      name: room_temp
+      state_topic: growshed/${node_id}/sensor/room_temp/state
+    humidity:
+      name: room_rh
+      state_topic: growshed/${node_id}/sensor/room_rh/state
+
+binary_sensor:
+  # Low float: closed (pin low) while floating. ON = level is LOW.
+  # A broken wire also reads as LOW, which is the safe direction.
+  - platform: gpio
+    name: res_low
+    state_topic: growshed/${node_id}/binary_sensor/res_low/state
+    pin:
+      number: ${pin_in1}
+      mode: INPUT_PULLUP
+    filters:
+      - delayed_on: 5s
+      - delayed_off: 5s
+  # High float: closes when the water reaches the full mark. ON = full.
+  - platform: gpio
+    name: res_high
+    state_topic: growshed/${node_id}/binary_sensor/res_high/state
+    pin:
+      number: ${pin_in2}
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 1s
+      - delayed_off: 5s
+  # Leak probes: ON = wet.
+  - platform: gpio
+    name: leak_res
+    state_topic: growshed/${node_id}/binary_sensor/leak_res/state
+    pin:
+      number: ${pin_in3}
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 500ms
+      - delayed_off: 10s
+  - platform: gpio
+    name: leak_topoff
+    state_topic: growshed/${node_id}/binary_sensor/leak_topoff/state
+    pin:
+      number: ${pin_in4}
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 500ms
+      - delayed_off: 10s

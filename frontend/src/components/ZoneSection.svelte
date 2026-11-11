@@ -1,7 +1,7 @@
 <script>
   // The readings and devices of one zone. Used for a card's own zone and its child zones.
-  import { values, settings, now } from '../lib/stores.js';
-  import { formatReading, describeBinary, isStale } from '../lib/format.js';
+  import { values, nodes, settings, now } from '../lib/stores.js';
+  import { formatReading, describeBinary, isStale, nodeDown } from '../lib/format.js';
 
   export let sensors = [];
   export let devices = [];
@@ -31,7 +31,7 @@
   <ul class="rows">
     {#each binary as sensor (keyOf(sensor, 'binary_sensor'))}
       {@const entry = $values[keyOf(sensor, 'binary_sensor')]}
-      {@const stale = isStale(entry, $now)}
+      {@const stale = !entry || nodeDown($nodes[sensor.node], $now)}
       {@const shown = describeBinary(sensor.kind, stale ? null : entry.value)}
       <li>
         <span>{sensor.name}</span>
@@ -40,7 +40,7 @@
     {/each}
     {#each devices as device (keyOf(device, 'switch'))}
       {@const entry = $values[keyOf(device, 'switch')]}
-      {@const stale = isStale(entry, $now)}
+      {@const stale = !entry || nodeDown($nodes[device.node], $now)}
       {@const on = !stale && entry.value === true}
       <li>
         <span>{device.name}</span>

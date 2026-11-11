@@ -10,7 +10,7 @@ import time
 
 import aiomqtt
 
-from .model import NodeModel, build_models
+from .model import NodeModel, TentModel, build_models
 
 log = logging.getLogger("simulator")
 PREFIX = "growshed"
@@ -55,6 +55,8 @@ class SimNode:
             ("sensor", "wifi_rssi", f"{-55 + self.model.rng.gauss(0, 2):.0f}"),
             ("sensor", "uptime", f"{time.time() - self.started:.0f}"),
             ("sensor", "heartbeat_age", f"{age:.0f}"),
+            ("text_sensor", "board", "Simulated board"),
+            ("text_sensor", "firmware", "simulator"),
         ]
         for component, entity, payload in self.model.entities() + diagnostics:
             await client.publish(f"{self.base}/{component}/{entity}/state", payload)
@@ -131,6 +133,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--interval", type=float, default=5.0, help="seconds between publishes")
     p.add_argument("--speed", type=float, default=1.0, help="time acceleration factor")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument(
+        "--extra-node",
+        action="append",
+        default=[],
+        metavar="ID",
+        help="also simulate a tent node that is NOT in config.yaml (tests auto-discovery)",
+    )
     return p.parse_args(argv)
 
 
@@ -138,5 +147,8 @@ async def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     clock = SimClock(args.speed)
-    nodes = [SimNode(i, m, clock, args.interval) for i, m in build_models(args.seed).items()]
+    models = build_models(args.seed)
+    for extra in args.extra_node:
+        models[extra] = TentModel(args.seed + len(models) + 1)
+    nodes = [SimNode(i, m, clock, args.interval) for i, m in models.items()]
     await asyncio.gather(*(node.run(args) for node in nodes))

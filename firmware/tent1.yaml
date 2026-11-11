@@ -1,0 +1,10 @@
+# Tent 1 node
+substitutions:
+  node_id: tent1
+  node_name: "Tent 1 node"
+
+packages:
+  # Change this one line to match the board you are flashing (see firmware/README.md).
+  board: !include boards/esp32.yaml
+  base: !include common/base.yaml
+  tent: !include common/tent.yaml

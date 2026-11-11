@@ -42,7 +42,7 @@ The system is config-driven for **N tents**. Starting layout:
 |---|---|---|
 | Location | Finished basement, grow tents | Unused space, stable temperatures, inside the house |
 | Brain | Raspberry Pi 4 (8GB), booting from a **USB SSD** | SD cards die under constant database writes |
-| Field nodes | **ESP32 boards running ESPHome**: one node per tent + one water node (+ dosing node later) | Declarative YAML, proven drivers, OTA, native MQTT. A node per tent avoids I²C address clashes and isolates failures |
+| Field nodes | **ESP32-family boards running ESPHome** (ESP32, -S3, -C3, Arduino Nano ESP32; ESP8266 for sensor-only tent nodes), chosen per node with a one-line board profile: one node per tent + one water node (+ dosing node later). Classic Arduinos and the Pico W cannot be nodes (see `firmware/README.md`) | Declarative YAML, proven drivers, OTA, native MQTT. A node per tent avoids I²C address clashes and isolates failures |
 | Messaging | MQTT (Mosquitto on the Pi) | Standard and debuggable. Matches ESPHome conventions |
 | Backend | Python 3.11+, FastAPI, asyncio, `aiomqtt`, SQLite | Readable and needs no extra servers |
 | Frontend | Svelte 4 + Vite (static build) + **uPlot** charts | Small bundles. Must run on an **old tablet** |
@@ -83,7 +83,12 @@ Each phase ends with a working, useful system. **Do not start a phase until the 
 - **Done when:** `docker compose --profile sim up` on a laptop shows live fake data for 3 tents on a dashboard.
 - **Status:** done and verified in Docker. Not yet done: running `deploy/pi-setup.sh` on the real Pi.
 
-### Phase 1 — Monitor
+### Phase 1 — Monitor (in progress)
+
+Built so far: multi-board node firmware (config-validated, not yet run on hardware), the USB
+board detector (`python -m tools.detect_boards`) and GUI auto-discovery of new boards.
+Still to do: storing readings, history charts, alert rules and phone notifications.
+
 - `tent<N>` nodes: air temp/RH (SHT45), light level (BH1750), RTC (DS3231), leak sensor.
 - `tent3` (tower tent) also reads the tower reservoir level and temperature.
 - `water` node: RDWC reservoir temp, reservoir level floats, leak sensor(s), **room** temp/RH.

@@ -5,7 +5,8 @@ RDWC, Kratky, a strawberry tower and soil pots. A Raspberry Pi 4 hub runs the we
 and alerts. ESP32 nodes running ESPHome handle sensors, relays and local failsafes.
 
 **Status:** Phase 0 (foundations) is built: the hub, a live dashboard and a simulator that
-stands in for the hardware. See [the plan](docs/PLAN.md) for what comes next.
+stands in for the hardware. Phase 1 is under way: multi-board node firmware and automatic
+detection of new boards exist; history and alerts do not yet. See [the plan](docs/PLAN.md) for what comes next.
 
 ## Try it on a laptop (no hardware needed)
 
@@ -67,5 +68,6 @@ and `cd frontend && npm run dev` for live-reloading GUI work.
 - [Safety rules](docs/SAFETY.md)
 - [Hardware & power budget](docs/HARDWARE.md)
 - [MQTT topic spec](docs/MQTT.md)
+- [Node firmware, supported boards and wiring](firmware/README.md)
 - [Printable node enclosure](hardware/enclosure/README.md)
 - [Instructions for coding agents](CLAUDE.md)

@@ -28,8 +28,21 @@ Nodes: `tent1`, `tent2`, `tent3` (tower tent), … `tentN`, `water`, `dosing`.
 | `wifi_rssi` | sensor | dBm |
 | `uptime` | sensor | seconds |
 | `heartbeat_age` | sensor | seconds since the last hub heartbeat |
+| `board` | text_sensor | Board type, e.g. `ESP32-S3 DevKitC` (from the board profile) |
+| `firmware` | text_sensor | ESPHome version |
 
 Each switchable device also gets `<device>_source` (text_sensor): `auto`, `manual`, `fallback` or `interlock`.
+
+## Auto-discovery
+
+The hub listens to `growshed/#`, so any board that publishes under `growshed/<new-id>/...`
+appears in the GUI by itself: on the System page (with its board type) and as a dashed
+"new device" card on the dashboard showing its raw readings. Zones, alerts and history only
+apply once its entities are added to `config/config.yaml`.
+
+On/off entities (`binary_sensor`, `switch`) are published only when they change. The GUI
+therefore trusts them for as long as their node is alive (any message within 120 s and not
+`offline`), instead of judging each one by its own age.
 
 ## Hub topics (published by backend)
 
