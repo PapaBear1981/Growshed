@@ -12,6 +12,15 @@
   --bad-bg: #fbe9e7;
   --on-bg: #e3f2e8;
   --off-bg: #eceeea;
+  --warn-bg: #fdf1dc;
+  /* Chart series colours: validated for colour-blind separation on this surface. Fixed order. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --grid: #e6eae3;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -27,6 +36,14 @@
     --bad-bg: #3a1d1a;
     --on-bg: #1f3a2a;
     --off-bg: #222e27;
+    --warn-bg: #3a2e14;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --series-6: #008300;
+    --grid: #25332a;
   }
 }
 * {

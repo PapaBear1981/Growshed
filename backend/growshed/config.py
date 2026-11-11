@@ -59,11 +59,44 @@ class Device(BaseModel):
         return f"{self.node}/switch/{self.key}"
 
 
+class AlertRule(BaseModel):
+    """Applies to every sensor of `sensor_kind` (optionally only in some kinds of zone).
+
+    Matching by kind instead of naming sensors means a newly added tent is covered
+    by the same rules automatically.
+    """
+
+    name: str
+    sensor_kind: str
+    zone_kinds: list[ZoneKind] | None = None
+    above: float | None = None  # numeric sensors, SI units
+    below: float | None = None
+    when_on: bool | None = None  # binary sensors: alert while ON (true) or OFF (false)
+    for_s: float = 0  # the condition must hold this long before alerting
+    severity: Literal["warning", "critical"] = "warning"
+    repeat_s: float | None = None  # re-notify this often until acknowledged
+
+    @model_validator(mode="after")
+    def _one_condition(self) -> AlertRule:
+        given = [v for v in (self.above, self.below, self.when_on) if v is not None]
+        if len(given) != 1:
+            raise ValueError(f"alert rule {self.name!r}: set exactly one of above/below/when_on")
+        return self
+
+
+class AlertConfig(BaseModel):
+    rules: list[AlertRule] = []
+    node_offline_after_s: float = 300
+    sensor_stale_after_s: float = 600
+    clear_after_s: float = 60  # a condition must stay good this long before the alert clears
+
+
 class SiteConfig(BaseModel):
     zones: list[Zone]
     nodes: list[Node]
     sensors: list[Sensor] = []
     devices: list[Device] = []
+    alerts: AlertConfig = AlertConfig()
 
     @model_validator(mode="after")
     def _check_references(self) -> SiteConfig:
@@ -76,6 +109,9 @@ class SiteConfig(BaseModel):
         for zone in self.zones:
             if zone.parent is not None and zone.parent not in zone_ids:
                 raise ValueError(f"zone {zone.id!r}: unknown parent {zone.parent!r}")
+        names = [r.name for r in self.alerts.rules]
+        if len(names) != len(set(names)):
+            raise ValueError("alert rule names must be unique")
         seen: set[str] = set()
         for item in [*self.sensors, *self.devices]:
             if item.zone not in zone_ids:
@@ -109,6 +145,10 @@ class Settings:
     mqtt_user: str | None = None
     mqtt_password: str | None = None
     heartbeat_interval_s: float = 30.0
+    background_enabled: bool = True  # recorder, alert engine, clean-up (off in unit tests)
+    ntfy_url: str | None = None  # full topic URL, e.g. https://ntfy.sh/growshed-3f9a...
+    ntfy_token: str | None = None
+    healthcheck_url: str | None = None  # dead man's switch: pinged every 5 minutes
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -122,4 +162,7 @@ class Settings:
         s.mqtt_port = int(env.get("GROWSHED_MQTT_PORT", s.mqtt_port))
         s.mqtt_user = env.get("GROWSHED_MQTT_USER") or None
         s.mqtt_password = env.get("GROWSHED_MQTT_PASSWORD") or None
+        s.ntfy_url = env.get("GROWSHED_NTFY_URL") or None
+        s.ntfy_token = env.get("GROWSHED_NTFY_TOKEN") or None
+        s.healthcheck_url = env.get("GROWSHED_HEALTHCHECK_URL") or None
         return s

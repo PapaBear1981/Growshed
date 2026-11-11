@@ -59,6 +59,13 @@ export function describeBinary(kind, value) {
   return { text: value ? 'On' : 'Off', tone: 'neutral' };
 }
 
+export function formatTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts * 1000);
+  const pad = (n) => (n < 10 ? '0' + n : '' + n);
+  return d.getMonth() + 1 + '/' + d.getDate() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
 export function formatDuration(seconds) {
   if (seconds === null || seconds === undefined) return '—';
   const s = Math.max(0, Math.round(seconds));

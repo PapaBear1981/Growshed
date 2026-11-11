@@ -53,3 +53,20 @@ devices:
   - {node: water, key: air_pump, zone: rdwc, kind: pump, name: "Air pump"}
   - {node: water, key: rdwc_pump, zone: rdwc, kind: pump, name: "Circulation pump"}
   - {node: water, key: top_off, zone: rdwc, kind: pump, name: "Top-off pump"}
+
+# Alert rules (docs/SAFETY.md §5). Each rule applies to every sensor of that kind, so a
+# new tent is covered automatically. Limits are SI (°C, %RH). for_s = how long the
+# condition must last before alerting; repeat_s = re-notify until acknowledged.
+alerts:
+  node_offline_after_s: 300
+  sensor_stale_after_s: 600
+  clear_after_s: 60
+  rules:
+    - {name: "Leak detected", sensor_kind: leak, when_on: true, severity: critical, repeat_s: 300}
+    - {name: "Reservoir low", sensor_kind: level_low, when_on: true, for_s: 30, severity: critical, repeat_s: 1800}
+    - {name: "Tent too hot", sensor_kind: temperature, zone_kinds: [tent], above: 30, for_s: 120}
+    - {name: "Tent too cold", sensor_kind: temperature, zone_kinds: [tent], below: 15, for_s: 120}
+    - {name: "Tent humidity high", sensor_kind: humidity, zone_kinds: [tent], above: 75, for_s: 1800}
+    - {name: "Basement humidity high", sensor_kind: humidity, zone_kinds: [room], above: 60, for_s: 3600}
+    - {name: "Water too cold", sensor_kind: temperature, zone_kinds: [rdwc, tower], below: 16, for_s: 600}
+    - {name: "Water too warm", sensor_kind: temperature, zone_kinds: [rdwc, tower], above: 24, for_s: 600}

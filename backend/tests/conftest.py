@@ -16,6 +16,7 @@ def settings(tmp_path):
         db_path=tmp_path / "test.db",
         static_dir=tmp_path / "no-frontend",
         mqtt_enabled=False,
+        background_enabled=False,
     )
 
 

@@ -10,9 +10,10 @@ from .ws import WebSocketHub
 
 
 class Ingest:
-    def __init__(self, state: LiveState, hub: WebSocketHub) -> None:
+    def __init__(self, state: LiveState, hub: WebSocketHub, recorder=None) -> None:
         self.state = state
         self.hub = hub
+        self.recorder = recorder  # optional: stores history for configured sensors
 
     async def handle(self, topic: str, payload: str, now: float | None = None) -> None:
         ts = time.time() if now is None else now
@@ -30,4 +31,6 @@ class Ingest:
         value = topics.parse_payload(entity.component, payload)
         self.state.set_value(entity.key, value, ts)
         self.state.touch_node(entity.node, ts)
+        if self.recorder is not None:
+            self.recorder.add(entity.key, value, ts)
         await self.hub.broadcast({"type": "value", "key": entity.key, "value": value, "ts": ts})

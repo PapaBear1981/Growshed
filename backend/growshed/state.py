@@ -8,11 +8,14 @@ from typing import Any
 class LiveState:
     def __init__(self) -> None:
         self.values: dict[str, dict[str, Any]] = {}  # key -> {"value", "ts"}
+        self.last_valid: dict[str, float] = {}  # key -> ts of the last usable (non-None) value
         self.nodes: dict[str, dict[str, Any]] = {}  # node id -> {"status", "last_seen"}
         self.mqtt_connected = False
 
     def set_value(self, key: str, value: Any, ts: float) -> None:
         self.values[key] = {"value": value, "ts": ts}
+        if value is not None:
+            self.last_valid[key] = ts
 
     def touch_node(self, node: str, ts: float) -> None:
         entry = self.nodes.setdefault(node, {"status": "unknown", "last_seen": None})
