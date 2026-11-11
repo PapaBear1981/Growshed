@@ -76,7 +76,7 @@ Rules:
 | SHT45 breakout | I²C | Tent air temp/RH, at canopy height, shaded from the light | 15 |
 | BH1750 | I²C | Light level (confirms the lights actually turned on) | 5 |
 | DS3231 RTC | I²C | Time for fallback schedules with no network | 5 |
-| Leak sensor (probe type) | GPIO | Tent floor tray | 10 |
+| Leak sensor module (sensing plate + comparator board with a `DO` pin) | GPIO | Tent floor tray. Bare two-wire probes only trigger reliably in conductive water | 5 |
 | Capacitive soil sensors ×N (if soil pots here) | ADC | Soil moisture | 3 each |
 | SCD41 (Phase 5) | I²C | CO₂ | 50 |
 | Outputs → relay boxes | GPIO | Lights, exhaust fan, (tent heater) | — |
@@ -87,7 +87,7 @@ Rules:
 |---|---|---|---|
 | DS18B20 waterproof | 1-Wire | Control bucket temp | 3 |
 | Vertical float switches ×2–3 | GPIO | Control bucket LOW/HIGH, (top-off tank LOW) | 15 |
-| Leak sensors ×2 | GPIO | Under the control bucket and the top-off tank | 20 |
+| Leak sensor modules ×2 | GPIO | Under the control bucket and the top-off tank | 10 |
 | SHT45 | I²C | **Room** (basement) temp/RH, outside the tents | 15 |
 | Atlas EZO-pH + probe (Phase 3) | I²C, isolated carrier | pH | ~170 |
 | Atlas EZO-EC + K1.0 probe (Phase 3) | I²C, isolated carrier | EC | ~200 |
@@ -135,7 +135,11 @@ that auto-restarts after a power loss.
 - Smoke detector for the grow area.
 - Old tablet + wall mount + charger.
 
-## 6. Pin assignments
+## 6. Wiring and assembly
+
+Step-by-step build instructions and wiring diagrams: [BUILD.md](BUILD.md).
+
+## 7. Pin assignments
 
 Pins depend on the board. They are defined in the board profiles (`firmware/boards/*.yaml`)
 and listed per board in [`firmware/README.md`](../firmware/README.md#wiring-pins-per-board-profile).

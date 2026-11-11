@@ -83,11 +83,15 @@ Each phase ends with a working, useful system. **Do not start a phase until the 
 - **Done when:** `docker compose --profile sim up` on a laptop shows live fake data for 3 tents on a dashboard.
 - **Status:** done and verified in Docker. Not yet done: running `deploy/pi-setup.sh` on the real Pi.
 
-### Phase 1 — Monitor (in progress)
+### Phase 1 — Monitor (software built; waiting on hardware)
 
-Built so far: multi-board node firmware (config-validated, not yet run on hardware), the USB
-board detector (`python -m tools.detect_boards`) and GUI auto-discovery of new boards.
-Still to do: storing readings, history charts, alert rules and phone notifications.
+Built and tested against the simulator: history storage and charts, alert rules, ntfy phone
+notifications, multi-board node firmware (config-validated only), the USB board detector,
+GUI auto-discovery, and the build guide with wiring diagrams ([BUILD.md](BUILD.md)).
+
+**Not done until hardware exists:** flashing real nodes, and the "done when" test below.
+Deferred to Phase 2 because they need control: the "lights commanded on but dark" alert and
+the interlock alerts. Not built: custom date ranges on the History page.
 
 - `tent<N>` nodes: air temp/RH (SHT45), light level (BH1750), RTC (DS3231), leak sensor.
 - `tent3` (tower tent) also reads the tower reservoir level and temperature.

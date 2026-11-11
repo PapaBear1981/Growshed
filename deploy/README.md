@@ -28,6 +28,24 @@
 5. Open `http://growshed.local:8000` from a phone or the tablet on the same network. For
    access away from home, run `sudo tailscale up` once and install Tailscale on your phones.
 
+## Phone notifications
+
+Alerts are sent through [ntfy](https://ntfy.sh), a free push-notification service.
+
+1. Install the **ntfy** app on both phones (Android or iPhone).
+2. Look in `.env` for `GROWSHED_NTFY_URL`. The setup script generated a random topic, e.g.
+   `https://ntfy.sh/growshed-3f9a…`. In the app, subscribe to the last part (`growshed-3f9a…`).
+3. Open the **Alerts** page in Growshed and press **Send a test notification**.
+4. In the app's settings for that topic, allow it to break through Do Not Disturb, so a leak
+   at 3 a.m. wakes you.
+
+Alert text passes through ntfy.sh's servers. It contains things like "Leak detected · Tent 1",
+never passwords. Anyone who learns the topic name could read it, which is why it is random.
+
+**If the Pi itself dies, it can't send alerts.** For that, create a free check at
+healthchecks.io (period 5 minutes, grace 10), put its ping URL in `GROWSHED_HEALTHCHECK_URL`,
+and restart with `docker compose up -d`. healthchecks.io then tells you when the hub goes silent.
+
 ## Updating
 
 ```bash

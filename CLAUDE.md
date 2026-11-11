@@ -26,9 +26,10 @@ over cleverness.
 - `backend/`: Python 3.11+, FastAPI, aiomqtt, SQLite (WAL), pytest. Formatting: ruff.
 - `frontend/`: **Svelte 4** (not 5) + Vite, uPlot for charts. No `gap` on flexbox, `inset`, or `aspect-ratio` in CSS. Conservative browser target (old Android tablet). Touch targets ≥ 44 px.
 - `docker-compose.yml` (root) + `deploy/`: mosquitto, backend, and the `sim` / `esphome` profiles; Pi setup script.
-- `config/config.yaml`: zones, nodes, sensors, devices. Adding a tent is a config change.
+- `config/config.yaml`: zones, nodes, sensors, devices, alert rules. Adding a tent is a config change.
 - `firmware/boards/`: one profile per supported board (chip + pin names). Node packages use only the pin names, never raw GPIO numbers. Validate every node against every profile when changing shared packages.
-- `tools/`: setup helpers (`python -m tools.detect_boards`). Standard library only.
+- `tools/`: setup helpers (`python -m tools.detect_boards`, `python -m tools.wiring_diagrams`). Standard library only.
+- `docs/wiring/*.svg` are generated from the board profiles by `python -m tools.wiring_diagrams`. Regenerate and update `docs/BUILD.md` whenever a pin, sensor or node role changes (a test fails if they are stale).
 - `simulator/`: fake nodes over MQTT that also react to commands.
 - `hardware/enclosure/`: 3D-printable node enclosure (OpenSCAD source + exported STLs). Re-export the STLs whenever the `.scad` changes.
 

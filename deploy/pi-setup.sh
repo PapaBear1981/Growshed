@@ -61,6 +61,9 @@ if [[ ! -f "$REPO_DIR/.env" ]]; then
   cat >"$REPO_DIR/.env" <<ENV
 MQTT_BACKEND_PASSWORD=$(openssl rand -hex 16)
 MQTT_NODE_PASSWORD=$(openssl rand -hex 16)
+GROWSHED_NTFY_URL=https://ntfy.sh/growshed-$(openssl rand -hex 12)
+GROWSHED_NTFY_TOKEN=
+GROWSHED_HEALTHCHECK_URL=
 GROWSHED_PORT=8000
 ENV
   chown "$RUN_USER": "$REPO_DIR/.env"
@@ -77,4 +80,6 @@ Setup finished. Next steps:
   2. sudo tailscale up                 (log in once to enable remote access)
   3. cd $REPO_DIR && docker compose up -d --build
   4. Open http://$(hostname).local:8000 on your phone or tablet.
+  5. Phone alerts: install the ntfy app and subscribe to the topic at the end of
+     GROWSHED_NTFY_URL in $REPO_DIR/.env, then use the test button on the Alerts page.
 DONE
