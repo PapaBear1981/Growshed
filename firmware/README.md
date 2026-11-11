@@ -20,7 +20,8 @@ compiled or run on real hardware yet. Relays, thermostats and interlocks arrive 
 | Arduino Nano ESP32 | `arduino-nano-esp32` | yes | yes | It is an ESP32-S3 inside |
 | ESP8266 (D1 mini, NodeMCU) | `esp8266` | yes | **no** | Too few safe pins for the water node, and too few for Phase 2 relays. Fine as a sensor-only node |
 | Arduino Uno / Nano / Mega / Leonardo, Uno R4, MKR, Nano 33 | none | no | no | ESPHome cannot run on these, and the classic ones have no WiFi |
-| Raspberry Pi Pico W | none | no | no | ESPHome has no MQTT support on the Pico |
+| Raspberry Pi Pico / Pico W | none | no | no | The plain Pico has no WiFi; ESPHome has no MQTT support on the Pico W |
+| Teensy (any) | none | no | no | No WiFi, and ESPHome cannot run on it |
 
 ## Which board do I have?
 

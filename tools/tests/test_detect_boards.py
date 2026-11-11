@@ -34,6 +34,15 @@ def test_pico_and_unknown_are_not_nodes():
     assert d.identify(dev("dead", "beef")).note == "Not recognised."
 
 
+def test_teensy_is_recognised_but_not_a_node():
+    teensy = d.identify(dev("16c0", "0483", product="USB Serial"))
+    assert teensy.description == "USB Serial" and teensy.profile is None
+    assert "no WiFi" in teensy.note
+    assert d.identify(dev("16c0", "0483")).description == "Teensy"
+    # 16c0 is a shared vendor id: other products under it are not assumed to be a Teensy
+    assert d.identify(dev("16c0", "05dc")).note == "Not recognised."
+
+
 @pytest.mark.parametrize(
     ("chip", "profile"),
     [

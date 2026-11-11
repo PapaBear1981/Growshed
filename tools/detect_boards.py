@@ -76,6 +76,7 @@ SERIAL_BRIDGES = {
 ARDUINO_VENDORS = {"2341", "2a03"}
 ESPRESSIF_VENDOR = "303a"
 PICO_VENDOR = "2e8a"
+TEENSY_VENDOR = "16c0"  # shared vendor id; PJRC's Teensy products are 04xx
 
 
 def identify(dev: UsbSerialDevice) -> Guess:
@@ -95,8 +96,11 @@ def identify(dev: UsbSerialDevice) -> Guess:
         return Guess(
             dev.product or "Raspberry Pi Pico",
             None,
-            "Not usable as a node: ESPHome has no MQTT support on the Pico.",
+            "Not usable as a node: the plain Pico has no WiFi, and ESPHome has no MQTT "
+            "support on the Pico W.",
         )
+    if dev.vid == TEENSY_VENDOR and dev.pid.startswith("04"):
+        return Guess(dev.product or "Teensy", None, NOT_A_NODE)
     if key in SERIAL_BRIDGES:
         return Guess(
             f"{SERIAL_BRIDGES[key]} USB-serial adapter: most likely an ESP32 or ESP8266 dev "
@@ -222,7 +226,11 @@ def main(argv: list[str] | None = None) -> int:
 
     for dev in devices:
         guess = identify(dev)
-        if command and guess.profile is None and dev.vid not in ARDUINO_VENDORS | {PICO_VENDOR}:
+        if (
+            command
+            and guess.profile is None
+            and dev.vid not in ARDUINO_VENDORS | {PICO_VENDOR, TEENSY_VENDOR}
+        ):
             chip = probe_chip(dev.port, command)
             if chip:
                 guess = guess_from_chip(chip)
