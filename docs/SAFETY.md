@@ -80,6 +80,17 @@ Enforced on **both** the Pi (controller) and the dosing node (hard cap).
 - Each dosing pump runs for at most `ceil(max_dose / ml_per_sec) + 1` seconds per command (hard timeout on the node).
 - Concentrated acids/bases are stored in their own spill tray, away from electronics.
 
+### How dosing is built (Phase 4)
+
+- **Three modes, default OFF.** `SUGGEST`: the hub proposes one small dose and a person approves it in the GUI; everything is re-checked at the moment of approval. `AUTO`: the hub doses by itself. The GUI shows a warning with Cancel / Continue before switching to `AUTO`, and the hub itself refuses the switch unless the request says the warning was accepted.
+- **No mode other than OFF** until all four pumps have a measured flow rate and both probes are calibrated.
+- **The hub never acts on a reading it cannot trust:** fewer than 3 readings in the last 5 minutes, readings that disagree (more than 0.3 pH or 15 % EC apart), a sudden jump (more than 0.5 pH or 30 % EC between two readings: 15 minutes of distrust), stale readings, or an overdue calibration.
+- **A dose must show an effect.** After the 15-minute mixing wait the hub compares the reading with the one before the dose. Two doses of the same kind with no movement in the right direction stop all dosing until a person re-enables it.
+- **Nutrient B follows A after 60 seconds.** If B cannot be dosed (leak, node offline), dosing stops and says the mix is uneven.
+- **The dosing node enforces its own limits** whatever it is told (`gs::MlDoser` in `firmware/common/control.h`): 2 mL per dose, 20 mL per pump per day, a 5-minute rest per pump, one pump at a time, no pH up within an hour of pH down (or the reverse), a 60-second ceiling on any run, nothing during a leak or without the hub, and no dosing at all from a pump whose flow rate was never measured. The hub's limits in `config.yaml` cannot be set above the node's.
+- **Priming** (filling a tube, measuring flow) runs a pump for at most 30 seconds and is not counted as a dose. The outlet must be in a measuring cup, never the reservoir.
+- Nothing is ever diluted automatically: if pH or EC overshoots, a person deals with it.
+
 ## 4b. Automatic soil watering limits (Phase 2)
 
 Decided when soil-pot support was added. Watering pumps are **not built yet**; these rules

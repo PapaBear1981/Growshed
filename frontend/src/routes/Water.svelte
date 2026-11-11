@@ -1,8 +1,9 @@
 <script>
   // Water chemistry at a glance, plus the log of what was added by hand.
   import { onMount } from 'svelte';
-  import { config, values, settings, calibration, now, command } from '../lib/stores.js';
+  import { config, values, settings, calibration, control, now, command } from '../lib/stores.js';
   import { formatReading, formatTime, isStale } from '../lib/format.js';
+  import Dosing from '../components/Dosing.svelte';
 
   const PRODUCTS = ['pH down', 'pH up', 'Nutrient A', 'Nutrient B', 'Cal-Mag', 'Fresh water'];
   const KINDS = ['ph', 'ec', 'temperature'];
@@ -81,6 +82,10 @@
         </div>
       {/each}
     </div>
+
+    {#if $control.dosing && $control.dosing.zone === zone.id}
+      <Dosing on:dosed={load} />
+    {/if}
 
     <h3>Log what you added</h3>
     <div class="form">

@@ -81,6 +81,7 @@ growshed/hub/leak_alarm                        ON | OFF  (retained)
 - **Relays are never switched directly.** `switch/<dev>/state` reports the relay; commands sent to `switch/<dev>/command` are ignored by the node. The hub asks for a *mode*, and the node's control loop applies its interlocks before anything moves.
 - Mode devices: `lights`, `exhaust_fan` (every tent), `tower_pump` (tent3), `water_heater`, `air_pump`, `rdwc_pump` (water).
 - Dose pumps: `top_off` (water), `water_1..4` (tent2). The node caps the run time, enforces a rest and a daily cap, and refuses during a leak, with an empty tank or full reservoir, or without the hub.
+- Chemical dosing pumps (`dosing` node): `ph_down`, `ph_up`, `nutrient_a`, `nutrient_b`. `dose/<pump>/command` takes **millilitres**; `prime/<pump>/command` takes seconds (at most 30) and is for filling tubes or measuring flow. Each pump's flow rate is the node setting `<pump>_ml_per_s` (0 = not calibrated: the pump refuses to dose). `<pump>_source` is `idle`, `dosing`, `priming` or `refused`.
 - Settings (`number`): `light_on_minute`, `light_off_minute`, `max_temp`, `max_rh` (tents), `tower_on_s`, `tower_off_s` (tent3), `water_setpoint` (water). Stored on the node.
 
 ## Simulator-only topics
@@ -91,7 +92,8 @@ growshed/sim/<node>/fault     leak on|off, sensor_fail on|off, offline, online,
                               soil_dry, soil_water, soil_unplug, soil_replug,
                               tank_low on|off (tent2),
                               ph_buffer <pH>|off, ec_solution <µS/cm>|off,
-                              ph_set <pH>, ec_set <µS/cm> (water)
+                              ph_set <pH>, ec_set <µS/cm> (water),
+                              empty <pump>, refill <pump> (dosing)
 ```
 
 Real nodes ignore these. They exist so alerts and interlocks can be tested with no hardware.

@@ -234,3 +234,50 @@ Troubleshooting:
 | pH volts barely change between buffers | Probe dead or still capped; on a PH-4502C, the offset trimmer turned to an extreme |
 | EC shows `—` | The reservoir temperature probe is not reporting (EC needs it), or EC is not calibrated |
 | EC stuck near its maximum | Solution stronger than the cheap board can measure (about 2 mS/cm) |
+
+## 10. Phase 4: dosing pumps
+
+Diagram: [dosing node](wiring/dosing-node.svg).
+
+**Read this first.** These pumps put concentrated acid, base and fertiliser into the water
+your plants live in. A wrong dose can kill everything in the reservoir overnight. Build it,
+test it with plain water, and run it in **Suggest** mode for a couple of weeks before you
+consider **Automatic**.
+
+**Parts:** four 12 V peristaltic pumps, a 4-channel MOSFET board, a 12 V supply (3 A),
+silicone tubing, four labelled bottles, a leak sensor module, a tray big enough to hold the
+bottles and pumps, and a small measuring cylinder or syringe.
+
+1. **Wire the node** as in the diagram: the MOSFET board's four inputs to Outputs 1–4, its
+   GND to the node's GND, the 12 V supply and the pumps on its power terminals. The leak
+   sensor goes on Input 1, with its plate in the tray.
+2. **Label everything**: each pump, each tube at both ends, each bottle. pH down, pH up,
+   Nutrient A, Nutrient B. A swapped tube doses the wrong chemical.
+3. **Stand the bottles and pumps in the tray**, below the level of the reservoir's rim, so
+   nothing can siphon in. Wear gloves and eye protection when handling pH adjusters.
+4. **Test with plain water first.** Fill all four bottles with water and do every step below
+   before any chemical goes in.
+5. **Prime and measure each pump** (Water page → *Pumps and flow calibration*). Put the
+   pump's outlet in the measuring cylinder, **not the reservoir**. Press **Prime 5 s** until
+   water reaches the end of the tube, empty the cylinder, press **Run 30 s**, then enter how
+   many mL came out and press **Save**. Repeat for all four.
+6. **Check a dose is what it says.** With the outlet still in the cylinder, press
+   **Dose pH down (1 mL)** and measure. Do the same for the others (wait for the mixing
+   timer between doses, or check them on different days).
+7. **Check the cutoffs** with water in the bottles:
+   - [ ] Wet the leak sensor in the tray: a dose is refused, on the page and at the pump.
+   - [ ] Turn the circulation pump off on the Controls page: a dose is refused.
+   - [ ] Unplug the Pi: no pump runs, whatever was requested before.
+8. **Move the outlet tubes into the reservoir**, near the circulation return so doses mix
+   quickly, held above the waterline so they cannot siphon. Swap the water for chemicals:
+   dilute pH adjusters as their labels say, and never mix concentrates together.
+9. **Start in Suggest mode.** The hub proposes one small dose at a time; you approve it and
+   watch what it does on the pH and EC charts. Adjust `ph_dose_ml`, `nutrient_dose_ml` and
+   the targets in `config/config.yaml` until one dose moves the reading a small, predictable
+   amount. A bigger reservoir needs a bigger dose; the limits cap it at 2 mL.
+10. **Automatic mode** is a deliberate choice: the page asks you to confirm. Recalibrate the
+    probes first, and keep checking against a handheld meter every week or so.
+
+If dosing stops by itself, the Water page says why. Fix the cause (empty bottle, air in a
+tube, a probe that has come out of the water, a calibration that is overdue) before pressing
+**Re-enable dosing**.

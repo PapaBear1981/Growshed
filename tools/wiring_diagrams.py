@@ -38,7 +38,7 @@ NETS = {
     # Outputs are drawn on their own diagrams, so they can reuse colours too.
     "OUT1": ("#2a78d6", "Output 1"),
     "OUT2": ("#e0a800", "Output 2"),
-    "OUT3": ("#1b9e77", "Output 3"),
+    "OUT3": ("#8c564b", "Output 3"),
     "OUT4": ("#d95f02", "Output 4"),
     "OUT5": ("#8e44ad", "Output 5"),
     "OUT6": ("#e7298a", "Output 6"),
@@ -246,6 +246,31 @@ DIAGRAMS += [
             ),  # fmt: skip
         ],
         COMMON_NOTES + ["Keep the two probes at least a hand's width apart in the bucket."],
+    ),
+]
+
+
+DIAGRAMS += [
+    Diagram(
+        "dosing-node",
+        "Dosing node: four dosing pumps",
+        [
+            leak("tray under the pumps", "IN1"),
+            Part(
+                "4-channel MOSFET board: 12 V peristaltic pumps",
+                "inside or beside the enclosure",
+                [
+                    ("IN1 (pH down)", "OUT1"),
+                    ("IN2 (pH up)", "OUT2"),
+                    ("IN3 (nutrient A)", "OUT3"),
+                    ("IN4 (nutrient B)", "OUT4"),
+                    ("GND", "GND"),
+                ],
+                MOSFET_NOTE,
+            ),  # fmt: skip
+        ],
+        OUTPUT_NOTES
+        + ["Label every pump, tube and bottle. A swapped tube doses the wrong chemical."],
     ),
 ]
 

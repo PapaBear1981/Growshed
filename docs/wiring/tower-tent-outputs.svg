@@ -2,7 +2,7 @@
 <line x1='262' y1='158' x2='262' y2='580' stroke='#1a1a1a' stroke-width='3'/>
 <line x1='293' y1='184' x2='293' y2='334' stroke='#2a78d6' stroke-width='3'/>
 <line x1='324' y1='210' x2='324' y2='444' stroke='#e0a800' stroke-width='3'/>
-<line x1='355' y1='236' x2='355' y2='554' stroke='#1b9e77' stroke-width='3'/>
+<line x1='355' y1='236' x2='355' y2='554' stroke='#8c564b' stroke-width='3'/>
 <line x1='293' y1='334' x2='553' y2='334' stroke='#ffffff' stroke-width='7'/>
 <line x1='293' y1='334' x2='553' y2='334' stroke='#2a78d6' stroke-width='3'/>
 <line x1='262' y1='360' x2='553' y2='360' stroke='#ffffff' stroke-width='7'/>
@@ -12,7 +12,7 @@
 <line x1='262' y1='470' x2='553' y2='470' stroke='#ffffff' stroke-width='7'/>
 <line x1='262' y1='470' x2='553' y2='470' stroke='#1a1a1a' stroke-width='3'/>
 <line x1='355' y1='554' x2='553' y2='554' stroke='#ffffff' stroke-width='7'/>
-<line x1='355' y1='554' x2='553' y2='554' stroke='#1b9e77' stroke-width='3'/>
+<line x1='355' y1='554' x2='553' y2='554' stroke='#8c564b' stroke-width='3'/>
 <line x1='262' y1='580' x2='553' y2='580' stroke='#ffffff' stroke-width='7'/>
 <line x1='262' y1='580' x2='553' y2='580' stroke='#1a1a1a' stroke-width='3'/>
 <line x1='227' y1='158' x2='262' y2='158' stroke='#ffffff' stroke-width='7'/>
@@ -22,17 +22,17 @@
 <line x1='227' y1='210' x2='324' y2='210' stroke='#ffffff' stroke-width='7'/>
 <line x1='227' y1='210' x2='324' y2='210' stroke='#e0a800' stroke-width='3'/>
 <line x1='227' y1='236' x2='355' y2='236' stroke='#ffffff' stroke-width='7'/>
-<line x1='227' y1='236' x2='355' y2='236' stroke='#1b9e77' stroke-width='3'/>
+<line x1='227' y1='236' x2='355' y2='236' stroke='#8c564b' stroke-width='3'/>
 <circle cx='293' cy='334' r='4.5' fill='#2a78d6'/>
 <circle cx='262' cy='360' r='4.5' fill='#1a1a1a'/>
 <circle cx='324' cy='444' r='4.5' fill='#e0a800'/>
 <circle cx='262' cy='470' r='4.5' fill='#1a1a1a'/>
-<circle cx='355' cy='554' r='4.5' fill='#1b9e77'/>
+<circle cx='355' cy='554' r='4.5' fill='#8c564b'/>
 <circle cx='262' cy='580' r='4.5' fill='#1a1a1a'/>
 <circle cx='262' cy='158' r='4.5' fill='#1a1a1a'/>
 <circle cx='293' cy='184' r='4.5' fill='#2a78d6'/>
 <circle cx='324' cy='210' r='4.5' fill='#e0a800'/>
-<circle cx='355' cy='236' r='4.5' fill='#1b9e77'/>
+<circle cx='355' cy='236' r='4.5' fill='#8c564b'/>
 <rect x='560' y='276' width='340' height='96' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
 <text x='572' y='296' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Relay outlet box: grow lights</text>
 <text x='572' y='312' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>plug the load into a &#x27;normally OFF&#x27; outlet</text>
@@ -50,7 +50,7 @@
 <rect x='560' y='496' width='340' height='96' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
 <text x='572' y='516' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Relay outlet box: tower pump</text>
 <text x='572' y='532' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>plug the load into a &#x27;normally OFF&#x27; outlet</text>
-<rect x='553' y='547' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
+<rect x='553' y='547' width='14' height='14' rx='3' fill='#ffffff' stroke='#8c564b' stroke-width='2'/>
 <text x='574' y='558' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>+ signal</text>
 <rect x='553' y='573' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
 <text x='574' y='584' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>- signal</text>
@@ -64,11 +64,11 @@
 <text x='206' y='214' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO17</text>
 <rect x='213' y='203' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
 <text x='206' y='240' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO18</text>
-<rect x='213' y='229' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
+<rect x='213' y='229' width='14' height='14' rx='3' fill='#ffffff' stroke='#8c564b' stroke-width='2'/>
 <text x='266' y='88' font-size='11' fill='#1a1a1a' font-weight='bold' transform='rotate(-55 266 88)' font-family='Helvetica, Arial, sans-serif'>Ground</text>
 <text x='297' y='88' font-size='11' fill='#2a78d6' font-weight='bold' transform='rotate(-55 297 88)' font-family='Helvetica, Arial, sans-serif'>Output 1</text>
 <text x='328' y='88' font-size='11' fill='#e0a800' font-weight='bold' transform='rotate(-55 328 88)' font-family='Helvetica, Arial, sans-serif'>Output 2</text>
-<text x='359' y='88' font-size='11' fill='#1b9e77' font-weight='bold' transform='rotate(-55 359 88)' font-family='Helvetica, Arial, sans-serif'>Output 3</text>
+<text x='359' y='88' font-size='11' fill='#8c564b' font-weight='bold' transform='rotate(-55 359 88)' font-family='Helvetica, Arial, sans-serif'>Output 3</text>
 <text x='30' y='614' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Wires join only where there is a dot. Lines that simply cross are not connected.</text>
 <text x='30' y='633' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• These are low-voltage signal wires only. Mains stays inside the relay boxes.</text>
 </svg>

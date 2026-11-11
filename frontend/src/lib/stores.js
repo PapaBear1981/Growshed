@@ -9,7 +9,7 @@ export const link = writable({ ws: false, mqtt: false });
 export const alerts = writable([]); // active alerts, critical first
 export const calibration = writable({}); // sensor key -> { dry, wet, calibrated }
 // Control view: manual-mode timers, the leak alarm latch, and each pot's watering status.
-export const control = writable({ overrides: {}, leak_alarm: false, watering: [] });
+export const control = writable({ overrides: {}, leak_alarm: false, watering: [], dosing: null });
 
 // Hub time in seconds. We track the offset to the hub's clock because an old
 // tablet's own clock can be badly wrong, which would make fresh data look stale.
@@ -64,7 +64,7 @@ function handle(msg) {
   } else if (msg.type === 'settings') {
     settings.set({ display_units: msg.display_units });
   } else if (msg.type === 'control') {
-    control.set({ overrides: msg.overrides, leak_alarm: msg.leak_alarm, watering: msg.watering });
+    control.set({ overrides: msg.overrides, leak_alarm: msg.leak_alarm, watering: msg.watering, dosing: msg.dosing });
   } else if (msg.type === 'calibration') {
     calibration.set(msg.calibration);
   } else if (msg.type === 'alerts') {

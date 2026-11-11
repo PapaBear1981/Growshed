@@ -7,7 +7,7 @@ One small file per node (`tent1.yaml`, `tent2.yaml`, `tent3.yaml`, `water.yaml`)
 
 The same node file works on any supported board: you change one line.
 
-**Status: Phases 1 to 3 (sensors, control, water chemistry).** `tent1`, `tent2`, `tent3` and `water` pass
+**Status: Phases 1 to 4 (sensors, control, water chemistry, dosing).** `tent1`, `tent2`, `tent3`, `water` and `dosing` pass
 `esphome config` and **compile** for the ESP32 DevKit; the other board profiles are
 config-checked only. Nothing has run on real hardware yet.
 
@@ -86,6 +86,7 @@ What the inputs are used for:
 |---|---|---|---|---|
 | tent1, tent2 | Floor leak probe | — | — | — |
 | tent3 (tower tent) | Floor leak probe | Tower low float | — | — |
+| dosing | Leak under the pumps and bottles | — | — | — |
 | water | Reservoir low float | Reservoir high float | Leak under reservoir | Leak under top-off tank |
 
 All inputs use the chip's internal pull-up: wire each switch or probe between the pin and GND.
@@ -99,7 +100,8 @@ What the outputs are used for:
 | tent1 | Lights | Exhaust fan | — | — | — | — |
 | tent2 | Lights | Exhaust fan | Pot 1 pump | Pot 2 pump | Pot 3 pump | Pot 4 pump |
 | tent3 | Lights | Exhaust fan | Tower pump | — | — | — |
-| water | Water heater | Air pump (inverted) | Circulation pump (inverted) | Top-off pump | — | — |
+| water | Water heater | Air pump (inverted) | Circulation pump (inverted) | Top-off pump | EC board power | — |
+| dosing | pH down pump | pH up pump | Nutrient A pump | Nutrient B pump | — | — |
 
 "Inverted" outputs drive relay boxes whose load is on the **normally-ON** outlet, so the pump
 runs whenever the node is dead or unplugged.

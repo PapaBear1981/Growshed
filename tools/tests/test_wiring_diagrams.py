@@ -10,7 +10,7 @@ DOCS = Path(__file__).resolve().parents[2] / "docs" / "wiring"
 def test_committed_diagrams_match_the_firmware_pins():
     """If this fails, run `python -m tools.wiring_diagrams` and commit the result."""
     generated = w.generate("esp32")
-    assert len(generated) == 9 and "water-chemistry.svg" in generated
+    assert len(generated) == 10 and "dosing-node.svg" in generated
     for name, svg in generated.items():
         assert (DOCS / name).read_text(encoding="utf-8") == svg, name
 
@@ -37,7 +37,7 @@ def test_node_that_does_not_fit_a_board_is_skipped():
 
 def test_main_writes_files(tmp_path, capsys):
     assert w.main(["--out", str(tmp_path)]) == 0
-    assert len(list(tmp_path.glob("*.svg"))) == 9
+    assert len(list(tmp_path.glob("*.svg"))) == 10
 
 
 @pytest.mark.parametrize("diagram", w.DIAGRAMS, ids=lambda d: d.slug)

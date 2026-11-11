@@ -144,11 +144,17 @@ alert rules for now). pH is not temperature-compensated (the error is small at r
 
 - **Done when:** a week of pH/EC readings that agree with a handheld meter to within about 0.2 pH and 10 % EC.
 
-### Phase 4 — Auto dosing
-- `dosing` node: 4 peristaltic pumps (pH down, pH up, nutrient A, nutrient B).
-- Pump calibration (mL/second) wizard.
-- Dosing controller on the Pi with strict limits (SAFETY.md §4).
-- Modes: `OFF` / `SUGGEST` (you approve each dose in the GUI) / `AUTO`.
+### Phase 4 — Dosing (software built; waiting on hardware)
+
+Built and tested against the simulator:
+- `dosing` node firmware: four peristaltic pumps with millilitre limits enforced on the node (compiled for the ESP32 DevKit, logic unit-tested natively).
+- Hub dosing logic with three modes, **OFF by default**: `SUGGEST` (you approve each dose) and `AUTO`, which must be turned on explicitly through a warning with Cancel / Continue.
+- Pump priming and flow-rate calibration, manual dose buttons, a lockout with a "re-enable" step, and alerts for a waiting suggestion and for stopped dosing.
+- Every limit in SAFETY.md §4, including the stricter rules for cheap probes.
+
+**Not done:** nothing has run on real pumps or probes. The dose sizes and the pH/EC targets in
+`config.yaml` are cautious starting values, not tuned for your reservoir.
+
 - **Done when:** two weeks in `SUGGEST` mode whose suggestions you agree with, then `AUTO` for a week without hitting a limit.
 
 ### Phase 5 — Extras (pick and choose)

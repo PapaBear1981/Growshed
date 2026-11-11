@@ -109,6 +109,8 @@ Rules:
 |---|---|---|
 | 12 V peristaltic pumps ×4 | pH down, pH up, nutrient A, nutrient B | 60 |
 | 4-ch logic-level MOSFET board (flyback diodes) | Drive pumps | 10 |
+| Silicone tubing, four labelled bottles, a tray that holds all of them | Chemicals and spill containment | 15 |
+| Small measuring cylinder or syringe (10–50 mL) | Measuring each pump's flow | 5 |
 | 12 V 3 A supply | Pumps | 15 |
 | Leak sensor | Dosing tray | 10 |
 
