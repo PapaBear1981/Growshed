@@ -15,6 +15,7 @@ from .model import NodeModel, TentModel, build_models
 log = logging.getLogger("simulator")
 PREFIX = "growshed"
 HEARTBEAT_TOPIC = f"{PREFIX}/hub/heartbeat"
+LEAK_ALARM_TOPIC = f"{PREFIX}/hub/leak_alarm"
 HEARTBEAT_TIMEOUT_S = 180  # SAFETY.md: no heartbeat for 3 minutes -> FALLBACK
 
 
@@ -74,11 +75,25 @@ class SimNode:
                 log.warning("%s: unknown fault %r", self.id, text)
                 return
             log.info("%s: fault %r", self.id, text)
+        elif topic == LEAK_ALARM_TOPIC:
+            self.model.hub_leak = payload.strip().upper() == "ON"
         elif topic.endswith("/command"):
-            switch = topic.split("/")[-2]
-            value = payload.strip().upper()
-            if value in ("ON", "OFF") and self.model.command(switch, value == "ON"):
-                log.info("%s: %s commanded %s", self.id, switch, value)
+            component, entity = topic.split("/")[-3:-1]
+            text = payload.strip()
+            try:
+                if component == "select":
+                    ok = self.model.set_mode(entity.removesuffix("_mode"), text)
+                elif component == "number":
+                    ok = self.model.set_number(entity, float(text))
+                elif component == "dose":
+                    ok = self.model.request_dose(entity, float(text))
+                else:
+                    ok = False  # like the firmware, direct switch commands are ignored
+            except ValueError:
+                ok = False
+            if not ok:
+                return
+            log.info("%s: %s/%s <- %s", self.id, component, entity, text)
         else:
             return
         if not self.offline:  # echo the new state straight away, as ESPHome does
@@ -104,7 +119,9 @@ class SimNode:
                     will=will,
                 ) as client:
                     await client.publish(f"{self.base}/status", "online", qos=1, retain=True)
-                    await client.subscribe(f"{self.base}/switch/+/command")
+                    for component in ("select", "number", "dose"):
+                        await client.subscribe(f"{self.base}/{component}/+/command")
+                    await client.subscribe(LEAK_ALARM_TOPIC)
                     await client.subscribe(f"{PREFIX}/sim/{self.id}/fault")
                     await client.subscribe(HEARTBEAT_TOPIC)
                     log.info("%s: connected", self.id)
