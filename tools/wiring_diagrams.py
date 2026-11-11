@@ -30,9 +30,15 @@ NETS = {
     "IN2": ("#d95f02", "Input 2"),
     "IN3": ("#a6761d", "Input 3"),
     "IN4": ("#e7298a", "Input 4"),
+    # Analog inputs reuse colours from nets that never appear on the same node.
+    "ADC1": ("#d95f02", "Analog 1"),
+    "ADC2": ("#a6761d", "Analog 2"),
+    "ADC3": ("#e7298a", "Analog 3"),
+    "ADC4": ("#8e44ad", "Analog 4"),
 }
 NET_PIN = {"SDA": "pin_sda", "SCL": "pin_scl", "1W": "pin_onewire", "IN1": "pin_in1",
-           "IN2": "pin_in2", "IN3": "pin_in3", "IN4": "pin_in4"}  # fmt: skip
+           "IN2": "pin_in2", "IN3": "pin_in3", "IN4": "pin_in4", "ADC1": "pin_adc1",
+           "ADC2": "pin_adc2", "ADC3": "pin_adc3", "ADC4": "pin_adc4"}  # fmt: skip
 
 
 @dataclass
@@ -66,6 +72,11 @@ def float_switch(what: str, net: str, note: str) -> Part:
                 [("wire", net), ("wire", "GND")], note)  # fmt: skip
 
 
+def soil(n: int) -> Part:
+    return Part(f"Capacitive soil moisture sensor: pot {n}", "pushed into the soil up to the line",
+                [("VCC", "3V3"), ("GND", "GND"), ("AOUT", f"ADC{n}")])  # fmt: skip
+
+
 DS18B20 = "DS18B20 waterproof probe: {}"
 PULLUP = Part("4.7 kΩ resistor", "between the two terminals, at the node",
               [("end", "3V3"), ("end", "1W")], "Needed once per node, not per probe.")  # fmt: skip
@@ -90,7 +101,13 @@ COMMON_NOTES = [
 ]
 
 DIAGRAMS = [
-    Diagram("tent-node", "Tent node (tent1, tent2)", TENT_PARTS, COMMON_NOTES),
+    Diagram("tent-node", "Tent node (tent1)", TENT_PARTS, COMMON_NOTES),
+    Diagram(
+        "tent-soil-node",
+        "Tent node with soil pots (tent2)",
+        TENT_PARTS + [soil(n) for n in (1, 2, 3, 4)],
+        COMMON_NOTES + ["Fewer pots: leave out the sensors you do not need, from the bottom up."],
+    ),
     Diagram(
         "tower-tent-node",
         "Tower tent node (tent3)",

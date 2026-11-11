@@ -1,5 +1,5 @@
 <script>
-  import { config, nodes, values, settings, link, now, saveUnits } from '../lib/stores.js';
+  import { config, nodes, values, settings, link, now, calibration, saveUnits, saveCalibration } from '../lib/stores.js';
   import { formatDuration, nodeDown } from '../lib/format.js';
 
   const diag = (all, node, component, entity) => {
@@ -15,6 +15,14 @@
         .sort()
         .map((id) => ({ id, name: id, isNew: true }))
     );
+  $: soilSensors = $config.sensors.filter((s) => s.kind === 'soil_moisture');
+  const zoneName = (id) => $config.zones.find((z) => z.id === id).name;
+  let calMessage = {};
+  async function calibrate(key, point) {
+    calMessage[key] = await saveCalibration(key, point);
+  }
+  const volts = (v) => (v === null || v === undefined ? '—' : v.toFixed(2) + ' V');
+
   const options = [
     { id: 'imperial', label: '°F' },
     { id: 'metric', label: '°C' },
@@ -44,6 +52,41 @@
     <li><span>Hub ↔ MQTT broker</span><b class:bad={!$link.mqtt}>{$link.mqtt ? 'Connected' : 'Disconnected'}</b></li>
   </ul>
 </section>
+
+{#if soilSensors.length}
+  <section class="card">
+    <h2>Soil sensor calibration</h2>
+    <p class="hint">
+      Do this once per sensor, before it goes in the pot. 1) Hold the sensor in open air, wait a
+      minute, press <b>Set dry</b>. 2) Stand it in a glass of water up to the line printed on it,
+      wait a minute, press <b>Set wet</b>. Readings then show as 0 % (air) to 100 % (water).
+    </p>
+    {#each soilSensors as sensor (sensor.key)}
+      {@const key = sensor.node + '/sensor/' + sensor.key}
+      {@const entry = $values[key]}
+      {@const cal = $calibration[key] || {}}
+      <div class="node">
+        <div class="node-head">
+          <b>{zoneName(sensor.zone)} · {sensor.name}</b>
+          <span class="chip" class:online={cal.calibrated}>{cal.calibrated ? 'calibrated' : 'not calibrated'}</span>
+        </div>
+        <dl>
+          <div><dt>Reading now</dt><dd>{volts(entry ? entry.raw : null)}{entry && entry.value !== null ? ' = ' + entry.value.toFixed(0) + ' %' : ''}</dd></div>
+          <div><dt>Dry point</dt><dd>{volts(cal.dry)}</dd></div>
+          <div><dt>Wet point</dt><dd>{volts(cal.wet)}</dd></div>
+        </dl>
+        <div class="actions">
+          <button on:click={() => calibrate(key, 'dry')}>Set dry (in air)</button>
+          <button on:click={() => calibrate(key, 'wet')}>Set wet (in water)</button>
+          {#if calMessage[key]}<span class="bad">{calMessage[key]}</span>{/if}
+          {#if cal.dry !== null && cal.dry !== undefined && cal.wet !== null && cal.wet !== undefined && !cal.calibrated}
+            <span class="bad">Dry and wet points are almost the same. Redo both.</span>
+          {/if}
+        </div>
+      </div>
+    {/each}
+  </section>
+{/if}
 
 <section class="card">
   <h2>Nodes</h2>
@@ -142,6 +185,19 @@
     font-size: 0.8rem;
     font-weight: 600;
     background: var(--off-bg);
+  }
+  .actions {
+    margin-top: 10px;
+  }
+  .actions button {
+    min-height: 44px;
+    margin: 0 8px 6px 0;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--off-bg);
+    font-weight: 600;
+    cursor: pointer;
   }
   .new {
     margin-left: 8px;

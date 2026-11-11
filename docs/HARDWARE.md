@@ -77,7 +77,8 @@ Rules:
 | BH1750 | I²C | Light level (confirms the lights actually turned on) | 5 |
 | DS3231 RTC | I²C | Time for fallback schedules with no network | 5 |
 | Leak sensor module (sensing plate + comparator board with a `DO` pin) | GPIO | Tent floor tray. Bare two-wire probes only trigger reliably in conductive water | 5 |
-| Capacitive soil sensors ×N (if soil pots here) | ADC | Soil moisture | 3 each |
+| Capacitive soil moisture sensors (v1.2 / v2.0, the black corrosion-proof kind), one per pot | Analog input | Soil moisture. Up to 4 per ESP32 DevKit node. Seal the electronics at the top with heat-shrink or nail varnish | 3 each |
+| **Phase 2, soil watering:** 12 V mini pump per pot (peristaltic or diaphragm), MOSFET board, silicone tubing, plain-water tank with a low float | GPIO | Automatic watering (SAFETY.md §4b) | ~12 per pot |
 | SCD41 (Phase 5) | I²C | CO₂ | 50 |
 | Outputs → relay boxes | GPIO | Lights, exhaust fan, (tent heater) | — |
 | **Tower tent only:** DS18B20 + float switch + relay output | 1-Wire, GPIO | Tower reservoir temp, tower LOW, tower pump | 10 |

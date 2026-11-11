@@ -20,7 +20,7 @@ Read with: [ARCHITECTURE.md](ARCHITECTURE.md), [SAFETY.md](SAFETY.md),
 | **RDWC** | One central "control" bucket (reservoir) feeding several DWC buckets, with a return pump | Fully monitored. Water heat, air and top-off are controlled. pH/EC is monitored now and auto-dosed later |
 | **Kratky** | Passive jars/totes, no pumps | Monitoring only (optional level/temp) |
 | **Strawberry tower** | Vertical tower with its own small reservoir and a pump on a cycle timer | Pump cycles, level monitoring. **Needs a tall tent** (tower height + ~18" for light) |
-| **Soil pots** | Ordinary potted plants | Moisture sensing, hand watering |
+| **Soil pots** | Ordinary potted plants in dirt, each with a moisture sensor and (Phase 2) its own small watering pump fed from a plain-water tank | Moisture monitoring and "soil dry" alerts now. Automatic watering in Phase 2, under the limits in SAFETY.md §4b |
 
 Each grow tent is a **zone** with its own climate, lights and exhaust, and its own node.
 The system is config-driven for **N tents**. Starting layout:
@@ -93,6 +93,9 @@ GUI auto-discovery, and the build guide with wiring diagrams ([BUILD.md](BUILD.m
 Deferred to Phase 2 because they need control: the "lights commanded on but dark" alert and
 the interlock alerts. Not built: custom date ranges on the History page.
 
+Soil pots: moisture sensing is built (firmware, per-sensor calibration in the GUI, dashboard,
+history, "Soil dry" alert). Four pots are assumed to be in tent 2 until the layout is decided.
+
 - `tent<N>` nodes: air temp/RH (SHT45), light level (BH1750), RTC (DS3231), leak sensor.
 - `tent3` (tower tent) also reads the tower reservoir level and temperature.
 - `water` node: RDWC reservoir temp, reservoir level floats, leak sensor(s), **room** temp/RH.
@@ -106,6 +109,7 @@ the interlock alerts. Not built: custom date ranges on the History page.
 - Node-local water thermostat with a setpoint pushed from the Pi. Node-local tent exhaust control on temp/RH thresholds.
 - Pi schedules: per-tent photoperiod, tower pump cycle.
 - Manual override for each device: `AUTO` / `ON` / `OFF`, with an optional expiry.
+- **Soil watering:** one small 12 V pump per pot from a plain-water tank, driven by the tent's node through a MOSFET board. Dose-based auto-watering per pot plus a "water now" button, with every limit in SAFETY.md §4b. Watering log on the soil chart.
 - Fallback mode on the nodes when the Pi heartbeat is lost. All interlocks in SAFETY.md implemented **on the nodes**.
 - **Done when:** unplugging the Pi for 30 minutes leaves lights on schedule, exhaust and water heat regulating and pumps cycling, and wetting a leak sensor stops every water pump within seconds.
 

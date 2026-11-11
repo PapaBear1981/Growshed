@@ -10,7 +10,12 @@ DOCS = Path(__file__).resolve().parents[2] / "docs" / "wiring"
 def test_committed_diagrams_match_the_firmware_pins():
     """If this fails, run `python -m tools.wiring_diagrams` and commit the result."""
     generated = w.generate("esp32")
-    assert sorted(generated) == ["tent-node.svg", "tower-tent-node.svg", "water-node.svg"]
+    assert sorted(generated) == [
+        "tent-node.svg",
+        "tent-soil-node.svg",
+        "tower-tent-node.svg",
+        "water-node.svg",
+    ]
     for name, svg in generated.items():
         assert (DOCS / name).read_text(encoding="utf-8") == svg, name
 
@@ -32,11 +37,12 @@ def test_other_boards_get_their_own_pins():
 def test_node_that_does_not_fit_a_board_is_skipped():
     assert "water-node.svg" not in w.generate("esp8266")  # too few inputs
     assert "tent-node.svg" in w.generate("esp8266")
+    assert "tent-soil-node.svg" not in w.generate("esp8266")  # no usable analog pins
 
 
 def test_main_writes_files(tmp_path, capsys):
     assert w.main(["--out", str(tmp_path)]) == 0
-    assert len(list(tmp_path.glob("*.svg"))) == 3
+    assert len(list(tmp_path.glob("*.svg"))) == 4
 
 
 @pytest.mark.parametrize("diagram", w.DIAGRAMS, ids=lambda d: d.slug)

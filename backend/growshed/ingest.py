@@ -10,10 +10,11 @@ from .ws import WebSocketHub
 
 
 class Ingest:
-    def __init__(self, state: LiveState, hub: WebSocketHub, recorder=None) -> None:
+    def __init__(self, state: LiveState, hub: WebSocketHub, recorder=None, calibrations=None):
         self.state = state
         self.hub = hub
         self.recorder = recorder  # optional: stores history for configured sensors
+        self.calibrations = calibrations  # optional: raw -> calibrated (soil moisture)
 
     async def handle(self, topic: str, payload: str, now: float | None = None) -> None:
         ts = time.time() if now is None else now
@@ -29,8 +30,16 @@ class Ingest:
         if entity is None:
             return
         value = topics.parse_payload(entity.component, payload)
-        self.state.set_value(entity.key, value, ts)
         self.state.touch_node(entity.node, ts)
         if self.recorder is not None:
-            self.recorder.add(entity.key, value, ts)
-        await self.hub.broadcast({"type": "value", "key": entity.key, "value": value, "ts": ts})
+            self.recorder.add(entity.key, value, ts)  # history keeps the raw reading
+        await self.publish(entity.key, value, ts)
+
+    async def publish(self, key: str, raw, ts: float) -> None:
+        """Update live state and the GUIs with one reading, applying any calibration."""
+        message = {"type": "value", "key": key, "value": raw, "ts": ts}
+        if self.calibrations is not None and self.calibrations.needs_calibration(key):
+            message["value"] = self.calibrations.apply(key, raw)
+            message["raw"] = raw
+        self.state.set_value(key, message["value"], ts, raw=message.get("raw"))
+        await self.hub.broadcast(message)

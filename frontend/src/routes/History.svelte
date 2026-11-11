@@ -9,6 +9,7 @@
     { kind: 'temperature', label: 'Temperature' },
     { kind: 'humidity', label: 'Humidity' },
     { kind: 'illuminance', label: 'Light' },
+    { kind: 'soil_moisture', label: 'Soil moisture' },
   ];
   const RANGES = [
     { hours: 6, label: '6 h' },
@@ -29,7 +30,9 @@
   // Colour is tied to the sensor's position in config.yaml, so it never changes
   // when the range or the data does.
   $: sensors = $config.sensors.filter((s) => s.component === 'sensor' && s.kind === kind);
-  $: unit = kind === 'temperature' ? ($settings.display_units === 'imperial' ? '°F' : '°C') : kind === 'humidity' ? '%' : 'lx';
+  // Only offer measures that have sensors in config.yaml.
+  $: measures = MEASURES.filter((m) => $config.sensors.some((s) => s.kind === m.kind));
+  $: unit = kind === 'temperature' ? ($settings.display_units === 'imperial' ? '°F' : '°C') : kind === 'illuminance' ? 'lx' : '%';
   $: convert = kind === 'temperature' && $settings.display_units === 'imperial' ? (v) => (v * 9) / 5 + 32 : (v) => v;
 
   function css(name) {
@@ -42,7 +45,9 @@
       keys.map((k) => body.series[k].map((v) => (v === null ? null : convert(v))))
     );
     const hasData = data.slice(1).some((col) => col.some((v) => v !== null));
-    status = hasData ? '' : 'No history for this range yet. Readings are saved from the moment the hub starts.';
+    status = hasData ? '' : kind === 'soil_moisture'
+        ? 'No soil history to show. Soil sensors appear here once they are calibrated (System page).'
+        : 'No history for this range yet. Readings are saved from the moment the hub starts.';
     if (plot) plot.destroy();
     plot = null;
     if (!hasData || !host) return;
@@ -108,7 +113,7 @@
 
 <div class="controls">
   <div class="segmented" role="group" aria-label="Measure">
-    {#each MEASURES as m (m.kind)}
+    {#each measures as m (m.kind)}
       <button class:selected={kind === m.kind} aria-pressed={kind === m.kind} on:click={() => (kind = m.kind)}>{m.label}</button>
     {/each}
   </div>

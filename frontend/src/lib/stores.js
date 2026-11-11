@@ -7,6 +7,7 @@ export const nodes = writable({}); // node id -> { status, last_seen }
 export const settings = writable({ display_units: 'imperial' });
 export const link = writable({ ws: false, mqtt: false });
 export const alerts = writable([]); // active alerts, critical first
+export const calibration = writable({}); // sensor key -> { dry, wet, calibrated }
 
 // Hub time in seconds. We track the offset to the hub's clock because an old
 // tablet's own clock can be badly wrong, which would make fresh data look stale.
@@ -37,10 +38,11 @@ function handle(msg) {
     nodes.set(msg.nodes);
     settings.set(msg.settings);
     alerts.set(msg.alerts || []);
+    calibration.set(msg.calibration || {});
     link.set({ ws: true, mqtt: msg.mqtt_connected });
   } else if (msg.type === 'value') {
     values.update((all) => {
-      all[msg.key] = { value: msg.value, ts: msg.ts };
+      all[msg.key] = { value: msg.value, ts: msg.ts, raw: msg.raw };
       return all;
     });
     // Any message from a node proves it is alive. This is also how a board that is
@@ -58,6 +60,8 @@ function handle(msg) {
     });
   } else if (msg.type === 'settings') {
     settings.set({ display_units: msg.display_units });
+  } else if (msg.type === 'calibration') {
+    calibration.set(msg.calibration);
   } else if (msg.type === 'alerts') {
     alerts.set(msg.active);
   } else if (msg.type === 'hub') {
@@ -85,4 +89,20 @@ export async function saveUnits(displayUnits) {
 
 export async function ackAlert(id) {
   await fetch('/api/alerts/' + id + '/ack', { method: 'POST' });
+}
+
+// Ask the hub to store the sensor's current reading as its "dry" or "wet" point.
+// Returns '' on success or a message to show the user.
+export async function saveCalibration(key, point) {
+  try {
+    const res = await fetch('/api/calibration', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: key, point: point }),
+    });
+    if (res.ok) return '';
+    return res.status === 409 ? 'No fresh reading from this sensor. Is it connected?' : 'Could not save.';
+  } catch (err) {
+    return 'Could not reach the hub.';
+  }
 }

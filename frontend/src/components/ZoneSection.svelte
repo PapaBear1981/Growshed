@@ -21,7 +21,10 @@
       <div class="reading" class:stale>
         <div class="label">{sensor.name}</div>
         <div class="value">{shown.text}<span class="unit">{shown.unit}</span></div>
-        {#if stale && entry}<div class="note">stale</div>{/if}
+        {#if stale && entry}<div class="note">stale</div>
+        {:else if entry && entry.value === null && entry.raw !== undefined && entry.raw !== null}
+          <div class="note">not calibrated</div>
+        {/if}
       </div>
     {/each}
   </div>

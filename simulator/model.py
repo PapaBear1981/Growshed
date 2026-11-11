@@ -72,8 +72,13 @@ class NodeModel:
 class TentModel(NodeModel):
     """A grow tent: lights heat it, plants humidify it, the exhaust fan fixes both."""
 
-    def __init__(self, seed: int = 0, has_tower: bool = False) -> None:
+    # Capacitive soil sensors: about this many volts in air (dry) and in water (wet).
+    SOIL_DRY_V = 2.6
+    SOIL_WET_V = 1.2
+
+    def __init__(self, seed: int = 0, has_tower: bool = False, soil_pots: int = 0) -> None:
         self.has_tower = has_tower
+        self.soil = [0.55, 0.45, 0.65, 0.50, 0.60, 0.40][:soil_pots]  # 0 = bone dry, 1 = soaked
         self.switches = ("lights", "exhaust_fan") + (("tower_pump",) if has_tower else ())
         super().__init__(seed)
         self.air_temp = 21.0
@@ -86,6 +91,9 @@ class TentModel(NodeModel):
     def fault(self, text: str) -> bool:
         if text in ("leak on", "leak off"):
             self.leak = text.endswith("on")
+            return True
+        if self.soil and text in ("soil_dry", "soil_water"):
+            self.soil = [0.1 if text == "soil_dry" else 0.8] * len(self.soil)
             return True
         if self.has_tower and text in ("tower_low on", "tower_low off"):
             self.tower_low = text.endswith("on")
@@ -109,6 +117,9 @@ class TentModel(NodeModel):
         self.air_rh = approach(self.air_rh, target_rh, dt_s, 600)
         self.state["lights"] = lights
         self.state["exhaust_fan"] = exhaust
+        # Pots dry out slowly, faster while the lights are on (plants drink more).
+        drying = (0.14 if lights else 0.06) * dt_s / 86400
+        self.soil = [max(0.0, level - drying) for level in self.soil]
 
         if self.has_tower:
             self.tower_temp = approach(self.tower_temp, self.air_temp, dt_s, 7200)
@@ -125,6 +136,9 @@ class TentModel(NodeModel):
             ("sensor", "light_lux", self._noisy(lux, 150.0 if lux else 0.0, 0)),
             ("binary_sensor", "leak", on_off(self.leak)),
         ]
+        for i, level in enumerate(self.soil, start=1):
+            volts = self.SOIL_DRY_V - level * (self.SOIL_DRY_V - self.SOIL_WET_V)
+            out.append(("sensor", f"soil_{i}", self._noisy(volts, 0.004, 3)))
         if self.has_tower:
             out += [
                 ("sensor", "tower_temp", self._noisy(self.tower_temp, 0.03, 2)),
@@ -212,7 +226,7 @@ def build_models(seed: int = 0) -> dict[str, NodeModel]:
     """The default garden: two 4x4 tents, the tower tent, and the water node."""
     return {
         "tent1": TentModel(seed + 1),
-        "tent2": TentModel(seed + 2),
+        "tent2": TentModel(seed + 2, soil_pots=4),
         "tent3": TentModel(seed + 3, has_tower=True),
         "water": WaterModel(seed + 4),
     }

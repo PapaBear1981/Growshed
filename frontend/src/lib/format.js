@@ -40,7 +40,7 @@ export function formatReading(sensor, value, displayUnits) {
     if (displayUnits === 'imperial') return { text: ((value * 9) / 5 + 32).toFixed(1), unit: '°F' };
     return { text: value.toFixed(1), unit: '°C' };
   }
-  if (sensor.kind === 'humidity') return { text: value.toFixed(0), unit: '%' };
+  if (sensor.kind === 'humidity' || sensor.kind === 'soil_moisture') return { text: value.toFixed(0), unit: '%' };
   if (sensor.kind === 'illuminance') {
     const text = value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value.toFixed(0);
     return { text, unit: 'lx' };

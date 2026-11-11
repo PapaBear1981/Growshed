@@ -3,7 +3,8 @@ from growshed import db
 
 def test_migrate_is_idempotent(tmp_path):
     conn = db.connect(tmp_path / "sub" / "x.db")
-    assert db.migrate(conn) == ["001_settings.sql", "002_history_alerts.sql"]
+    expected = sorted(p.name for p in db.MIGRATIONS_DIR.glob("*.sql"))
+    assert db.migrate(conn) == expected and expected[0] == "001_settings.sql"
     assert db.migrate(conn) == []
 
 

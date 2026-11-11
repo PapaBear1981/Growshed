@@ -9,6 +9,8 @@ substitutions:
   pin_in2: GPIO1
   pin_in3: GPIO3
   pin_in4: GPIO10
+  # No pin_adc*: every WiFi-safe analog pin on a C3 is already used. No soil sensors on this board.
+
 esp32:
   board: esp32-c3-devkitm-1
   framework:

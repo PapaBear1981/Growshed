@@ -69,12 +69,15 @@ directly, without MQTT.
 
 ```
 growshed/sim/<node>/fault     leak on|off, sensor_fail on|off, offline, online,
-                              tower_low on|off (tent3), drain (water)
+                              tower_low on|off (tent3), drain (water),
+                              soil_dry, soil_water (tent2)
 ```
 
 Real nodes ignore these. They exist so alerts and interlocks can be tested with no hardware.
 
 ## Rules
+
+- **Soil moisture (`soil_N`) is published as raw volts.** The hub converts to percent with a per-sensor two-point calibration (air = 0 %, water = 100 %) and stores the raw volts, so recalibrating also corrects history. An uncalibrated sensor has no value.
 
 - **Binary sensors are ON when the named condition is true**: `leak` ON = wet, `res_low` ON = level is low, `res_high` ON = full.
 - A sensor that fails to read publishes `nan`. The backend stores that as "no value", never as a number.

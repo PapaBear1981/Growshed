@@ -8,3 +8,9 @@ packages:
   board: !include boards/esp32.yaml
   base: !include common/base.yaml
   tent: !include common/tent.yaml
+  # Soil pots in this tent: one line per pot (up to the board's number of pin_adc pins).
+  # Delete the lines you don't need, or move them to another tent's file.
+  soil_1: !include { file: common/soil_sensor.yaml, vars: { n: 1, pin: "${pin_adc1}" } }
+  soil_2: !include { file: common/soil_sensor.yaml, vars: { n: 2, pin: "${pin_adc2}" } }
+  soil_3: !include { file: common/soil_sensor.yaml, vars: { n: 3, pin: "${pin_adc3}" } }
+  soil_4: !include { file: common/soil_sensor.yaml, vars: { n: 4, pin: "${pin_adc4}" } }

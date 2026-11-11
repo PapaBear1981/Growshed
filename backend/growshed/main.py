@@ -15,6 +15,7 @@ from . import db
 from .alerts import AlertEngine
 from .api import router
 from .background import run_background
+from .calibration import Calibrations
 from .config import Settings, load_config
 from .ingest import Ingest
 from .mqtt import run_mqtt
@@ -35,6 +36,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         recorded = {s.state_key for s in site.sensors if s.component == "sensor"}
         app.state.recorder = Recorder(conn, recorded)
         app.state.ingest.recorder = app.state.recorder
+        app.state.calibrations = Calibrations(conn, {s.state_key: s.kind for s in site.sensors})
+        app.state.ingest.calibrations = app.state.calibrations
         app.state.notifier = Notifier(settings.ntfy_url, settings.ntfy_token)
         app.state.alerts = AlertEngine(
             conn,

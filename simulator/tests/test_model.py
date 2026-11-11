@@ -95,7 +95,21 @@ def test_sensor_failure_publishes_nan():
     assert not tent.fault("gibberish")
 
 
+def test_soil_pots_dry_out_and_report_volts():
+    tent = TentModel(soil_pots=2)
+    start = list(tent.soil)
+    run(tent, 24 * 3600, hour=12, dt=600)
+    assert all(0 < now < before for now, before in zip(tent.soil, start, strict=True))
+    volts = float(payloads(tent)["soil_1"])
+    assert TentModel.SOIL_WET_V < volts < TentModel.SOIL_DRY_V
+    assert tent.fault("soil_dry")
+    drier = float(payloads(tent)["soil_1"])
+    assert drier > volts  # drier soil = higher voltage
+    assert not TentModel().fault("soil_dry")  # a tent without pots has no such fault
+
+
 def test_default_garden_has_three_tents_and_water():
     models = build_models()
     assert sorted(models) == ["tent1", "tent2", "tent3", "water"]
     assert "tower_pump" in models["tent3"].switches
+    assert len(models["tent2"].soil) == 4 and models["tent1"].soil == []

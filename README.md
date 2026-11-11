@@ -34,7 +34,7 @@ docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshe
 ```
 
 Faults: `leak on|off`, `sensor_fail on|off`, `offline`, `online`; `tower_low on|off` (tent3);
-`drain` (water). Switch a device the way the hub will in Phase 2:
+`drain` (water); `soil_dry`, `soil_water` (tent2). Switch a device the way the hub will in Phase 2:
 
 ```bash
 docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshed/tent2/switch/lights/command -m ON

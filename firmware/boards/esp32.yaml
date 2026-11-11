@@ -9,6 +9,12 @@ substitutions:
   pin_in2: GPIO33
   pin_in3: GPIO25
   pin_in4: GPIO26
+  # Analog inputs for soil moisture sensors (must be WiFi-safe ADC pins).
+  pin_adc1: GPIO34
+  pin_adc2: GPIO35
+  pin_adc3: GPIO36
+  pin_adc4: GPIO39
+
 esp32:
   board: esp32dev
   framework:

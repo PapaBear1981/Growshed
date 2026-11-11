@@ -19,6 +19,14 @@ class SettingsBody(BaseModel):
     display_units: Literal["imperial", "metric"]
 
 
+class CalibrationBody(BaseModel):
+    key: str
+    point: Literal["dry", "wet"]
+
+
+FRESH_S = 180  # a calibration point must come from a reading this recent
+
+
 def _settings(request_or_ws) -> dict[str, str]:
     conn = request_or_ws.app.state.db
     return {"display_units": db.get_setting(conn, "display_units", DEFAULT_UNITS)}
@@ -48,7 +56,39 @@ async def get_history(
     unknown = [k for k in wanted if k not in request.app.state.recorder.keys]
     if unknown or not wanted:
         raise HTTPException(422, f"not a recorded sensor: {unknown or 'none given'}")
-    return recorder.history(request.app.state.db, wanted, start, end)
+    result = recorder.history(request.app.state.db, wanted, start, end)
+    # History stores raw readings; apply today's calibration on the way out.
+    cal = request.app.state.calibrations
+    for key in wanted:
+        if cal.needs_calibration(key):
+            result["series"][key] = [cal.apply(key, v) for v in result["series"][key]]
+    return result
+
+
+@router.get("/api/calibration")
+async def get_calibration(request: Request) -> dict:
+    return request.app.state.calibrations.summary()
+
+
+@router.post("/api/calibration")
+async def set_calibration(body: CalibrationBody, request: Request) -> dict:
+    """Store the sensor's CURRENT raw reading as its dry or wet point.
+
+    The hub takes the reading itself (rather than trusting a number from the browser) so
+    a stale screen cannot save an old value.
+    """
+    state = request.app.state
+    cal = state.calibrations
+    if not cal.needs_calibration(body.key):
+        raise HTTPException(404, "that sensor does not use calibration")
+    entry = state.live.values.get(body.key)
+    now = time.time()
+    if entry is None or entry.get("raw") is None or now - entry["ts"] > FRESH_S:
+        raise HTTPException(409, "no fresh reading from that sensor; check that it is connected")
+    cal.set_point(body.key, body.point, entry["raw"], now)
+    await state.ingest.publish(body.key, entry["raw"], entry["ts"])  # show the new % at once
+    await state.hub.broadcast({"type": "calibration", "calibration": cal.summary()})
+    return cal.summary()[body.key]
 
 
 @router.get("/api/alerts")
@@ -116,6 +156,7 @@ async def websocket(ws: WebSocket) -> None:
             **ws.app.state.live.snapshot(),
             "settings": _settings(ws),
             "alerts": ws.app.state.alerts.active(),
+            "calibration": ws.app.state.calibrations.summary(),
             "server_time": time.time(),
         }
     )

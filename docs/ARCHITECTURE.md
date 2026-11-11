@@ -63,6 +63,7 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | `ingest` | Parses ESPHome state topics → typed readings → live state, recorder and WebSocket broadcast. (Phase 2: aggregates leak state → `growshed/hub/leak_alarm`) |
 | `recorder` | Buffers and stores numeric readings; 5-minute and hourly rollups; retention; history queries on a shared time grid |
 | `notify` | ntfy delivery and the optional dead man's ping (standard library only) |
+| `calibration` | Two-point calibrations (soil moisture: volts → percent), applied to live values, history output and therefore alerts |
 | `background` | The periodic loop: alert ticks, notification retries, flush, rollup, pruning |
 | `controller` | Device modes (AUTO/ON/OFF + expiry), schedules, setpoint publishing, heartbeat |
 | `alerts` | Rule evaluation (threshold, on/off, node offline, fallback, silent sensor) with hold and clear delays, acknowledge, repeats, restart recovery |
@@ -73,7 +74,7 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 ## 4. Data model (target)
 
 Tables are added by numbered migrations as each phase needs them. Built so far: `setting`
-(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event` (Phase 1). Readings
+(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1). Readings
 are keyed by a `series` row per MQTT entity instead of the `sensor` table sketched below, and
 alert rules live in `config.yaml`, not in an `alert_rule` table.
 

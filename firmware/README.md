@@ -68,6 +68,7 @@ type and firmware version.
 | Input 2 | GPIO33 | GPIO6 | GPIO1 | GPIO7 | GPIO12 (D6) |
 | Input 3 | GPIO25 | GPIO7 | GPIO3 | GPIO8 | GPIO13 (D7) |
 | Input 4 | GPIO26 | GPIO15 | GPIO10 | GPIO9 | — |
+| Analog 1–4 (soil moisture) | GPIO34, 35, 36, 39 | GPIO1, 2, 10 | none | GPIO1 (A0), 2 (A1), 4 (A3) | none |
 
 The Arduino Nano ESP32 and ESP32-C3 pin choices are the least certain: check them against
 your board's pinout diagram before wiring, and edit the profile if needed.
@@ -83,6 +84,10 @@ What the inputs are used for:
 All inputs use the chip's internal pull-up: wire each switch or probe between the pin and GND.
 Low floats are wired so that a broken wire reads as "low" (the safe direction). A leak probe
 with a broken wire reads "dry", so test the leak probes with a wet finger now and then.
+
+**Soil pots:** `tent2.yaml` includes one `soil_sensor` line per pot. Delete lines, or move them
+to another tent's file, to match where your pots are; a board supports as many pots as it has
+analog pins in the table above. Each sensor's `AOUT` goes to its analog pin.
 
 I²C devices: SHT45 (air temperature/humidity), BH1750 (light), DS3231 (clock) on tent nodes;
 SHT45 (room climate) on the water node. All share the same two I²C wires.

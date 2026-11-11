@@ -8,6 +8,7 @@ zones:
   - {id: tent2, name: "Tent 2", kind: tent}
   - {id: tent3, name: "Tower tent", kind: tent}
   - {id: tower, name: "Strawberry tower", kind: tower, parent: tent3}
+  - {id: soil, name: "Soil pots", kind: soil, parent: tent2}
   - {id: rdwc, name: "RDWC reservoir", kind: rdwc}
   - {id: room, name: "Basement", kind: room}
 
@@ -30,6 +31,12 @@ sensors:
   - {node: tent3, key: air_rh, zone: tent3, kind: humidity, unit: "%", name: "Humidity"}
   - {node: tent3, key: light_lux, zone: tent3, kind: illuminance, unit: "lx", name: "Light"}
   - {node: tent3, key: leak, component: binary_sensor, zone: tent3, kind: leak, name: "Floor leak"}
+  # Soil moisture: the node sends volts; the hub shows % after calibration in the GUI.
+  # One line per pot. Match the soil_N lines in firmware/tent2.yaml.
+  - {node: tent2, key: soil_1, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 1"}
+  - {node: tent2, key: soil_2, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 2"}
+  - {node: tent2, key: soil_3, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 3"}
+  - {node: tent2, key: soil_4, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 4"}
   - {node: tent3, key: tower_temp, zone: tower, kind: temperature, unit: "°C", name: "Water temperature"}
   - {node: tent3, key: tower_low, component: binary_sensor, zone: tower, kind: level_low, name: "Reservoir low"}
   - {node: water, key: res_temp, zone: rdwc, kind: temperature, unit: "°C", name: "Water temperature"}
@@ -70,3 +77,5 @@ alerts:
     - {name: "Basement humidity high", sensor_kind: humidity, zone_kinds: [room], above: 60, for_s: 3600}
     - {name: "Water too cold", sensor_kind: temperature, zone_kinds: [rdwc, tower], below: 16, for_s: 600}
     - {name: "Water too warm", sensor_kind: temperature, zone_kinds: [rdwc, tower], above: 24, for_s: 600}
+    # 0 % = sensor in air, 100 % = sensor in water. Tune this limit to your soil and plants.
+    - {name: "Soil dry", sensor_kind: soil_moisture, below: 30, for_s: 1800}

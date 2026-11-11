@@ -9,6 +9,11 @@ substitutions:
   pin_in2: GPIO7
   pin_in3: GPIO8
   pin_in4: GPIO9
+  # Analog inputs for soil moisture sensors (must be WiFi-safe ADC pins).
+  pin_adc1: GPIO1
+  pin_adc2: GPIO2
+  pin_adc3: GPIO4
+
 esp32:
   board: arduino_nano_esp32
   framework:

@@ -12,7 +12,7 @@ def format_value(kind: str, value: float, display_units: str) -> str:
         if display_units == "imperial":
             return f"{value * 9 / 5 + 32:.1f} °F"
         return f"{value:.1f} °C"
-    if kind == "humidity":
+    if kind in ("humidity", "soil_moisture"):
         return f"{value:.0f} %"
     if kind == "illuminance":
         return f"{value:.0f} lx"

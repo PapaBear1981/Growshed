@@ -28,6 +28,7 @@ changes must never weaken them without an explicit decision recorded in this fil
 | RDWC circulation pump | **ON** (always) |
 | Tower pump | Built-in cycle (default 15 min ON / 45 min OFF, lights-on hours only) |
 | Top-off | **OFF** (never refill unattended without the Pi) |
+| Soil watering pumps | **OFF** (never water unattended without the Pi). Potted plants tolerate a day or two dry; a pump with nobody watching can flood the floor |
 | Dosing pumps | **OFF** (never dose without the Pi) |
 
 Air pumps and the RDWC pump should be wired to the **normally-on** outlet of their relay box,
@@ -47,6 +48,8 @@ so a dead node or a loose signal wire leaves them running.
 | I-8 | **RDWC pump OFF** if the control-bucket low-float reads LOW for > 10 s |
 | I-9 | **Top-off OFF** if the high-float trips, any leak sensor is wet, or the pump has run > configured max (default 120 s) per fill |
 | I-10 | **Any leak sensor wet → every water-moving pump and the top-off OFF on every node** (leak state is shared over MQTT, *and* each node also acts on its own local leak sensors without needing MQTT). Air pumps stay ON. A human must clear it in the GUI |
+| I-11 | **Each soil watering pump runs for at most its configured dose time per command** (default 20 s, hard timeout on the node), then must rest at least 10 min |
+| I-12 | **Soil watering pumps OFF** if the watering tank's low float reads LOW (protects the pump and stops it sucking air) |
 
 Whenever an interlock takes control, the node publishes the event, the Pi shows the
 state source as `interlock`, and an alert is sent.
@@ -67,6 +70,23 @@ Enforced on **both** the Pi (controller) and the dosing node (hard cap).
 - Each dosing pump runs for at most `ceil(max_dose / ml_per_sec) + 1` seconds per command (hard timeout on the node).
 - Concentrated acids/bases are stored in their own spill tray, away from electronics.
 
+## 4b. Automatic soil watering limits (Phase 2)
+
+Decided when soil-pot support was added. Watering pumps are **not built yet**; these rules
+bind the Phase 2 implementation. Enforced on **both** the Pi (controller) and the node (hard cap).
+
+The dangerous failure is a moisture sensor that reads "dry" forever (pulled out of the pot,
+unplugged, failed) while the pump keeps answering it. So:
+
+- Water in **small fixed doses**, never "until the sensor says wet". After a dose, wait at least **30 min** for the water to soak in before judging again.
+- **The reading must respond.** If a pot's moisture has not risen after **2 consecutive doses**, stop auto-watering that pot and alert ("watered but soil did not get wetter": empty tank, kinked tube, or the sensor is out of the soil). A human must re-enable it.
+- Max doses per pot per 24 h: default **6**. On hitting it: lockout + alert.
+- No auto-watering if the pot's sensor is uncalibrated, stale, or reading outside its calibrated range by more than 10 %.
+- No watering while any leak alarm is active (I-10) or the watering tank is low (I-12).
+- Modes per pot: `OFF` / `AUTO`, plus a manual "water now" button that gives one dose and obeys every limit above.
+- Every pot stands in a saucer or tray, and the tent's leak sensor sits where overflow would collect.
+- The watering tank holds **plain water** and is separate from the nutrient reservoirs. Its outlet tubes end **above** the tank's water level at the pot, or have anti-siphon valves, so a stopped pump cannot keep siphoning.
+
 ## 5. Alerts that must exist
 
 - **Leak detected (any sensor): critical**, repeated every 5 min until acknowledged.
@@ -75,6 +95,7 @@ Enforced on **both** the Pi (controller) and the dosing node (hard cap).
 - Tent RH > 75 % for > 30 min: warning.
 - **Room (basement) RH > 60 % for > 1 h: warning** (mold risk to the house).
 - Water temp < 16 °C or > 24 °C: warning.
+- Soil moisture below the configured limit for 30 min: warning.
 - Lights commanded ON but the lux sensor reads dark (or vice versa): warning (bulb/driver/relay failure).
 - Node offline > 5 min, any node in FALLBACK: warning.
 - Sensor stale > 10 min: warning.

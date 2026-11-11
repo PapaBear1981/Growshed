@@ -1,0 +1,24 @@
+# One capacitive soil moisture sensor. Include once per pot from the node file:
+#
+#   soil_1: !include { file: common/soil_sensor.yaml, vars: { n: 1, pin: "${pin_adc1}" } }
+#
+# The node publishes the sensor's raw voltage. The hub turns it into a percentage using a
+# per-sensor calibration made in the GUI, so a sensor can be recalibrated without reflashing.
+# Wetter soil = LOWER voltage on these sensors.
+
+sensor:
+  - platform: adc
+    pin: ${pin}
+    name: soil_${n}
+    state_topic: growshed/${node_id}/sensor/soil_${n}/state
+    attenuation: 12db # full 0-3.3 V range
+    unit_of_measurement: V
+    accuracy_decimals: 3
+    # Read every 10 s, publish the median of six readings once a minute: soil changes
+    # slowly, and the median throws away electrical noise spikes.
+    update_interval: 10s
+    filters:
+      - median:
+          window_size: 6
+          send_every: 6
+          send_first_at: 6

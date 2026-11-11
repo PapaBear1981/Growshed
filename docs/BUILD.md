@@ -13,7 +13,8 @@ added in Phase 2.
 
 | Node | Lives | Measures | Diagram |
 |---|---|---|---|
-| `tent1`, `tent2` | Outside each 4×4 tent | Air temperature, humidity, light, floor leak | [tent node](wiring/tent-node.svg) |
+| `tent1` | Outside tent 1 | Air temperature, humidity, light, floor leak | [tent node](wiring/tent-node.svg) |
+| `tent2` with soil pots | Outside tent 2 | The same as a tent node, plus soil moisture for up to 4 pots | [tent node with soil pots](wiring/tent-soil-node.svg) |
 | `tent3` | Outside the tower tent | The same, plus tower water temperature and tower reservoir level | [tower tent node](wiring/tower-tent-node.svg) |
 | `water` | Next to the RDWC control bucket | Water temperature, reservoir low/full, two leak sensors, basement air | [water node](wiring/water-node.svg) |
 
@@ -40,6 +41,9 @@ Per node:
 | 4.7 kΩ resistor | — | 1 | 1 | |
 | Vertical float switch | — | 1 | 2 | |
 | Printed enclosure | 1 | 1 | 1 | [`hardware/enclosure/`](../hardware/enclosure/README.md) |
+
+Soil pots add one **capacitive soil moisture sensor** per pot (the black "v1.2" or "v2.0" kind
+with no exposed metal; the cheap two-prong metal ones corrode within weeks).
 
 **Buy the I²C sensors with STEMMA QT / Qwiic connectors if you can** (Adafruit and SparkFun
 sell the SHT45, BH1750 and DS3231 this way). They plug together with ready-made cables, so
@@ -96,12 +100,21 @@ Check that each sensor reacts:
 | DS18B20 | Hold the metal tip in your fist | Temperature climbs toward ~30 °C / 86 °F |
 | Low float | Let the float hang down, then lift it | **LOW** when hanging, **OK** when lifted (after 5 s) |
 | Full float | Lift the float | **Full** when lifted |
+| Soil sensor | Hold it in air, then stand it in a glass of water up to the line | On the System page the voltage drops by about a volt in water. Calibrate it there (below) |
 
 **If a float reads backwards:** most float switches can be reversed. Pull off the retaining
 clip, turn the float upside down, and put it back.
 
 **Leak module adjustment:** turn the blue knob until the board's second LED is off when the
 plate is dry and comes on with a single drop of your actual water on the plate.
+
+### Soil moisture sensors
+
+1. **Protect the electronics.** The small components at the top of the sensor must stay dry. Cover that end with heat-shrink tubing or a few coats of clear nail varnish, leaving the long blade bare.
+2. Wire `VCC` to 3V3, `GND` to GND and `AOUT` to the pot's analog terminal (see the diagram). The lead can be a few metres long.
+3. **Calibrate before planting it.** Open the System page, find the sensor under *Soil sensor calibration*, and follow the two steps there: *Set dry* with the sensor in open air, *Set wet* with it standing in a glass of water up to the printed line. Until both are done the pot shows "not calibrated".
+4. Push the sensor into the soil up to the line, about halfway between the stem and the pot's edge, and don't move it afterwards: moving it changes the reading.
+5. Water the pot normally and watch the number for a few days. Note the reading when the plant actually needs water, then set the "Soil dry" limit in `config/config.yaml` to match (it starts at 30 %).
 
 ## 5. Assemble a node
 
