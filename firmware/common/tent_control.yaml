@@ -1,0 +1,95 @@
+# Tent control (Phase 2): grow lights and exhaust fan. Needs common/tent.yaml.
+# Rules: docs/SAFETY.md §2 (fallback) and §3 (I-4, I-5). Logic: common/control.h.
+
+packages:
+  lights: !include { file: device.yaml, vars: { dev: lights, pin: "${pin_out1}", inverted: "false", boot: ALWAYS_OFF } }
+  exhaust_fan: !include { file: device.yaml, vars: { dev: exhaust_fan, pin: "${pin_out2}", inverted: "false", boot: ALWAYS_OFF } }
+
+# Settings the hub can change. They are stored on the node, so the schedule and limits
+# keep working with the hub switched off.
+number:
+  - platform: template
+    id: light_on_minute
+    name: light_on_minute
+    min_value: 0
+    max_value: 1439
+    step: 1
+    initial_value: 360
+    unit_of_measurement: "min"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/light_on_minute/state
+    command_topic: growshed/${node_id}/number/light_on_minute/command
+  - platform: template
+    id: light_off_minute
+    name: light_off_minute
+    min_value: 0
+    max_value: 1439
+    step: 1
+    initial_value: 1320
+    unit_of_measurement: "min"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/light_off_minute/state
+    command_topic: growshed/${node_id}/number/light_off_minute/command
+  - platform: template
+    id: max_temp
+    name: max_temp
+    min_value: 20
+    max_value: 30
+    step: 0.5
+    initial_value: 28
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/max_temp/state
+    command_topic: growshed/${node_id}/number/max_temp/command
+  - platform: template
+    id: max_rh
+    name: max_rh
+    min_value: 40
+    max_value: 90
+    step: 1
+    initial_value: 70
+    unit_of_measurement: "%"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/max_rh/state
+    command_topic: growshed/${node_id}/number/max_rh/command
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          const bool fallback = id(heartbeat_age_s) > 180;
+          const float temp = id(air_temp).state;
+          const float rh = id(air_rh).state;
+
+          // Lights follow the daily window. With no valid clock, keep the last decision.
+          static bool lights_auto = false;
+          auto now = id(sntp_time).now();
+          if (now.is_valid()) {
+            lights_auto = gs::in_window(now.hour * 60 + now.minute, (int) id(light_on_minute).state,
+                                        (int) id(light_off_minute).state);
+          }
+          // I-4: lights off if the tent stays above 35 °C for 2 minutes, back on below 30 °C.
+          static gs::OverTemp too_hot;
+          const bool tripped = too_hot.update(temp, 35.0f, 30.0f, 1, 120);
+          gs::Decision lights = gs::decide((int) id(lights_mode).active_index().value_or(0), fallback, lights_auto,
+                                           tripped ? "I-4" : nullptr, nullptr);
+          gs::apply(id(relay_lights), lights.on);
+          static std::string lights_prev;
+          gs::report(id(lights_source), id(last_interlock), lights.source, lights.interlock, "lights", lights_prev);
+
+          // Exhaust: on above the temperature or humidity limit.
+          // I-5: forced on above 30 °C, or when the air sensor has failed for 2 minutes.
+          static bool fan_auto = false;
+          fan_auto = gs::exhaust_demand(fan_auto, temp, rh, id(max_temp).state, id(max_rh).state);
+          static gs::Held sensor_dead;
+          const bool dead = sensor_dead.update(std::isnan(temp), 1, 120);
+          const bool hot = !std::isnan(temp) && temp > 30.0f;
+          gs::Decision fan = gs::decide((int) id(exhaust_fan_mode).active_index().value_or(0), fallback, fan_auto,
+                                        nullptr, (hot || dead) ? "I-5" : nullptr);
+          gs::apply(id(relay_exhaust_fan), fan.on);
+          static std::string fan_prev;
+          gs::report(id(exhaust_fan_source), id(last_interlock), fan.source, fan.interlock, "exhaust_fan", fan_prev);

@@ -8,9 +8,17 @@ packages:
   board: !include boards/esp32.yaml
   base: !include common/base.yaml
   tent: !include common/tent.yaml
+  # Phase 2 control. Remove this line for a sensor-only board (ESP8266, ESP32-C3).
+  tent_control: !include common/tent_control.yaml
   # Soil pots in this tent: one line per pot (up to the board's number of pin_adc pins).
   # Delete the lines you don't need, or move them to another tent's file.
   soil_1: !include { file: common/soil_sensor.yaml, vars: { n: 1, pin: "${pin_adc1}" } }
   soil_2: !include { file: common/soil_sensor.yaml, vars: { n: 2, pin: "${pin_adc2}" } }
   soil_3: !include { file: common/soil_sensor.yaml, vars: { n: 3, pin: "${pin_adc3}" } }
   soil_4: !include { file: common/soil_sensor.yaml, vars: { n: 4, pin: "${pin_adc4}" } }
+  # Automatic watering for those pots: the tank's low float plus one pump per pot.
+  watering_tank: !include common/watering_tank.yaml
+  water_1: !include { file: common/soil_watering.yaml, vars: { n: 1, pin: "${pin_out3}" } }
+  water_2: !include { file: common/soil_watering.yaml, vars: { n: 2, pin: "${pin_out4}" } }
+  water_3: !include { file: common/soil_watering.yaml, vars: { n: 3, pin: "${pin_out5}" } }
+  water_4: !include { file: common/soil_watering.yaml, vars: { n: 4, pin: "${pin_out6}" } }

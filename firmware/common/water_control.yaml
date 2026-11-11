@@ -1,0 +1,74 @@
+# Water node control (Phase 2): reservoir heater, air pump, circulation pump, top-off.
+# Needs common/water.yaml. Rules: docs/SAFETY.md §2 and §3 (I-1, I-2, I-3, I-8, I-9, I-10).
+
+packages:
+  water_heater: !include { file: device.yaml, vars: { dev: water_heater, pin: "${pin_out1}", inverted: "false", boot: ALWAYS_OFF } }
+  # Air and circulation pumps sit on NORMALLY-ON outlets: a dead node leaves them running.
+  air_pump: !include { file: device.yaml, vars: { dev: air_pump, pin: "${pin_out2}", inverted: "true", boot: ALWAYS_ON } }
+  rdwc_pump: !include { file: device.yaml, vars: { dev: rdwc_pump, pin: "${pin_out3}", inverted: "true", boot: ALWAYS_ON } }
+  top_off: !include { file: dose_device.yaml, vars: { dev: top_off, pin: "${pin_out4}" } }
+
+number:
+  - platform: template
+    id: water_setpoint
+    name: water_setpoint
+    min_value: 15
+    max_value: 24
+    step: 0.5
+    initial_value: 20
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/water_setpoint/state
+    command_topic: growshed/${node_id}/number/water_setpoint/command
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          const bool fallback = id(heartbeat_age_s) > 180;
+          const float temp = id(res_temp).state;
+          const bool leak = id(leak_res).state || id(leak_topoff).state || id(hub_leak);
+
+          // Heater thermostat around the setpoint.
+          // I-3 sensor failed for 90 s; I-1 reservoir low (dry-fire); I-2 water above 26 °C.
+          static bool heat_auto = false;
+          heat_auto = gs::heat_demand(heat_auto, temp, id(water_setpoint).state, 0.5f);
+          static gs::Held sensor_dead;
+          const bool dead = sensor_dead.update(std::isnan(temp), 1, 90);
+          const char *heat_block = dead ? "I-3" : id(res_low).state ? "I-1" : (!std::isnan(temp) && temp > 26.0f) ? "I-2" : nullptr;
+          gs::Decision heater = gs::decide((int) id(water_heater_mode).active_index().value_or(0), fallback, heat_auto,
+                                           heat_block, nullptr);
+          gs::apply(id(relay_water_heater), heater.on);
+          static std::string heater_prev;
+          gs::report(id(water_heater_source), id(last_interlock), heater.source, heater.interlock, "water_heater",
+                     heater_prev);
+
+          // Air pump: always on unless switched off by hand for maintenance. Leaks do not stop it.
+          gs::Decision air = gs::decide((int) id(air_pump_mode).active_index().value_or(0), fallback, true, nullptr,
+                                        nullptr);
+          gs::apply(id(relay_air_pump), air.on);
+          static std::string air_prev;
+          gs::report(id(air_pump_source), id(last_interlock), air.source, air.interlock, "air_pump", air_prev);
+
+          // Circulation pump: always on. I-10 any leak; I-8 reservoir low for 10 s.
+          static gs::Held low_held;
+          const bool low = low_held.update(id(res_low).state, 1, 10);
+          const char *rdwc_block = leak ? "I-10" : low ? "I-8" : nullptr;
+          gs::Decision rdwc = gs::decide((int) id(rdwc_pump_mode).active_index().value_or(0), fallback, true,
+                                         rdwc_block, nullptr);
+          gs::apply(id(relay_rdwc_pump), rdwc.on);
+          static std::string rdwc_prev;
+          gs::report(id(rdwc_pump_source), id(last_interlock), rdwc.source, rdwc.interlock, "rdwc_pump", rdwc_prev);
+
+          // Top-off: only on request, at most 120 s per fill, never past the high float (I-9),
+          // never during a leak (I-10), never without the hub (fallback).
+          static gs::Doser topoff(120, 300, 12);
+          const char *fill_block = leak ? "I-10" : id(res_high).state ? "I-9" : fallback ? "fallback" : nullptr;
+          const int request = id(top_off_request);
+          id(top_off_request) = 0;
+          const bool filling = topoff.step(request, fill_block, 1);
+          gs::apply(id(relay_top_off), filling);
+          static std::string fill_prev;
+          gs::report(id(top_off_source), id(last_interlock), topoff.status(filling),
+                     filling ? nullptr : topoff.refused, "top_off", fill_prev);

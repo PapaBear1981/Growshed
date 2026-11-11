@@ -1,0 +1,15 @@
+# Plain-water tank that feeds the soil watering pumps: its low-level float (I-12).
+# Float between the pin and GND, closed while floating. ON = tank is LOW.
+# A broken wire also reads LOW, which stops the pumps: the safe direction.
+
+binary_sensor:
+  - platform: gpio
+    id: water_tank_low
+    name: water_tank_low
+    state_topic: growshed/${node_id}/binary_sensor/water_tank_low/state
+    pin:
+      number: ${pin_in2}
+      mode: INPUT_PULLUP
+    filters:
+      - delayed_on: 5s
+      - delayed_off: 5s

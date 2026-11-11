@@ -6,6 +6,7 @@ one_wire:
 
 sensor:
   - platform: dallas_temp
+    id: tower_temp
     name: tower_temp
     state_topic: growshed/${node_id}/sensor/tower_temp/state
     update_interval: 30s
@@ -14,6 +15,7 @@ binary_sensor:
   # Float switch between the pin and GND, closed while floating. ON = level is LOW.
   # A broken or unplugged wire also reads as LOW, which is the safe direction.
   - platform: gpio
+    id: tower_low
     name: tower_low
     state_topic: growshed/${node_id}/binary_sensor/tower_low/state
     pin:

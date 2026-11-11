@@ -1,0 +1,49 @@
+# Tower pump control (Phase 2). Needs common/tent.yaml, tent_control.yaml and tower.yaml.
+# Rules: docs/SAFETY.md §2 and §3 (I-7, I-10).
+
+packages:
+  tower_pump: !include { file: device.yaml, vars: { dev: tower_pump, pin: "${pin_out3}", inverted: "false", boot: ALWAYS_OFF } }
+
+number:
+  - platform: template
+    id: tower_on_s
+    name: tower_on_s
+    min_value: 0
+    max_value: 3600
+    step: 30
+    initial_value: 900
+    unit_of_measurement: "s"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/tower_on_s/state
+    command_topic: growshed/${node_id}/number/tower_on_s/command
+  - platform: template
+    id: tower_off_s
+    name: tower_off_s
+    min_value: 0
+    max_value: 14400
+    step: 30
+    initial_value: 2700
+    unit_of_measurement: "s"
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/number/tower_off_s/state
+    command_topic: growshed/${node_id}/number/tower_off_s/command
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          const bool fallback = id(heartbeat_age_s) > 180;
+          // Cycle only while the lights are on: plants drink little in the dark.
+          static unsigned long seconds = 0;
+          seconds++;
+          const bool want = id(relay_lights).state &&
+                            gs::cycle_on(seconds, (int) id(tower_on_s).state, (int) id(tower_off_s).state);
+          // I-10 any leak; I-7 never run the pump dry.
+          const char *block = (id(leak).state || id(hub_leak)) ? "I-10" : id(tower_low).state ? "I-7" : nullptr;
+          gs::Decision pump = gs::decide((int) id(tower_pump_mode).active_index().value_or(0), fallback, want, block,
+                                         nullptr);
+          gs::apply(id(relay_tower_pump), pump.on);
+          static std::string prev;
+          gs::report(id(tower_pump_source), id(last_interlock), pump.source, pump.interlock, "tower_pump", prev);

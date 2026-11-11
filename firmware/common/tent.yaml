@@ -9,9 +9,11 @@ sensor:
   - platform: sht4x
     update_interval: 30s
     temperature:
+      id: air_temp
       name: air_temp
       state_topic: growshed/${node_id}/sensor/air_temp/state
     humidity:
+      id: air_rh
       name: air_rh
       state_topic: growshed/${node_id}/sensor/air_rh/state
   - platform: bh1750
@@ -23,6 +25,7 @@ binary_sensor:
   # Leak probe between the pin and GND: water bridges the probes and pulls the pin low.
   # ON = wet. Quick to trip, slow to clear, so a brief splash still gets noticed.
   - platform: gpio
+    id: leak
     name: leak
     state_topic: growshed/${node_id}/binary_sensor/leak/state
     pin:
@@ -39,8 +42,10 @@ time:
   - platform: ds1307
     id: rtc_time
     update_interval: never
+    timezone: !secret timezone
   - platform: sntp
     id: sntp_time
+    timezone: !secret timezone
     on_time_sync:
       then:
         - ds1307.write_time:

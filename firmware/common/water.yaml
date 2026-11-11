@@ -12,6 +12,7 @@ one_wire:
 
 sensor:
   - platform: dallas_temp
+    id: res_temp
     name: res_temp
     state_topic: growshed/${node_id}/sensor/res_temp/state
     update_interval: 30s
@@ -28,6 +29,7 @@ binary_sensor:
   # Low float: closed (pin low) while floating. ON = level is LOW.
   # A broken wire also reads as LOW, which is the safe direction.
   - platform: gpio
+    id: res_low
     name: res_low
     state_topic: growshed/${node_id}/binary_sensor/res_low/state
     pin:
@@ -38,6 +40,7 @@ binary_sensor:
       - delayed_off: 5s
   # High float: closes when the water reaches the full mark. ON = full.
   - platform: gpio
+    id: res_high
     name: res_high
     state_topic: growshed/${node_id}/binary_sensor/res_high/state
     pin:
@@ -49,6 +52,7 @@ binary_sensor:
       - delayed_off: 5s
   # Leak probes: ON = wet.
   - platform: gpio
+    id: leak_res
     name: leak_res
     state_topic: growshed/${node_id}/binary_sensor/leak_res/state
     pin:
@@ -59,6 +63,7 @@ binary_sensor:
       - delayed_on: 500ms
       - delayed_off: 10s
   - platform: gpio
+    id: leak_topoff
     name: leak_topoff
     state_topic: growshed/${node_id}/binary_sensor/leak_topoff/state
     pin:

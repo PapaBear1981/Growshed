@@ -5,6 +5,8 @@
 esphome:
   name: growshed-${node_id}
   friendly_name: ${node_name}
+  includes:
+    - common/control.h # the tested control logic (docs/SAFETY.md)
 
 logger:
 
@@ -41,6 +43,13 @@ mqtt:
         - globals.set:
             id: heartbeat_age_s
             value: "0"
+    # I-10: the hub tells every node when ANY leak sensor in the house is wet. Retained,
+    # so a node that reboots during an alarm learns about it straight away.
+    - topic: growshed/hub/leak_alarm
+      then:
+        - globals.set:
+            id: hub_leak
+            value: !lambda 'return x == "ON";'
 
 globals:
   # Seconds since the hub's last heartbeat (counts from boot until the first one).
@@ -48,6 +57,9 @@ globals:
   - id: heartbeat_age_s
     type: int
     initial_value: "0"
+  - id: hub_leak
+    type: bool
+    initial_value: "false"
 
 interval:
   - interval: 10s
@@ -87,6 +99,11 @@ text_sensor:
     update_interval: 300s
     lambda: |-
       return std::string("${board_label}");
+  # Which safety rule last took control of a device, e.g. "I-4 lights" (docs/SAFETY.md §3).
+  - platform: template
+    id: last_interlock
+    name: last_interlock
+    state_topic: growshed/${node_id}/text_sensor/last_interlock/state
   - platform: version
     name: firmware
     state_topic: growshed/${node_id}/text_sensor/firmware/state

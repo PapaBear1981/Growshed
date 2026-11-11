@@ -11,6 +11,7 @@ substitutions:
   # No pin_in4: an ESP8266 has too few safe input pins for the water node.
   # Use it for tent nodes only (compiling water.yaml with this profile fails on purpose).
   # No pin_adc*: an ESP8266 has one low-range analog pin. No soil sensors on this board.
+  # No pin_out*: too few free pins. Sensor-only: leave the *_control packages out of the node file.
 
 esp8266:
   board: d1_mini

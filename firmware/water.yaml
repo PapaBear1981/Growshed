@@ -8,3 +8,5 @@ packages:
   board: !include boards/esp32.yaml
   base: !include common/base.yaml
   water: !include common/water.yaml
+  # Phase 2 control. Remove this line for a sensor-only board (ESP8266, ESP32-C3).
+  water_control: !include common/water_control.yaml

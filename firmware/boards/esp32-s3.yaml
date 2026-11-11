@@ -13,6 +13,13 @@ substitutions:
   pin_adc1: GPIO1
   pin_adc2: GPIO2
   pin_adc3: GPIO10
+  # Outputs to relay boxes and pump driver boards.
+  pin_out1: GPIO16
+  pin_out2: GPIO17
+  pin_out3: GPIO18
+  pin_out4: GPIO21
+  pin_out5: GPIO38
+  pin_out6: GPIO47
 
 esp32:
   board: esp32-s3-devkitc-1

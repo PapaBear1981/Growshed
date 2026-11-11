@@ -1,0 +1,39 @@
+# One dosing pump: it only ever runs for a short, limited time when the hub asks.
+#
+#   water_1: !include { file: common/dose_device.yaml, vars: { dev: water_1, pin: "${pin_out3}" } }
+#
+# The hub requests a dose by publishing a number of seconds to
+#   growshed/<node>/dose/<dev>/command
+# The control package for the node decides whether it runs (limits in control.h Doser).
+
+switch:
+  - platform: gpio
+    id: relay_${dev}
+    pin: ${pin}
+    internal: true
+    restore_mode: ALWAYS_OFF
+  - platform: template
+    id: ${dev}
+    name: ${dev}
+    state_topic: growshed/${node_id}/switch/${dev}/state
+    lambda: return id(relay_${dev}).state;
+    turn_on_action: []
+    turn_off_action: []
+
+globals:
+  - id: ${dev}_request
+    type: int
+    initial_value: "0"
+
+mqtt:
+  on_message:
+    - topic: growshed/${node_id}/dose/${dev}/command
+      then:
+        - lambda: id(${dev}_request) = atoi(x.c_str());
+
+text_sensor:
+  # idle | dosing | refused
+  - platform: template
+    id: ${dev}_source
+    name: ${dev}_source
+    state_topic: growshed/${node_id}/text_sensor/${dev}_source/state

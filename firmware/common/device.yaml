@@ -1,0 +1,45 @@
+# One switched device (a relay box or pump driver). Include once per device:
+#
+#   lights: !include { file: common/device.yaml, vars: { dev: lights, pin: "${pin_out1}", inverted: "false", boot: ALWAYS_OFF } }
+#
+# It creates the relay output, the reported on/off state, the mode the hub can set
+# (auto / on / off) and the "source" that says who is in charge. It does NOT decide
+# anything: the control package for the node drives relay_<dev> every second.
+#
+# For pumps that must keep running if the node dies (air, circulation), plug them into the
+# relay box's NORMALLY-ON outlet and use inverted: "true", boot: ALWAYS_ON.
+
+switch:
+  - platform: gpio
+    id: relay_${dev}
+    pin:
+      number: ${pin}
+      inverted: ${inverted}
+    internal: true # never controllable from the network: only the control loop drives it
+    restore_mode: ${boot}
+  # What the hub sees. Commands sent to it are ignored on purpose: modes go through the
+  # select below, so every request passes the interlocks.
+  - platform: template
+    id: ${dev}
+    name: ${dev}
+    state_topic: growshed/${node_id}/switch/${dev}/state
+    lambda: return id(relay_${dev}).state;
+    turn_on_action: []
+    turn_off_action: []
+
+select:
+  - platform: template
+    id: ${dev}_mode
+    name: ${dev}_mode
+    options: ["auto", "on", "off"] # order matters: matches MODE_AUTO/ON/OFF in control.h
+    initial_option: auto
+    optimistic: true
+    restore_value: true
+    state_topic: growshed/${node_id}/select/${dev}_mode/state
+    command_topic: growshed/${node_id}/select/${dev}_mode/command
+
+text_sensor:
+  - platform: template
+    id: ${dev}_source
+    name: ${dev}_source
+    state_topic: growshed/${node_id}/text_sensor/${dev}_source/state

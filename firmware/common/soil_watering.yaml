@@ -1,0 +1,28 @@
+# One soil watering pump (Phase 2). Needs common/tent.yaml and common/watering_tank.yaml.
+#
+#   water_1: !include { file: common/soil_watering.yaml, vars: { n: 1, pin: "${pin_out3}" } }
+#
+# The hub decides WHEN to water (it holds the moisture calibration and the rules in
+# docs/SAFETY.md §4b). This node enforces the hard limits whatever it is told:
+# I-11 at most 20 s per dose, 10 min rest, 8 doses a day; I-12 tank low; I-10 any leak;
+# and never without the hub.
+
+packages:
+  pump_${n}: !include { file: dose_device.yaml, vars: { dev: "water_${n}", pin: "${pin}" } }
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          static gs::Doser doser(20, 600, 8);
+          const bool fallback = id(heartbeat_age_s) > 180;
+          const char *block = (id(leak).state || id(hub_leak)) ? "I-10"
+                              : id(water_tank_low).state ? "I-12"
+                              : fallback ? "fallback" : nullptr;
+          const int request = id(water_${n}_request);
+          id(water_${n}_request) = 0;
+          const bool on = doser.step(request, block, 1);
+          gs::apply(id(relay_water_${n}), on);
+          static std::string prev;
+          gs::report(id(water_${n}_source), id(last_interlock), doser.status(on), on ? nullptr : doser.refused,
+                     "water_${n}", prev);

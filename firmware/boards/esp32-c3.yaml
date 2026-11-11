@@ -10,6 +10,7 @@ substitutions:
   pin_in3: GPIO3
   pin_in4: GPIO10
   # No pin_adc*: every WiFi-safe analog pin on a C3 is already used. No soil sensors on this board.
+  # No pin_out*: too few free pins. Sensor-only: leave the *_control packages out of the node file.
 
 esp32:
   board: esp32-c3-devkitm-1
