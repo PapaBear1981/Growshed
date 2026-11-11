@@ -165,3 +165,44 @@ def history(conn: sqlite3.Connection, keys: list[str], start: float, end: float)
             )
         )
     return {"bucket_s": bucket, "t": grid, "series": series}
+
+
+def stats(conn: sqlite3.Connection, key: str, start: float, end: float) -> dict | None:
+    """Min / average / max of one sensor's raw readings over any period, however long ago.
+
+    Uses the hourly summaries where they exist, then the 5-minute ones, then raw readings
+    for the newest stretch, so it works for last night and for a grow two years back.
+    """
+    row = conn.execute("SELECT id FROM series WHERE key = ?", (key,)).fetchone()
+    if row is None:
+        return None
+    sid, lo, hi = row["id"], int(start), int(end)
+    hourly_until = int(db.get_setting(conn, "rollup_1h_until", "0"))
+    five_until = int(db.get_setting(conn, "rollup_5m_until", "0"))
+    parts = [
+        conn.execute(
+            "SELECT MIN(min) AS lo, MAX(max) AS hi, SUM(avg * n) AS total, SUM(n) AS n "
+            "FROM reading_1h WHERE series_id = ? AND ts >= ? AND ts <= ? AND ts < ?",
+            (sid, lo, hi, hourly_until),
+        ).fetchone(),
+        conn.execute(
+            "SELECT MIN(min) AS lo, MAX(max) AS hi, SUM(avg * n) AS total, SUM(n) AS n "
+            "FROM reading_5m WHERE series_id = ? AND ts >= ? AND ts <= ? AND ts < ?",
+            (sid, max(lo, hourly_until), hi, five_until),
+        ).fetchone(),
+        conn.execute(
+            "SELECT MIN(value) AS lo, MAX(value) AS hi, SUM(value) AS total, COUNT(*) AS n "
+            "FROM reading WHERE series_id = ? AND ts >= ? AND ts <= ?",
+            (sid, max(lo, five_until), hi),
+        ).fetchone(),
+    ]
+    parts = [p for p in parts if p["n"]]
+    if not parts:
+        return None
+    n = sum(p["n"] for p in parts)
+    return {
+        "min": min(p["lo"] for p in parts),
+        "max": max(p["hi"] for p in parts),
+        "avg": sum(p["total"] for p in parts) / n,
+        "n": n,
+    }

@@ -59,6 +59,7 @@ class AlertEngine:
         started_at: float,
         get_units: Callable[[], str] = lambda: "imperial",
         extra: list[Condition] | None = None,
+        tunables=None,
     ) -> None:
         self.conn = conn
         self.site = site
@@ -66,6 +67,7 @@ class AlertEngine:
         self.started_at = started_at
         self.get_units = get_units
         self.cfg = site.alerts
+        self.tunables = tunables  # limits changed in the GUI override config.yaml
         self.conditions = {c.key: c for c in [*self._build_conditions(), *(extra or [])]}
         self.tracks = {key: _Track() for key in self.conditions}
         self.changed = False  # set whenever the active list changes; the caller resets it
@@ -83,6 +85,12 @@ class AlertEngine:
             return None
         return now - info["last_seen"] <= NODE_QUIET_S
 
+    def _limit(self, rule: AlertRule, sensor: Sensor) -> float:
+        key = f"alert.{rule.name}@{sensor.zone}"
+        if self.tunables is not None and key in self.tunables.defs:
+            return self.tunables.get(key)
+        return rule.above if rule.above is not None else rule.below
+
     def _rule_check(self, rule: AlertRule, sensor: Sensor) -> Callable[[float], CheckResult]:
         key = sensor.state_key
 
@@ -98,7 +106,7 @@ class AlertEngine:
                 return value == rule.when_on, ""
             if now - entry["ts"] > self.cfg.sensor_stale_after_s:
                 return None, ""
-            limit = rule.above if rule.above is not None else rule.below
+            limit = self._limit(rule, sensor)
             bad = value > limit if rule.above is not None else value < limit
             units = self.get_units()
             shown = format_value(sensor.kind, value, units)

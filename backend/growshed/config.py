@@ -263,6 +263,7 @@ class Settings:
     ntfy_url: str | None = None  # full topic URL, e.g. https://ntfy.sh/growshed-3f9a...
     ntfy_token: str | None = None
     healthcheck_url: str | None = None  # dead man's switch: pinged every 5 minutes
+    backup_dir: Path | None = None  # default: a "backups" folder next to the database
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -279,4 +280,5 @@ class Settings:
         s.ntfy_url = env.get("GROWSHED_NTFY_URL") or None
         s.ntfy_token = env.get("GROWSHED_NTFY_TOKEN") or None
         s.healthcheck_url = env.get("GROWSHED_HEALTHCHECK_URL") or None
+        s.backup_dir = Path(env["GROWSHED_BACKUP_DIR"]) if env.get("GROWSHED_BACKUP_DIR") else None
         return s

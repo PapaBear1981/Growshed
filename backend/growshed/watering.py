@@ -35,16 +35,23 @@ class Watering:
         live: LiveState,
         calibrations: Calibrations,
         controller: Controller,
+        tunables=None,
     ) -> None:
         self.conn = conn
         self.cfg = site.watering
         self.live = live
         self.cal = calibrations
         self.controller = controller
+        self.tunables = tunables  # thresholds changed in the GUI
         self.pots: dict[str, WateringPot] = {p.sensor: p for p in self.cfg.pots}
         for key in self.pots:
             conn.execute("INSERT OR IGNORE INTO watering_pot (sensor_key) VALUES (?)", (key,))
         conn.commit()
+
+    def _below(self, pot: WateringPot) -> float:
+        if self.tunables is not None:
+            return self.tunables.get(f"watering.below@{pot.sensor}")
+        return pot.below
 
     # ------------------------------------------------------------ stored state
     def _row(self, key: str) -> sqlite3.Row:
@@ -138,7 +145,7 @@ class Watering:
             if row["mode"] != "auto" or row["locked"]:
                 continue
             value = self._moisture(key, now)
-            if value is None or value >= pot.below:
+            if value is None or value >= self._below(pot):
                 continue
             reason = self._blocked(pot, now)
             if reason == "daily dose limit reached":
@@ -162,7 +169,7 @@ class Watering:
                     "sensor": key,
                     "pump": pot.pump,
                     "name": pot.name,
-                    "below": pot.below,
+                    "below": self._below(pot),
                     "mode": row["mode"],
                     "locked": self.locked_reason(key),
                     "blocked": self._blocked(pot, now),

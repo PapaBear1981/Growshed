@@ -11,20 +11,26 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from . import db
+from . import db, maintenance
 from .alerts import AlertEngine, Condition
 from .api import router
 from .background import run_background
 from .calibration import MAX_AGE_DAYS, Calibrations
 from .config import Settings, load_config
 from .control import Controller
+from .devicelog import DeviceLog
+from .digest import Courier
 from .dosing import Dosing
+from .grows import router as grows_router
 from .ingest import Ingest
 from .journal import router as journal_router
 from .mqtt import MqttLink, run_mqtt
 from .notify import Notifier
+from .qol import PUMPS
+from .qol import router as qol_router
 from .recorder import Recorder
 from .state import LiveState
+from .tunables import Tunables
 from .watering import Watering
 from .ws import WebSocketHub
 
@@ -75,6 +81,34 @@ def _calibration_conditions(cal: Calibrations, site) -> list[Condition]:
                 0,
                 None,
                 due,
+            )
+        )
+    return out
+
+
+def _maintenance_conditions(conn, dosing) -> list[Condition]:
+    def due(now: float) -> tuple[bool, str]:
+        names = maintenance.overdue(conn, now)
+        return bool(names), "; ".join(names[:4])
+
+    out = [Condition("maintenance_due", "Maintenance due", "Reminders", "warning", 0, None, due)]
+    if dosing is None:
+        return out
+    for pump, label in PUMPS.items():
+
+        def low(now: float, p: str = pump) -> tuple[bool, str]:
+            bottle = next(b for b in maintenance.bottles(conn, PUMPS) if b["pump"] == p)
+            return bottle["low"], f"about {bottle['left_ml']:.0f} mL left" if bottle["low"] else ""
+
+        out.append(
+            Condition(
+                f"bottle_low:{pump}",
+                "Bottle nearly empty",
+                f"{label} bottle",
+                "warning",
+                0,
+                None,
+                low,
             )
         )
     return out
@@ -157,14 +191,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
         app.state.ingest.calibrations = app.state.calibrations
         app.state.notifier = Notifier(settings.ntfy_url, settings.ntfy_token)
+        tunables = app.state.tunables = Tunables(conn, site)
+        app.state.device_log = DeviceLog(conn, {d.state_key for d in site.devices})
+        app.state.ingest.device_log = app.state.device_log
+        app.state.courier = Courier(conn)
         link = app.state.link = MqttLink()
         controller = app.state.controller = Controller(conn, site, app.state.live, link)
         link.on_connect = controller.on_connect
         watering = app.state.watering = Watering(
-            conn, site, app.state.live, app.state.calibrations, controller
+            conn, site, app.state.live, app.state.calibrations, controller, tunables
         )
         dosing = app.state.dosing = (
-            Dosing(conn, site, app.state.live, app.state.calibrations, controller, link)
+            Dosing(conn, site, app.state.live, app.state.calibrations, controller, link, tunables)
             if site.dosing is not None
             else None
         )
@@ -178,7 +216,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 *_control_conditions(controller, watering),
                 *_calibration_conditions(app.state.calibrations, site),
                 *_dosing_conditions(dosing),
+                *_maintenance_conditions(conn, dosing),
             ],
+            tunables=tunables,
         )
         tasks = []
         if settings.mqtt_enabled:
@@ -202,6 +242,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.ingest = Ingest(app.state.live, app.state.hub)
     app.include_router(router)
     app.include_router(journal_router)
+    app.include_router(grows_router)
+    app.include_router(qol_router)
     if settings.static_dir.is_dir():
         # Built frontend. Mounted last so /api and /ws take priority.
         app.mount("/", StaticFiles(directory=settings.static_dir, html=True), name="frontend")

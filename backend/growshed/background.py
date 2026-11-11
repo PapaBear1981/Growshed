@@ -8,6 +8,8 @@ import time
 
 from fastapi import FastAPI
 
+from . import backup, db
+from .digest import build_summary
 from .mqtt import NotConnected
 from .notify import Notification, Notifier, ping
 
@@ -20,6 +22,9 @@ PRUNE_EVERY_S = 3600
 PING_EVERY_S = 300
 WATERING_EVERY_S = 30
 DOSING_EVERY_S = 5
+SUMMARY_CHECK_S = 60
+BACKUP_CHECK_S = 600
+BACKUP_EVERY_S = 86400
 RETRY_DELAY_S = 30
 GIVE_UP_AFTER_S = 900
 
@@ -31,6 +36,15 @@ def control_view(state, now: float) -> dict:
         "watering": state.watering.status(now),
         "dosing": state.dosing.snapshot(now) if state.dosing is not None else None,
     }
+
+
+def nightly_backup(state, now: float) -> None:
+    """Snapshot the database and config once a day."""
+    if now - float(db.get_setting(state.db, "backup_last", "0")) < BACKUP_EVERY_S:
+        return
+    folder = state.settings.backup_dir or state.settings.db_path.parent / "backups"
+    backup.run_backup(state.db, folder, state.settings.config_path, now)
+    db.set_setting(state.db, "backup_last", str(int(now)))
 
 
 async def deliver(notifier: Notifier, queue: asyncio.Queue[Notification]) -> None:
@@ -53,7 +67,8 @@ async def run_background(app: FastAPI) -> None:
     state = app.state
     queue: asyncio.Queue[Notification] = asyncio.Queue()
     sender = asyncio.create_task(deliver(state.notifier, queue))
-    last = dict.fromkeys(("flush", "rollup", "prune", "ping", "watering", "dosing"), 0.0)
+    jobs = ("flush", "rollup", "prune", "ping", "watering", "dosing", "summary", "backup")
+    last = dict.fromkeys(jobs, 0.0)
 
     def due(job: str, every_s: float, now: float) -> bool:
         if now - last[job] >= every_s:
@@ -76,8 +91,16 @@ async def run_background(app: FastAPI) -> None:
                 if state.controller.changed:
                     state.controller.changed = False
                     await state.hub.broadcast({"type": "control", **control_view(state, now)})
+                # Quiet hours: warnings wait for morning, critical alerts never do.
                 for note in state.alerts.tick(now):
-                    queue.put_nowait(note)
+                    for out in state.courier.route(note, now):
+                        queue.put_nowait(out)
+                for out in state.courier.release(now):
+                    queue.put_nowait(out)
+                if due("summary", SUMMARY_CHECK_S, now) and state.courier.summary_due(now):
+                    queue.put_nowait(build_summary(state, now))
+                if due("backup", BACKUP_CHECK_S, now):
+                    nightly_backup(state, now)
                 if state.alerts.changed:
                     state.alerts.changed = False
                     await state.hub.broadcast({"type": "alerts", "active": state.alerts.active()})

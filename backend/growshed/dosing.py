@@ -56,6 +56,7 @@ class Dosing:
         calibrations: Calibrations,
         controller: Controller,
         link: MqttLink,
+        tunables=None,
     ) -> None:
         self.conn = conn
         self.cfg: DosingConfig = site.dosing
@@ -64,6 +65,7 @@ class Dosing:
         self.cal = calibrations
         self.controller = controller
         self.link = link
+        self.tunables = tunables  # targets and dose sizes changed in the GUI
         self.devices = {d.state_key: d for d in site.devices}
         self.suggestion: dict | None = None
         self.snoozed: dict[str, float] = {}
@@ -71,6 +73,12 @@ class Dosing:
         self.distrust_until = 0.0
         self._recent = {"ph": deque(maxlen=30), "ec": deque(maxlen=30)}
         self._last_seen_ts = {"ph": 0.0, "ec": 0.0}
+
+    def target(self, name: str) -> float:
+        """A target or dose size: the GUI's value if one was set, else config.yaml's."""
+        if self.tunables is not None:
+            return self.tunables.get(f"dosing.{name}")
+        return getattr(self.cfg, name)
 
     # ------------------------------------------------------------ stored state
     @property
@@ -217,13 +225,14 @@ class Dosing:
         ph, ec = self._value(cfg.ph_sensor, now), self._value(cfg.ec_sensor, now)
         if ph is None or ec is None:
             return None
-        if ec < cfg.ec_low:
-            return ("nutrients", cfg.nutrient_dose_ml,
-                    f"EC is {ec / 1000:.2f} mS/cm, below {cfg.ec_low / 1000:.2f}")  # fmt: skip
-        if ph > cfg.ph_high:
-            return "ph_down", cfg.ph_dose_ml, f"pH is {ph:.1f}, above {cfg.ph_high:.1f}"
-        if ph < cfg.ph_low:
-            return "ph_up", cfg.ph_dose_ml, f"pH is {ph:.1f}, below {cfg.ph_low:.1f}"
+        ph_low, ph_high, ec_low = (self.target(n) for n in ("ph_low", "ph_high", "ec_low"))
+        if ec < ec_low:
+            why = f"EC is {ec / 1000:.2f} mS/cm, below {ec_low / 1000:.2f}"
+            return "nutrients", self.target("nutrient_dose_ml"), why
+        if ph > ph_high:
+            return "ph_down", self.target("ph_dose_ml"), f"pH is {ph:.1f}, above {ph_high:.1f}"
+        if ph < ph_low:
+            return "ph_up", self.target("ph_dose_ml"), f"pH is {ph:.1f}, below {ph_low:.1f}"
         return None
 
     # ------------------------------------------------------------ dosing
@@ -364,7 +373,7 @@ class Dosing:
         """One dose chosen by a person. Every limit applies except the probe checks."""
         if kind not in KINDS:
             raise Refused("Unknown kind of dose.")
-        ml = self.cfg.nutrient_dose_ml if kind == "nutrients" else self.cfg.ph_dose_ml
+        ml = self.target("nutrient_dose_ml") if kind == "nutrients" else self.target("ph_dose_ml")
         reason = self.blocked(now, need_probes=False) or self._kind_blocked(kind, ml, now)
         if reason:
             raise Refused(f"Not dosing: {reason}.")
@@ -404,8 +413,11 @@ class Dosing:
             "locked": LOCK_REASONS.get(self.locked, self.locked) if self.locked else None,
             "blocked": None if mode == "off" else self.blocked(now),
             "suggestion": self.suggestion,
-            "targets": {"ph_low": cfg.ph_low, "ph_high": cfg.ph_high, "ec_low": cfg.ec_low},
-            "doses": {"ph": cfg.ph_dose_ml, "nutrients": cfg.nutrient_dose_ml},
+            "targets": {n: self.target(n) for n in ("ph_low", "ph_high", "ec_low")},
+            "doses": {
+                "ph": self.target("ph_dose_ml"),
+                "nutrients": self.target("nutrient_dose_ml"),
+            },
             "max_day_ml": cfg.max_day_ml,
             "pumps": [
                 {

@@ -15,6 +15,7 @@ class Ingest:
         self.hub = hub
         self.recorder = recorder  # optional: stores history for configured sensors
         self.calibrations = calibrations  # optional: raw -> calibrated (soil moisture)
+        self.device_log = None  # optional: records when devices switch on and off
 
     async def handle(self, topic: str, payload: str, now: float | None = None) -> None:
         ts = time.time() if now is None else now
@@ -38,6 +39,8 @@ class Ingest:
                 cal.observe(entity.key, value, ts)
         if self.recorder is not None:
             self.recorder.add(entity.key, value, ts)  # history keeps the raw reading
+        if self.device_log is not None and entity.component == "switch":
+            self.device_log.record(entity.key, value, ts)
         await self.publish(entity.key, value, ts)
 
     async def publish(self, key: str, raw, ts: float) -> None:
