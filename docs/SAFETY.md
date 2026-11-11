@@ -34,6 +34,15 @@ changes must never weaken them without an explicit decision recorded in this fil
 Air pumps and the RDWC pump should be wired to the **normally-on** outlet of their relay box,
 so a dead node or a loose signal wire leaves them running.
 
+### How this is built (Phase 2)
+
+Every automatic behaviour runs **on the node, all the time**, from settings stored on the
+node (light times, fan limits, water setpoint, pump cycle). The hub only changes those
+settings and asks for modes (auto / on / off) or doses. So NORMAL and FALLBACK use the same
+automation; in FALLBACK the node additionally ignores manual on/off modes and refuses
+top-off and watering doses. The decision logic is one function, `gs::decide` in
+`firmware/common/control.h`, with native unit tests in `firmware/tests/`.
+
 ## 3. Interlocks (enforced on the node, always, even in manual ON)
 
 | ID | Rule |
@@ -43,7 +52,7 @@ so a dead node or a loose signal wire leaves them running.
 | I-3 | **Water heater OFF** on water temp sensor failure (the heater's own thermostat is the backup). Alert |
 | I-4 | **Tent lights OFF** if tent air temp > 35 °C (95 °F) for > 2 min. Auto-restore when < 30 °C. Alert |
 | I-5 | **Exhaust fan ON** if tent air temp > 30 °C (86 °F) or on tent sensor failure |
-| I-6 | **Tent heater OFF** (if installed) if tent air temp > 30 °C or on sensor failure. (A house basement doesn't freeze, so failing OFF is safe) |
+| I-6 | **Tent heater OFF** (if installed) if tent air temp > 30 °C or on sensor failure. (A house basement doesn't freeze, so failing OFF is safe.) *Not implemented: no tent heater exists in the firmware or config yet. It must be added together with this rule.* |
 | I-7 | **Tower pump OFF** if the tower reservoir is low |
 | I-8 | **RDWC pump OFF** if the control-bucket low-float reads LOW for > 10 s |
 | I-9 | **Top-off OFF** if the high-float trips, any leak sensor is wet, or the pump has run > configured max (default 120 s) per fill |
@@ -83,7 +92,7 @@ unplugged, failed) while the pump keeps answering it. So:
 - Max doses per pot per 24 h: default **6**. On hitting it: lockout + alert.
 - No auto-watering if the pot's sensor is uncalibrated, stale, or reading outside its calibrated range by more than 10 %.
 - No watering while any leak alarm is active (I-10) or the watering tank is low (I-12).
-- Modes per pot: `OFF` / `AUTO`, plus a manual "water now" button that gives one dose and obeys every limit above.
+- Modes per pot: `OFF` (the default) / `AUTO`, plus a manual "water now" button. A manual dose obeys the leak alarm, the tank-low check, the 30-minute soak wait and the daily cap. It does not need a calibrated sensor or a dry reading: a person is choosing to water.
 - Every pot stands in a saucer or tray, and the tent's leak sensor sits where overflow would collect.
 - The watering tank holds **plain water** and is separate from the nutrient reservoirs. Its outlet tubes end **above** the tank's water level at the pot, or have anti-siphon valves, so a stopped pump cannot keep siphoning.
 

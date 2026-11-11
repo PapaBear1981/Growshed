@@ -1,67 +1,72 @@
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 920 1663' width='920' height='1663' role='img' aria-label='Tent node with soil pots (tent2) wiring'><rect width='920' height='1663' fill='#ffffff'/><text x='30' y='30' font-size='19' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Tent node with soil pots (tent2)</text>
-<line x1='262' y1='158' x2='262' y2='1514' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='184' x2='293' y2='1540' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='324' y1='210' x2='324' y2='860' stroke='#2a78d6' stroke-width='3'/>
-<line x1='355' y1='236' x2='355' y2='886' stroke='#e0a800' stroke-width='3'/>
-<line x1='386' y1='262' x2='386' y2='1022' stroke='#1b9e77' stroke-width='3'/>
-<line x1='417' y1='288' x2='417' y2='1158' stroke='#d95f02' stroke-width='3'/>
-<line x1='448' y1='314' x2='448' y2='1294' stroke='#a6761d' stroke-width='3'/>
-<line x1='479' y1='340' x2='479' y2='1430' stroke='#e7298a' stroke-width='3'/>
-<line x1='510' y1='366' x2='510' y2='1566' stroke='#8e44ad' stroke-width='3'/>
-<line x1='262' y1='464' x2='533' y2='464' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='464' x2='533' y2='464' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='490' x2='533' y2='490' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='490' x2='533' y2='490' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='355' y1='516' x2='533' y2='516' stroke='#ffffff' stroke-width='7'/>
-<line x1='355' y1='516' x2='533' y2='516' stroke='#e0a800' stroke-width='3'/>
-<line x1='324' y1='542' x2='533' y2='542' stroke='#ffffff' stroke-width='7'/>
-<line x1='324' y1='542' x2='533' y2='542' stroke='#2a78d6' stroke-width='3'/>
-<line x1='262' y1='626' x2='533' y2='626' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='626' x2='533' y2='626' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='652' x2='533' y2='652' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='652' x2='533' y2='652' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='355' y1='678' x2='533' y2='678' stroke='#ffffff' stroke-width='7'/>
-<line x1='355' y1='678' x2='533' y2='678' stroke='#e0a800' stroke-width='3'/>
-<line x1='324' y1='704' x2='533' y2='704' stroke='#ffffff' stroke-width='7'/>
-<line x1='324' y1='704' x2='533' y2='704' stroke='#2a78d6' stroke-width='3'/>
-<line x1='262' y1='808' x2='533' y2='808' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='808' x2='533' y2='808' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='834' x2='533' y2='834' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='834' x2='533' y2='834' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='324' y1='860' x2='533' y2='860' stroke='#ffffff' stroke-width='7'/>
-<line x1='324' y1='860' x2='533' y2='860' stroke='#2a78d6' stroke-width='3'/>
-<line x1='355' y1='886' x2='533' y2='886' stroke='#ffffff' stroke-width='7'/>
-<line x1='355' y1='886' x2='533' y2='886' stroke='#e0a800' stroke-width='3'/>
-<line x1='262' y1='970' x2='533' y2='970' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='970' x2='533' y2='970' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='996' x2='533' y2='996' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='996' x2='533' y2='996' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='386' y1='1022' x2='533' y2='1022' stroke='#ffffff' stroke-width='7'/>
-<line x1='386' y1='1022' x2='533' y2='1022' stroke='#1b9e77' stroke-width='3'/>
-<line x1='262' y1='1106' x2='533' y2='1106' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='1106' x2='533' y2='1106' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='1132' x2='533' y2='1132' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1132' x2='533' y2='1132' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='417' y1='1158' x2='533' y2='1158' stroke='#ffffff' stroke-width='7'/>
-<line x1='417' y1='1158' x2='533' y2='1158' stroke='#d95f02' stroke-width='3'/>
-<line x1='262' y1='1242' x2='533' y2='1242' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='1242' x2='533' y2='1242' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='1268' x2='533' y2='1268' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1268' x2='533' y2='1268' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='448' y1='1294' x2='533' y2='1294' stroke='#ffffff' stroke-width='7'/>
-<line x1='448' y1='1294' x2='533' y2='1294' stroke='#a6761d' stroke-width='3'/>
-<line x1='262' y1='1378' x2='533' y2='1378' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='1378' x2='533' y2='1378' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='1404' x2='533' y2='1404' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1404' x2='533' y2='1404' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='479' y1='1430' x2='533' y2='1430' stroke='#ffffff' stroke-width='7'/>
-<line x1='479' y1='1430' x2='533' y2='1430' stroke='#e7298a' stroke-width='3'/>
-<line x1='262' y1='1514' x2='533' y2='1514' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='1514' x2='533' y2='1514' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='1540' x2='533' y2='1540' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1540' x2='533' y2='1540' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='510' y1='1566' x2='533' y2='1566' stroke='#ffffff' stroke-width='7'/>
-<line x1='510' y1='1566' x2='533' y2='1566' stroke='#8e44ad' stroke-width='3'/>
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 920 1819' width='920' height='1819' role='img' aria-label='Tent node with soil pots (tent2): sensors wiring'><rect width='920' height='1819' fill='#ffffff'/><text x='30' y='30' font-size='19' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Tent node with soil pots (tent2): sensors</text>
+<line x1='262' y1='158' x2='262' y2='1670' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='184' x2='293' y2='1696' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='324' y1='210' x2='324' y2='886' stroke='#2a78d6' stroke-width='3'/>
+<line x1='355' y1='236' x2='355' y2='912' stroke='#e0a800' stroke-width='3'/>
+<line x1='386' y1='262' x2='386' y2='1048' stroke='#1b9e77' stroke-width='3'/>
+<line x1='417' y1='288' x2='417' y2='1132' stroke='#d95f02' stroke-width='3'/>
+<line x1='448' y1='314' x2='448' y2='1314' stroke='#d95f02' stroke-width='3'/>
+<line x1='479' y1='340' x2='479' y2='1450' stroke='#a6761d' stroke-width='3'/>
+<line x1='510' y1='366' x2='510' y2='1586' stroke='#e7298a' stroke-width='3'/>
+<line x1='541' y1='392' x2='541' y2='1722' stroke='#8e44ad' stroke-width='3'/>
+<line x1='262' y1='490' x2='553' y2='490' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='490' x2='553' y2='490' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='516' x2='553' y2='516' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='516' x2='553' y2='516' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='355' y1='542' x2='553' y2='542' stroke='#ffffff' stroke-width='7'/>
+<line x1='355' y1='542' x2='553' y2='542' stroke='#e0a800' stroke-width='3'/>
+<line x1='324' y1='568' x2='553' y2='568' stroke='#ffffff' stroke-width='7'/>
+<line x1='324' y1='568' x2='553' y2='568' stroke='#2a78d6' stroke-width='3'/>
+<line x1='262' y1='652' x2='553' y2='652' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='652' x2='553' y2='652' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='678' x2='553' y2='678' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='678' x2='553' y2='678' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='355' y1='704' x2='553' y2='704' stroke='#ffffff' stroke-width='7'/>
+<line x1='355' y1='704' x2='553' y2='704' stroke='#e0a800' stroke-width='3'/>
+<line x1='324' y1='730' x2='553' y2='730' stroke='#ffffff' stroke-width='7'/>
+<line x1='324' y1='730' x2='553' y2='730' stroke='#2a78d6' stroke-width='3'/>
+<line x1='262' y1='834' x2='553' y2='834' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='834' x2='553' y2='834' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='860' x2='553' y2='860' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='860' x2='553' y2='860' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='324' y1='886' x2='553' y2='886' stroke='#ffffff' stroke-width='7'/>
+<line x1='324' y1='886' x2='553' y2='886' stroke='#2a78d6' stroke-width='3'/>
+<line x1='355' y1='912' x2='553' y2='912' stroke='#ffffff' stroke-width='7'/>
+<line x1='355' y1='912' x2='553' y2='912' stroke='#e0a800' stroke-width='3'/>
+<line x1='262' y1='996' x2='553' y2='996' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='996' x2='553' y2='996' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1022' x2='553' y2='1022' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1022' x2='553' y2='1022' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='386' y1='1048' x2='553' y2='1048' stroke='#ffffff' stroke-width='7'/>
+<line x1='386' y1='1048' x2='553' y2='1048' stroke='#1b9e77' stroke-width='3'/>
+<line x1='417' y1='1132' x2='553' y2='1132' stroke='#ffffff' stroke-width='7'/>
+<line x1='417' y1='1132' x2='553' y2='1132' stroke='#d95f02' stroke-width='3'/>
+<line x1='293' y1='1158' x2='553' y2='1158' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1158' x2='553' y2='1158' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='262' y1='1262' x2='553' y2='1262' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='1262' x2='553' y2='1262' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1288' x2='553' y2='1288' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1288' x2='553' y2='1288' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='448' y1='1314' x2='553' y2='1314' stroke='#ffffff' stroke-width='7'/>
+<line x1='448' y1='1314' x2='553' y2='1314' stroke='#d95f02' stroke-width='3'/>
+<line x1='262' y1='1398' x2='553' y2='1398' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='1398' x2='553' y2='1398' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1424' x2='553' y2='1424' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1424' x2='553' y2='1424' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='479' y1='1450' x2='553' y2='1450' stroke='#ffffff' stroke-width='7'/>
+<line x1='479' y1='1450' x2='553' y2='1450' stroke='#a6761d' stroke-width='3'/>
+<line x1='262' y1='1534' x2='553' y2='1534' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='1534' x2='553' y2='1534' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1560' x2='553' y2='1560' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1560' x2='553' y2='1560' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='510' y1='1586' x2='553' y2='1586' stroke='#ffffff' stroke-width='7'/>
+<line x1='510' y1='1586' x2='553' y2='1586' stroke='#e7298a' stroke-width='3'/>
+<line x1='262' y1='1670' x2='553' y2='1670' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='1670' x2='553' y2='1670' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1696' x2='553' y2='1696' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1696' x2='553' y2='1696' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='541' y1='1722' x2='553' y2='1722' stroke='#ffffff' stroke-width='7'/>
+<line x1='541' y1='1722' x2='553' y2='1722' stroke='#8e44ad' stroke-width='3'/>
 <line x1='227' y1='158' x2='262' y2='158' stroke='#ffffff' stroke-width='7'/>
 <line x1='227' y1='158' x2='262' y2='158' stroke='#d62828' stroke-width='3'/>
 <line x1='227' y1='184' x2='293' y2='184' stroke='#ffffff' stroke-width='7'/>
@@ -75,127 +80,140 @@
 <line x1='227' y1='288' x2='417' y2='288' stroke='#ffffff' stroke-width='7'/>
 <line x1='227' y1='288' x2='417' y2='288' stroke='#d95f02' stroke-width='3'/>
 <line x1='227' y1='314' x2='448' y2='314' stroke='#ffffff' stroke-width='7'/>
-<line x1='227' y1='314' x2='448' y2='314' stroke='#a6761d' stroke-width='3'/>
+<line x1='227' y1='314' x2='448' y2='314' stroke='#d95f02' stroke-width='3'/>
 <line x1='227' y1='340' x2='479' y2='340' stroke='#ffffff' stroke-width='7'/>
-<line x1='227' y1='340' x2='479' y2='340' stroke='#e7298a' stroke-width='3'/>
+<line x1='227' y1='340' x2='479' y2='340' stroke='#a6761d' stroke-width='3'/>
 <line x1='227' y1='366' x2='510' y2='366' stroke='#ffffff' stroke-width='7'/>
-<line x1='227' y1='366' x2='510' y2='366' stroke='#8e44ad' stroke-width='3'/>
-<circle cx='262' cy='464' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='490' r='4.5' fill='#1a1a1a'/>
-<circle cx='355' cy='516' r='4.5' fill='#e0a800'/>
-<circle cx='324' cy='542' r='4.5' fill='#2a78d6'/>
-<circle cx='262' cy='626' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='652' r='4.5' fill='#1a1a1a'/>
-<circle cx='355' cy='678' r='4.5' fill='#e0a800'/>
-<circle cx='324' cy='704' r='4.5' fill='#2a78d6'/>
-<circle cx='262' cy='808' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='834' r='4.5' fill='#1a1a1a'/>
-<circle cx='324' cy='860' r='4.5' fill='#2a78d6'/>
-<circle cx='355' cy='886' r='4.5' fill='#e0a800'/>
-<circle cx='262' cy='970' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='996' r='4.5' fill='#1a1a1a'/>
-<circle cx='386' cy='1022' r='4.5' fill='#1b9e77'/>
-<circle cx='262' cy='1106' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='1132' r='4.5' fill='#1a1a1a'/>
-<circle cx='417' cy='1158' r='4.5' fill='#d95f02'/>
-<circle cx='262' cy='1242' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='1268' r='4.5' fill='#1a1a1a'/>
-<circle cx='448' cy='1294' r='4.5' fill='#a6761d'/>
-<circle cx='262' cy='1378' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='1404' r='4.5' fill='#1a1a1a'/>
-<circle cx='479' cy='1430' r='4.5' fill='#e7298a'/>
-<circle cx='262' cy='1514' r='4.5' fill='#d62828'/>
-<circle cx='293' cy='1540' r='4.5' fill='#1a1a1a'/>
-<circle cx='510' cy='1566' r='4.5' fill='#8e44ad'/>
+<line x1='227' y1='366' x2='510' y2='366' stroke='#e7298a' stroke-width='3'/>
+<line x1='227' y1='392' x2='541' y2='392' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='392' x2='541' y2='392' stroke='#8e44ad' stroke-width='3'/>
+<circle cx='262' cy='490' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='516' r='4.5' fill='#1a1a1a'/>
+<circle cx='355' cy='542' r='4.5' fill='#e0a800'/>
+<circle cx='324' cy='568' r='4.5' fill='#2a78d6'/>
+<circle cx='262' cy='652' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='678' r='4.5' fill='#1a1a1a'/>
+<circle cx='355' cy='704' r='4.5' fill='#e0a800'/>
+<circle cx='324' cy='730' r='4.5' fill='#2a78d6'/>
+<circle cx='262' cy='834' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='860' r='4.5' fill='#1a1a1a'/>
+<circle cx='324' cy='886' r='4.5' fill='#2a78d6'/>
+<circle cx='355' cy='912' r='4.5' fill='#e0a800'/>
+<circle cx='262' cy='996' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='1022' r='4.5' fill='#1a1a1a'/>
+<circle cx='386' cy='1048' r='4.5' fill='#1b9e77'/>
+<circle cx='417' cy='1132' r='4.5' fill='#d95f02'/>
+<circle cx='293' cy='1158' r='4.5' fill='#1a1a1a'/>
+<circle cx='262' cy='1262' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='1288' r='4.5' fill='#1a1a1a'/>
+<circle cx='448' cy='1314' r='4.5' fill='#d95f02'/>
+<circle cx='262' cy='1398' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='1424' r='4.5' fill='#1a1a1a'/>
+<circle cx='479' cy='1450' r='4.5' fill='#a6761d'/>
+<circle cx='262' cy='1534' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='1560' r='4.5' fill='#1a1a1a'/>
+<circle cx='510' cy='1586' r='4.5' fill='#e7298a'/>
+<circle cx='262' cy='1670' r='4.5' fill='#d62828'/>
+<circle cx='293' cy='1696' r='4.5' fill='#1a1a1a'/>
+<circle cx='541' cy='1722' r='4.5' fill='#8e44ad'/>
 <circle cx='262' cy='158' r='4.5' fill='#d62828'/>
 <circle cx='293' cy='184' r='4.5' fill='#1a1a1a'/>
 <circle cx='324' cy='210' r='4.5' fill='#2a78d6'/>
 <circle cx='355' cy='236' r='4.5' fill='#e0a800'/>
 <circle cx='386' cy='262' r='4.5' fill='#1b9e77'/>
 <circle cx='417' cy='288' r='4.5' fill='#d95f02'/>
-<circle cx='448' cy='314' r='4.5' fill='#a6761d'/>
-<circle cx='479' cy='340' r='4.5' fill='#e7298a'/>
-<circle cx='510' cy='366' r='4.5' fill='#8e44ad'/>
-<rect x='540' y='406' width='350' height='148' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='426' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SHT45 temperature / humidity</text>
-<text x='552' y='442' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside the tent at plant height, shaded from the light</text>
-<rect x='533' y='457' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='468' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VIN</text>
-<rect x='533' y='483' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='494' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='509' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
-<text x='554' y='520' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
-<rect x='533' y='535' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
-<text x='554' y='546' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
-<rect x='540' y='568' width='350' height='168' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='588' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>BH1750 light sensor</text>
-<text x='552' y='604' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside the tent, facing the light</text>
-<rect x='533' y='619' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='630' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='645' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='656' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='671' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
-<text x='554' y='682' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
-<rect x='533' y='697' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
-<text x='554' y='708' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
-<text x='552' y='727' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leave the ADDR pin unconnected.</text>
-<rect x='540' y='750' width='350' height='148' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='770' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DS3231 clock</text>
-<text x='552' y='786' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside the enclosure</text>
-<rect x='533' y='801' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='812' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='827' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='838' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='853' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
-<text x='554' y='864' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
-<rect x='533' y='879' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
-<text x='554' y='890' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
-<rect x='540' y='912' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='932' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leak sensor module: tent floor</text>
-<text x='552' y='948' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>sensing plate on the floor of the spill tray</text>
-<rect x='533' y='963' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='974' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='989' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1000' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1015' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
-<text x='554' y='1026' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DO</text>
-<rect x='540' y='1048' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='1068' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 1</text>
-<text x='552' y='1084' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
-<rect x='533' y='1099' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='1110' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='1125' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1136' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1151' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
-<text x='554' y='1162' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
-<rect x='540' y='1184' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='1204' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 2</text>
-<text x='552' y='1220' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
-<rect x='533' y='1235' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='1246' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='1261' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1272' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1287' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
-<text x='554' y='1298' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
-<rect x='540' y='1320' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='1340' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 3</text>
-<text x='552' y='1356' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
-<rect x='533' y='1371' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='1382' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='1397' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1408' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1423' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
-<text x='554' y='1434' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
-<rect x='540' y='1456' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='1476' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 4</text>
-<text x='552' y='1492' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
-<rect x='533' y='1507' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='1518' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='1533' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1544' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1559' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
-<text x='554' y='1570' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
-<rect x='30' y='96' width='190' height='288' rx='8' fill='#e8f1ea' stroke='#2f7d4f' stroke-width='2'/>
+<circle cx='448' cy='314' r='4.5' fill='#d95f02'/>
+<circle cx='479' cy='340' r='4.5' fill='#a6761d'/>
+<circle cx='510' cy='366' r='4.5' fill='#e7298a'/>
+<circle cx='541' cy='392' r='4.5' fill='#8e44ad'/>
+<rect x='560' y='432' width='340' height='148' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='452' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SHT45 temperature / humidity</text>
+<text x='572' y='468' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside the tent at plant height, shaded from the light</text>
+<rect x='553' y='483' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='494' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VIN</text>
+<rect x='553' y='509' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='520' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='535' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
+<text x='574' y='546' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
+<rect x='553' y='561' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
+<text x='574' y='572' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
+<rect x='560' y='594' width='340' height='168' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='614' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>BH1750 light sensor</text>
+<text x='572' y='630' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside the tent, facing the light</text>
+<rect x='553' y='645' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='656' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='671' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='682' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='697' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
+<text x='574' y='708' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
+<rect x='553' y='723' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
+<text x='574' y='734' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
+<text x='572' y='753' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leave the ADDR pin unconnected.</text>
+<rect x='560' y='776' width='340' height='148' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='796' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DS3231 clock</text>
+<text x='572' y='812' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside the enclosure</text>
+<rect x='553' y='827' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='838' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='853' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='864' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='879' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
+<text x='574' y='890' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
+<rect x='553' y='905' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
+<text x='574' y='916' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
+<rect x='560' y='938' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='958' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leak sensor module: tent floor</text>
+<text x='572' y='974' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>sensing plate on the floor of the spill tray</text>
+<rect x='553' y='989' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1000' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1015' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1026' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1041' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
+<text x='574' y='1052' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DO</text>
+<rect x='560' y='1074' width='340' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1094' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float switch: watering tank low</text>
+<text x='572' y='1110' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>either wire to either terminal</text>
+<rect x='553' y='1125' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='574' y='1136' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
+<rect x='553' y='1151' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1162' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
+<text x='572' y='1181' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float hangs DOWN (switch open) when the tank is low.</text>
+<rect x='560' y='1204' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1224' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 1</text>
+<text x='572' y='1240' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
+<rect x='553' y='1255' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1266' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1281' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1292' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1307' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='574' y='1318' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
+<rect x='560' y='1340' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1360' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 2</text>
+<text x='572' y='1376' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
+<rect x='553' y='1391' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1402' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1417' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1428' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1443' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
+<text x='574' y='1454' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
+<rect x='560' y='1476' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1496' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 3</text>
+<text x='572' y='1512' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
+<rect x='553' y='1527' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1538' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1553' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1564' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1579' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
+<text x='574' y='1590' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
+<rect x='560' y='1612' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1632' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Capacitive soil moisture sensor: pot 4</text>
+<text x='572' y='1648' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>pushed into the soil up to the line</text>
+<rect x='553' y='1663' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1674' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1689' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1700' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1715' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='574' y='1726' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>AOUT</text>
+<rect x='30' y='96' width='190' height='314' rx='8' fill='#e8f1ea' stroke='#2f7d4f' stroke-width='2'/>
 <text x='42' y='116' font-size='13' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>ESP32 DevKit (WROOM-32)</text>
 <text x='42' y='132' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>screw-terminal breakout</text>
 <text x='206' y='162' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>3V3</text>
@@ -208,24 +226,27 @@
 <rect x='213' y='229' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
 <text x='206' y='266' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO32</text>
 <rect x='213' y='255' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
-<text x='206' y='292' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO34</text>
+<text x='206' y='292' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO33</text>
 <rect x='213' y='281' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
-<text x='206' y='318' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO35</text>
-<rect x='213' y='307' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
-<text x='206' y='344' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO36</text>
-<rect x='213' y='333' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
-<text x='206' y='370' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO39</text>
-<rect x='213' y='359' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='206' y='318' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO34</text>
+<rect x='213' y='307' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='206' y='344' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO35</text>
+<rect x='213' y='333' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
+<text x='206' y='370' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO36</text>
+<rect x='213' y='359' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
+<text x='206' y='396' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO39</text>
+<rect x='213' y='385' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
 <text x='266' y='88' font-size='11' fill='#d62828' font-weight='bold' transform='rotate(-55 266 88)' font-family='Helvetica, Arial, sans-serif'>3.3 V</text>
 <text x='297' y='88' font-size='11' fill='#1a1a1a' font-weight='bold' transform='rotate(-55 297 88)' font-family='Helvetica, Arial, sans-serif'>Ground</text>
 <text x='328' y='88' font-size='11' fill='#2a78d6' font-weight='bold' transform='rotate(-55 328 88)' font-family='Helvetica, Arial, sans-serif'>I2C data</text>
 <text x='359' y='88' font-size='11' fill='#e0a800' font-weight='bold' transform='rotate(-55 359 88)' font-family='Helvetica, Arial, sans-serif'>I2C clock</text>
 <text x='390' y='88' font-size='11' fill='#1b9e77' font-weight='bold' transform='rotate(-55 390 88)' font-family='Helvetica, Arial, sans-serif'>Input 1</text>
-<text x='421' y='88' font-size='11' fill='#d95f02' font-weight='bold' transform='rotate(-55 421 88)' font-family='Helvetica, Arial, sans-serif'>Analog 1</text>
-<text x='452' y='88' font-size='11' fill='#a6761d' font-weight='bold' transform='rotate(-55 452 88)' font-family='Helvetica, Arial, sans-serif'>Analog 2</text>
-<text x='483' y='88' font-size='11' fill='#e7298a' font-weight='bold' transform='rotate(-55 483 88)' font-family='Helvetica, Arial, sans-serif'>Analog 3</text>
-<text x='514' y='88' font-size='11' fill='#8e44ad' font-weight='bold' transform='rotate(-55 514 88)' font-family='Helvetica, Arial, sans-serif'>Analog 4</text>
-<text x='30' y='1600' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Wires join only where there is a dot. Lines that simply cross are not connected.</text>
-<text x='30' y='1619' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Power the board from a USB charger. Never connect 5 V to any of these pins.</text>
-<text x='30' y='1638' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Fewer pots: leave out the sensors you do not need, from the bottom up.</text>
+<text x='421' y='88' font-size='11' fill='#d95f02' font-weight='bold' transform='rotate(-55 421 88)' font-family='Helvetica, Arial, sans-serif'>Input 2</text>
+<text x='452' y='88' font-size='11' fill='#d95f02' font-weight='bold' transform='rotate(-55 452 88)' font-family='Helvetica, Arial, sans-serif'>Analog 1</text>
+<text x='483' y='88' font-size='11' fill='#a6761d' font-weight='bold' transform='rotate(-55 483 88)' font-family='Helvetica, Arial, sans-serif'>Analog 2</text>
+<text x='514' y='88' font-size='11' fill='#e7298a' font-weight='bold' transform='rotate(-55 514 88)' font-family='Helvetica, Arial, sans-serif'>Analog 3</text>
+<text x='545' y='88' font-size='11' fill='#8e44ad' font-weight='bold' transform='rotate(-55 545 88)' font-family='Helvetica, Arial, sans-serif'>Analog 4</text>
+<text x='30' y='1756' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Wires join only where there is a dot. Lines that simply cross are not connected.</text>
+<text x='30' y='1775' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Power the board from a USB charger. Never connect 5 V to any of these pins.</text>
+<text x='30' y='1794' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Fewer pots: leave out the sensors you do not need, from the bottom up.</text>
 </svg>

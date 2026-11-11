@@ -30,13 +30,15 @@ over cleverness.
 - `firmware/boards/`: one profile per supported board (chip + pin names). Node packages use only the pin names, never raw GPIO numbers. Validate every node against every profile when changing shared packages.
 - `tools/`: setup helpers (`python -m tools.detect_boards`, `python -m tools.wiring_diagrams`). Standard library only.
 - `docs/wiring/*.svg` are generated from the board profiles by `python -m tools.wiring_diagrams`. Regenerate and update `docs/BUILD.md` whenever a pin, sensor or node role changes (a test fails if they are stale).
-- `simulator/`: fake nodes over MQTT that also react to commands.
+- `firmware/common/control.h`: the node control and interlock logic, pure C++, unit-tested natively by `firmware/tests/control_test.cpp` (run by `pytest`). Change the tests with it. `simulator/control.py` is its Python port: keep the two in step.
+- The hub never switches a relay. It asks a node for a mode, a setting or a dose (`backend/growshed/control.py`); only the node's control loop drives outputs.
+- `simulator/`: fake nodes over MQTT that mirror the firmware's modes, interlocks and dose limits.
 - `hardware/enclosure/`: 3D-printable node enclosure (OpenSCAD source + exported STLs). Re-export the STLs whenever the `.scad` changes.
 
 ## Definition of done (every task)
 - Backend: `pytest` and `ruff check .` pass (run both from the repo root). New control/alert/dosing logic has unit tests, including failure cases.
 - Frontend: `npm run build` succeeds; the page works at phone width and tablet width.
-- Firmware: `esphome config firmware/<node>.yaml` validates (use the `ghcr.io/esphome/esphome:stable` Docker image).
+- Firmware: `esphome config firmware/<node>.yaml` validates, and any change to a lambda or `control.h` also passes `esphome compile` for at least the affected node (use the `ghcr.io/esphome/esphome:stable` Docker image).
 - End-to-end: `docker compose --profile sim up -d --build` shows the feature working in a browser.
 - Docs updated if behavior, topics or the data model changed.
 

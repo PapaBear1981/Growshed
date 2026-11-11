@@ -35,10 +35,18 @@ NETS = {
     "ADC2": ("#a6761d", "Analog 2"),
     "ADC3": ("#e7298a", "Analog 3"),
     "ADC4": ("#8e44ad", "Analog 4"),
+    # Outputs are drawn on their own diagrams, so they can reuse colours too.
+    "OUT1": ("#2a78d6", "Output 1"),
+    "OUT2": ("#e0a800", "Output 2"),
+    "OUT3": ("#1b9e77", "Output 3"),
+    "OUT4": ("#d95f02", "Output 4"),
+    "OUT5": ("#8e44ad", "Output 5"),
+    "OUT6": ("#e7298a", "Output 6"),
 }
 NET_PIN = {"SDA": "pin_sda", "SCL": "pin_scl", "1W": "pin_onewire", "IN1": "pin_in1",
            "IN2": "pin_in2", "IN3": "pin_in3", "IN4": "pin_in4", "ADC1": "pin_adc1",
-           "ADC2": "pin_adc2", "ADC3": "pin_adc3", "ADC4": "pin_adc4"}  # fmt: skip
+           "ADC2": "pin_adc2", "ADC3": "pin_adc3", "ADC4": "pin_adc4",
+           **{f"OUT{i}": f"pin_out{i}" for i in range(1, 7)}}  # fmt: skip
 
 
 @dataclass
@@ -77,6 +85,11 @@ def soil(n: int) -> Part:
                 [("VCC", "3V3"), ("GND", "GND"), ("AOUT", f"ADC{n}")])  # fmt: skip
 
 
+def relay_box(what: str, net: str, outlet: str = "normally OFF") -> Part:
+    return Part(f"Relay outlet box: {what}", f"plug the load into a '{outlet}' outlet",
+                [("+ signal", net), ("- signal", "GND")])  # fmt: skip
+
+
 DS18B20 = "DS18B20 waterproof probe: {}"
 PULLUP = Part("4.7 kΩ resistor", "between the two terminals, at the node",
               [("end", "3V3"), ("end", "1W")], "Needed once per node, not per probe.")  # fmt: skip
@@ -101,16 +114,22 @@ COMMON_NOTES = [
 ]
 
 DIAGRAMS = [
-    Diagram("tent-node", "Tent node (tent1)", TENT_PARTS, COMMON_NOTES),
+    Diagram("tent-node", "Tent node (tent1): sensors", TENT_PARTS, COMMON_NOTES),
     Diagram(
         "tent-soil-node",
-        "Tent node with soil pots (tent2)",
-        TENT_PARTS + [soil(n) for n in (1, 2, 3, 4)],
+        "Tent node with soil pots (tent2): sensors",
+        TENT_PARTS
+        + [
+            float_switch(
+                "watering tank low", "IN2", "Float hangs DOWN (switch open) when the tank is low."
+            )
+        ]
+        + [soil(n) for n in (1, 2, 3, 4)],
         COMMON_NOTES + ["Fewer pots: leave out the sensors you do not need, from the bottom up."],
     ),
     Diagram(
         "tower-tent-node",
-        "Tower tent node (tent3)",
+        "Tower tent node (tent3): sensors",
         TENT_PARTS
         + [
             Part(
@@ -129,7 +148,7 @@ DIAGRAMS = [
     ),
     Diagram(
         "water-node",
-        "Water node (RDWC reservoir)",
+        "Water node (RDWC reservoir): sensors",
         [
             Part(
                 DS18B20.format("control bucket"),
@@ -152,6 +171,62 @@ DIAGRAMS = [
 ]
 
 
+OUTPUT_NOTES = [
+    "Wires join only where there is a dot. Lines that simply cross are not connected.",
+    "These are low-voltage signal wires only. Mains stays inside the relay boxes.",
+]
+TENT_OUTPUTS = [relay_box("grow lights", "OUT1"), relay_box("exhaust fan", "OUT2")]
+MOSFET_NOTE = "Pumps and the 12 V supply go on the board's power terminals."
+
+DIAGRAMS += [
+    Diagram("tent-outputs", "Tent node (tent1): outputs", TENT_OUTPUTS, OUTPUT_NOTES),
+    Diagram(
+        "tent-soil-outputs",
+        "Tent node with soil pots (tent2): outputs",
+        TENT_OUTPUTS
+        + [
+            Part(
+                "4-channel MOSFET board: watering pumps",
+                "inside or beside the enclosure",
+                [
+                    ("IN1 (pot 1)", "OUT3"),
+                    ("IN2 (pot 2)", "OUT4"),
+                    ("IN3 (pot 3)", "OUT5"),
+                    ("IN4 (pot 4)", "OUT6"),
+                    ("GND", "GND"),
+                ],
+                MOSFET_NOTE,
+            ),  # fmt: skip
+        ],
+        OUTPUT_NOTES
+        + ["The 12 V supply's minus must connect to the node's GND (the board does this)."],
+    ),
+    Diagram(
+        "tower-tent-outputs",
+        "Tower tent node (tent3): outputs",
+        TENT_OUTPUTS + [relay_box("tower pump", "OUT3")],
+        OUTPUT_NOTES,
+    ),
+    Diagram(
+        "water-outputs",
+        "Water node (RDWC reservoir): outputs",
+        [
+            relay_box("water heater", "OUT1"),
+            relay_box("air pump", "OUT2", "normally ON"),
+            relay_box("circulation pump", "OUT3", "normally ON"),
+            Part(
+                "MOSFET module: 12 V top-off pump",
+                "inside or beside the enclosure",
+                [("SIG", "OUT4"), ("GND", "GND")],
+                MOSFET_NOTE,
+            ),  # fmt: skip
+        ],
+        OUTPUT_NOTES
+        + ["Normally-ON outlets keep the air and circulation pumps running if the node dies."],
+    ),
+]
+
+
 def read_profile(board: str) -> dict[str, str]:
     """The substitutions block of a board profile (kept dependency-free: no YAML library)."""
     text = (REPO_ROOT / "firmware" / "boards" / f"{board}.yaml").read_text(encoding="utf-8")
@@ -161,7 +236,7 @@ def read_profile(board: str) -> dict[str, str]:
 # Layout constants (pixels)
 ROW = 26
 BOARD_X, BOARD_W = 30, 190
-PART_X, PART_W = 540, 350
+PART_X, PART_W = 560, 340
 LANE_X0, LANE_GAP = 262, 31
 FONT = "font-family='Helvetica, Arial, sans-serif'"
 

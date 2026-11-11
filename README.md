@@ -5,9 +5,10 @@ RDWC, Kratky, a strawberry tower and soil pots. A Raspberry Pi 4 hub runs the we
 and alerts. ESP32 nodes running ESPHome handle sensors, relays and local failsafes.
 
 **Status:** Phase 0 (foundations) is built: the hub, a live dashboard and a simulator that
-stands in for the hardware. Phase 1's software is built too:
-history charts, alerts with phone notifications, multi-board node firmware and a build guide.
-It has only run against the simulator so far; no real node has been built yet. See [the plan](docs/PLAN.md) for what comes next.
+stands in for the hardware. The software for Phase 1 (history, alerts,
+phone notifications, soil sensors) and Phase 2 (control of lights, fans, heater and pumps,
+automatic soil watering, safety cutoffs on the nodes) is built too. It has only run against
+the simulator so far; no real node has been built yet. See [the plan](docs/PLAN.md) for what comes next.
 
 ## Try it on a laptop (no hardware needed)
 
@@ -34,10 +35,10 @@ docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshe
 ```
 
 Faults: `leak on|off`, `sensor_fail on|off`, `offline`, `online`; `tower_low on|off` (tent3);
-`drain` (water); `soil_dry`, `soil_water` (tent2). Switch a device the way the hub will in Phase 2:
+`drain` (water); `soil_dry`, `soil_water`, `soil_unplug`, `soil_replug`, `tank_low on|off` (tent2). Ask a node for a device mode the way the hub does (`auto`, `on` or `off`):
 
 ```bash
-docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshed/tent2/switch/lights/command -m ON
+docker compose exec mosquitto mosquitto_pub -u node -P change-me-node -t growshed/tent2/select/lights_mode/command -m on
 ```
 
 ## On the Raspberry Pi

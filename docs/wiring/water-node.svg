@@ -1,4 +1,4 @@
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 920 1418' width='920' height='1418' role='img' aria-label='Water node (RDWC reservoir) wiring'><rect width='920' height='1418' fill='#ffffff'/><text x='30' y='30' font-size='19' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Water node (RDWC reservoir)</text>
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 920 1418' width='920' height='1418' role='img' aria-label='Water node (RDWC reservoir): sensors wiring'><rect width='920' height='1418' fill='#ffffff'/><text x='30' y='30' font-size='19' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Water node (RDWC reservoir): sensors</text>
 <line x1='262' y1='158' x2='262' y2='1288' stroke='#d62828' stroke-width='3'/>
 <line x1='293' y1='184' x2='293' y2='1314' stroke='#1a1a1a' stroke-width='3'/>
 <line x1='324' y1='210' x2='324' y2='808' stroke='#2a78d6' stroke-width='3'/>
@@ -8,44 +8,44 @@
 <line x1='448' y1='314' x2='448' y2='1022' stroke='#d95f02' stroke-width='3'/>
 <line x1='479' y1='340' x2='479' y2='1204' stroke='#a6761d' stroke-width='3'/>
 <line x1='510' y1='366' x2='510' y2='1340' stroke='#e7298a' stroke-width='3'/>
-<line x1='262' y1='464' x2='533' y2='464' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='464' x2='533' y2='464' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='490' x2='533' y2='490' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='490' x2='533' y2='490' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='386' y1='516' x2='533' y2='516' stroke='#ffffff' stroke-width='7'/>
-<line x1='386' y1='516' x2='533' y2='516' stroke='#8e44ad' stroke-width='3'/>
-<line x1='262' y1='600' x2='533' y2='600' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='600' x2='533' y2='600' stroke='#d62828' stroke-width='3'/>
-<line x1='386' y1='626' x2='533' y2='626' stroke='#ffffff' stroke-width='7'/>
-<line x1='386' y1='626' x2='533' y2='626' stroke='#8e44ad' stroke-width='3'/>
-<line x1='262' y1='730' x2='533' y2='730' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='730' x2='533' y2='730' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='756' x2='533' y2='756' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='756' x2='533' y2='756' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='355' y1='782' x2='533' y2='782' stroke='#ffffff' stroke-width='7'/>
-<line x1='355' y1='782' x2='533' y2='782' stroke='#e0a800' stroke-width='3'/>
-<line x1='324' y1='808' x2='533' y2='808' stroke='#ffffff' stroke-width='7'/>
-<line x1='324' y1='808' x2='533' y2='808' stroke='#2a78d6' stroke-width='3'/>
-<line x1='417' y1='892' x2='533' y2='892' stroke='#ffffff' stroke-width='7'/>
-<line x1='417' y1='892' x2='533' y2='892' stroke='#1b9e77' stroke-width='3'/>
-<line x1='293' y1='918' x2='533' y2='918' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='918' x2='533' y2='918' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='448' y1='1022' x2='533' y2='1022' stroke='#ffffff' stroke-width='7'/>
-<line x1='448' y1='1022' x2='533' y2='1022' stroke='#d95f02' stroke-width='3'/>
-<line x1='293' y1='1048' x2='533' y2='1048' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1048' x2='533' y2='1048' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='262' y1='1152' x2='533' y2='1152' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='1152' x2='533' y2='1152' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='1178' x2='533' y2='1178' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1178' x2='533' y2='1178' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='479' y1='1204' x2='533' y2='1204' stroke='#ffffff' stroke-width='7'/>
-<line x1='479' y1='1204' x2='533' y2='1204' stroke='#a6761d' stroke-width='3'/>
-<line x1='262' y1='1288' x2='533' y2='1288' stroke='#ffffff' stroke-width='7'/>
-<line x1='262' y1='1288' x2='533' y2='1288' stroke='#d62828' stroke-width='3'/>
-<line x1='293' y1='1314' x2='533' y2='1314' stroke='#ffffff' stroke-width='7'/>
-<line x1='293' y1='1314' x2='533' y2='1314' stroke='#1a1a1a' stroke-width='3'/>
-<line x1='510' y1='1340' x2='533' y2='1340' stroke='#ffffff' stroke-width='7'/>
-<line x1='510' y1='1340' x2='533' y2='1340' stroke='#e7298a' stroke-width='3'/>
+<line x1='262' y1='464' x2='553' y2='464' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='464' x2='553' y2='464' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='490' x2='553' y2='490' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='490' x2='553' y2='490' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='386' y1='516' x2='553' y2='516' stroke='#ffffff' stroke-width='7'/>
+<line x1='386' y1='516' x2='553' y2='516' stroke='#8e44ad' stroke-width='3'/>
+<line x1='262' y1='600' x2='553' y2='600' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='600' x2='553' y2='600' stroke='#d62828' stroke-width='3'/>
+<line x1='386' y1='626' x2='553' y2='626' stroke='#ffffff' stroke-width='7'/>
+<line x1='386' y1='626' x2='553' y2='626' stroke='#8e44ad' stroke-width='3'/>
+<line x1='262' y1='730' x2='553' y2='730' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='730' x2='553' y2='730' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='756' x2='553' y2='756' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='756' x2='553' y2='756' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='355' y1='782' x2='553' y2='782' stroke='#ffffff' stroke-width='7'/>
+<line x1='355' y1='782' x2='553' y2='782' stroke='#e0a800' stroke-width='3'/>
+<line x1='324' y1='808' x2='553' y2='808' stroke='#ffffff' stroke-width='7'/>
+<line x1='324' y1='808' x2='553' y2='808' stroke='#2a78d6' stroke-width='3'/>
+<line x1='417' y1='892' x2='553' y2='892' stroke='#ffffff' stroke-width='7'/>
+<line x1='417' y1='892' x2='553' y2='892' stroke='#1b9e77' stroke-width='3'/>
+<line x1='293' y1='918' x2='553' y2='918' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='918' x2='553' y2='918' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='448' y1='1022' x2='553' y2='1022' stroke='#ffffff' stroke-width='7'/>
+<line x1='448' y1='1022' x2='553' y2='1022' stroke='#d95f02' stroke-width='3'/>
+<line x1='293' y1='1048' x2='553' y2='1048' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1048' x2='553' y2='1048' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='262' y1='1152' x2='553' y2='1152' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='1152' x2='553' y2='1152' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1178' x2='553' y2='1178' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1178' x2='553' y2='1178' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='479' y1='1204' x2='553' y2='1204' stroke='#ffffff' stroke-width='7'/>
+<line x1='479' y1='1204' x2='553' y2='1204' stroke='#a6761d' stroke-width='3'/>
+<line x1='262' y1='1288' x2='553' y2='1288' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='1288' x2='553' y2='1288' stroke='#d62828' stroke-width='3'/>
+<line x1='293' y1='1314' x2='553' y2='1314' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='1314' x2='553' y2='1314' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='510' y1='1340' x2='553' y2='1340' stroke='#ffffff' stroke-width='7'/>
+<line x1='510' y1='1340' x2='553' y2='1340' stroke='#e7298a' stroke-width='3'/>
 <line x1='227' y1='158' x2='262' y2='158' stroke='#ffffff' stroke-width='7'/>
 <line x1='227' y1='158' x2='262' y2='158' stroke='#d62828' stroke-width='3'/>
 <line x1='227' y1='184' x2='293' y2='184' stroke='#ffffff' stroke-width='7'/>
@@ -92,68 +92,68 @@
 <circle cx='448' cy='314' r='4.5' fill='#d95f02'/>
 <circle cx='479' cy='340' r='4.5' fill='#a6761d'/>
 <circle cx='510' cy='366' r='4.5' fill='#e7298a'/>
-<rect x='540' y='406' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='426' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DS18B20 waterproof probe: control bucket</text>
-<text x='552' y='442' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>in the reservoir water</text>
-<rect x='533' y='457' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='468' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>red</text>
-<rect x='533' y='483' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='494' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>black</text>
-<rect x='533' y='509' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
-<text x='554' y='520' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>yellow</text>
-<rect x='540' y='542' width='350' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='562' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>4.7 kΩ resistor</text>
-<text x='552' y='578' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>between the two terminals, at the node</text>
-<rect x='533' y='593' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='604' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>end</text>
-<rect x='533' y='619' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
-<text x='554' y='630' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>end</text>
-<text x='552' y='649' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Needed once per node, not per probe.</text>
-<rect x='540' y='672' width='350' height='148' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='692' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SHT45 temperature / humidity</text>
-<text x='552' y='708' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>in open basement air, away from the tents&#x27; exhaust</text>
-<rect x='533' y='723' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='734' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VIN</text>
-<rect x='533' y='749' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='760' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='775' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
-<text x='554' y='786' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
-<rect x='533' y='801' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
-<text x='554' y='812' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
-<rect x='540' y='834' width='350' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='854' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float switch: reservoir LOW</text>
-<text x='552' y='870' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>either wire to either terminal</text>
-<rect x='533' y='885' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
-<text x='554' y='896' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
-<rect x='533' y='911' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='922' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
-<text x='552' y='941' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float hangs DOWN (switch open) when the water is low.</text>
-<rect x='540' y='964' width='350' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='984' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float switch: reservoir FULL</text>
-<text x='552' y='1000' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>either wire to either terminal</text>
-<rect x='533' y='1015' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
-<text x='554' y='1026' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
-<rect x='533' y='1041' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1052' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
-<text x='552' y='1071' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float lifts UP (switch closed) at the full mark.</text>
-<rect x='540' y='1094' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='1114' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leak sensor module: under the reservoir</text>
-<text x='552' y='1130' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>sensing plate on the floor of the spill tray</text>
-<rect x='533' y='1145' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='1156' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='1171' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1182' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1197' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
-<text x='554' y='1208' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DO</text>
-<rect x='540' y='1230' width='350' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
-<text x='552' y='1250' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leak sensor module: under the top-off tank</text>
-<text x='552' y='1266' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>sensing plate on the floor of the spill tray</text>
-<rect x='533' y='1281' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
-<text x='554' y='1292' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
-<rect x='533' y='1307' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
-<text x='554' y='1318' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
-<rect x='533' y='1333' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
-<text x='554' y='1344' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DO</text>
+<rect x='560' y='406' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='426' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DS18B20 waterproof probe: control bucket</text>
+<text x='572' y='442' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>in the reservoir water</text>
+<rect x='553' y='457' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='468' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>red</text>
+<rect x='553' y='483' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='494' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>black</text>
+<rect x='553' y='509' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='574' y='520' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>yellow</text>
+<rect x='560' y='542' width='340' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='562' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>4.7 kΩ resistor</text>
+<text x='572' y='578' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>between the two terminals, at the node</text>
+<rect x='553' y='593' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='604' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>end</text>
+<rect x='553' y='619' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='574' y='630' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>end</text>
+<text x='572' y='649' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Needed once per node, not per probe.</text>
+<rect x='560' y='672' width='340' height='148' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='692' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SHT45 temperature / humidity</text>
+<text x='572' y='708' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>in open basement air, away from the tents&#x27; exhaust</text>
+<rect x='553' y='723' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='734' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VIN</text>
+<rect x='553' y='749' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='760' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='775' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
+<text x='574' y='786' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SCL</text>
+<rect x='553' y='801' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
+<text x='574' y='812' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>SDA</text>
+<rect x='560' y='834' width='340' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='854' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float switch: reservoir LOW</text>
+<text x='572' y='870' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>either wire to either terminal</text>
+<rect x='553' y='885' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
+<text x='574' y='896' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
+<rect x='553' y='911' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='922' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
+<text x='572' y='941' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float hangs DOWN (switch open) when the water is low.</text>
+<rect x='560' y='964' width='340' height='116' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='984' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float switch: reservoir FULL</text>
+<text x='572' y='1000' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>either wire to either terminal</text>
+<rect x='553' y='1015' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='574' y='1026' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
+<rect x='553' y='1041' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1052' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>wire</text>
+<text x='572' y='1071' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Float lifts UP (switch closed) at the full mark.</text>
+<rect x='560' y='1094' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1114' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leak sensor module: under the reservoir</text>
+<text x='572' y='1130' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>sensing plate on the floor of the spill tray</text>
+<rect x='553' y='1145' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1156' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1171' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1182' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1197' width='14' height='14' rx='3' fill='#ffffff' stroke='#a6761d' stroke-width='2'/>
+<text x='574' y='1208' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DO</text>
+<rect x='560' y='1230' width='340' height='122' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='1250' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Leak sensor module: under the top-off tank</text>
+<text x='572' y='1266' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>sensing plate on the floor of the spill tray</text>
+<rect x='553' y='1281' width='14' height='14' rx='3' fill='#ffffff' stroke='#d62828' stroke-width='2'/>
+<text x='574' y='1292' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>VCC</text>
+<rect x='553' y='1307' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='1318' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='553' y='1333' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
+<text x='574' y='1344' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>DO</text>
 <rect x='30' y='96' width='190' height='288' rx='8' fill='#e8f1ea' stroke='#2f7d4f' stroke-width='2'/>
 <text x='42' y='116' font-size='13' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>ESP32 DevKit (WROOM-32)</text>
 <text x='42' y='132' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>screw-terminal breakout</text>

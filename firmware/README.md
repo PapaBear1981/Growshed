@@ -7,8 +7,13 @@ One small file per node (`tent1.yaml`, `tent2.yaml`, `tent3.yaml`, `water.yaml`)
 
 The same node file works on any supported board: you change one line.
 
-**Status: Phase 1, monitoring only.** All configs pass `esphome config`, but nothing has been
-compiled or run on real hardware yet. Relays, thermostats and interlocks arrive in Phase 2.
+**Status: Phases 1 and 2 (sensors and control).** `tent1`, `tent2`, `tent3` and `water` pass
+`esphome config` and **compile** for the ESP32 DevKit; the other board profiles are
+config-checked only. Nothing has run on real hardware yet.
+
+The control logic (who decides whether a relay is on, the interlocks, the dose limits) lives
+in `common/control.h`. It is plain C++ with unit tests in `tests/`, which run on a PC as part
+of `pytest`.
 
 ## Supported boards
 
@@ -16,9 +21,9 @@ compiled or run on real hardware yet. Relays, thermostats and interlocks arrive 
 |---|---|---|---|---|
 | ESP32 DevKit (WROOM-32, 30- or 38-pin) | `esp32` | yes | yes | **Recommended.** Enough pins for Phase 2 relays |
 | ESP32-S3 DevKitC | `esp32-s3` | yes | yes | |
-| ESP32-C3 DevKitM / "Super Mini" | `esp32-c3` | yes | yes | Few pins: may run short in Phase 2 |
+| ESP32-C3 DevKitM / "Super Mini" | `esp32-c3` | sensors only | sensors only | Too few pins for outputs or soil sensors. Remove the `*_control` lines |
 | Arduino Nano ESP32 | `arduino-nano-esp32` | yes | yes | It is an ESP32-S3 inside |
-| ESP8266 (D1 mini, NodeMCU) | `esp8266` | yes | **no** | Too few safe pins for the water node, and too few for Phase 2 relays. Fine as a sensor-only node |
+| ESP8266 (D1 mini, NodeMCU) | `esp8266` | sensors only | **no** | Too few pins for outputs, soil sensors or the water node. Remove the `*_control` lines |
 | Arduino Uno / Nano / Mega / Leonardo, Uno R4, MKR, Nano 33 | none | no | no | ESPHome cannot run on these, and the classic ones have no WiFi |
 | Raspberry Pi Pico / Pico W | none | no | no | The plain Pico has no WiFi; ESPHome has no MQTT support on the Pico W |
 | Teensy (any) | none | no | no | No WiFi, and ESPHome cannot run on it |
@@ -42,7 +47,8 @@ It prints the line to put in the node file, e.g. `board: !include boards/esp32-s
 
 ## Flashing a node
 
-1. Copy `secrets.example.yaml` to `secrets.yaml` and fill in WiFi and the MQTT node password
+1. Copy `secrets.example.yaml` to `secrets.yaml` and fill in WiFi, your **time zone** (the light
+   schedule uses it) and the MQTT node password
    (the `MQTT_NODE_PASSWORD` from the Pi's `.env`).
 2. In the node file (e.g. `tent1.yaml`) set the `board:` line to your board's profile.
 3. Start the ESPHome dashboard on the Pi and open port 6052:
@@ -69,6 +75,7 @@ type and firmware version.
 | Input 3 | GPIO25 | GPIO7 | GPIO3 | GPIO8 | GPIO13 (D7) |
 | Input 4 | GPIO26 | GPIO15 | GPIO10 | GPIO9 | — |
 | Analog 1–4 (soil moisture) | GPIO34, 35, 36, 39 | GPIO1, 2, 10 | none | GPIO1 (A0), 2 (A1), 4 (A3) | none |
+| Output 1–6 (relay boxes, pump drivers) | GPIO16, 17, 18, 19, 23, 27 | GPIO16, 17, 18, 21, 38, 47 | none | GPIO10, 17, 18, 21, 38, 47 | none |
 
 The Arduino Nano ESP32 and ESP32-C3 pin choices are the least certain: check them against
 your board's pinout diagram before wiring, and edit the profile if needed.
@@ -84,6 +91,21 @@ What the inputs are used for:
 All inputs use the chip's internal pull-up: wire each switch or probe between the pin and GND.
 Low floats are wired so that a broken wire reads as "low" (the safe direction). A leak probe
 with a broken wire reads "dry", so test the leak probes with a wet finger now and then.
+
+What the outputs are used for:
+
+| Node | Output 1 | Output 2 | Output 3 | Output 4 | Output 5 | Output 6 |
+|---|---|---|---|---|---|---|
+| tent1 | Lights | Exhaust fan | — | — | — | — |
+| tent2 | Lights | Exhaust fan | Pot 1 pump | Pot 2 pump | Pot 3 pump | Pot 4 pump |
+| tent3 | Lights | Exhaust fan | Tower pump | — | — | — |
+| water | Water heater | Air pump (inverted) | Circulation pump (inverted) | Top-off pump | — | — |
+
+"Inverted" outputs drive relay boxes whose load is on the **normally-ON** outlet, so the pump
+runs whenever the node is dead or unplugged.
+
+**Sensor-only boards (ESP32-C3, ESP8266)** have no output pins. To use one as a monitoring
+node, delete the `*_control` (and watering) lines from the node file.
 
 **Soil pots:** `tent2.yaml` includes one `soil_sensor` line per pot. Delete lines, or move them
 to another tent's file, to match where your pots are; a board supports as many pots as it has

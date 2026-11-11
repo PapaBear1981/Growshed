@@ -42,10 +42,12 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | Concern | Lives on | Notes |
 |---|---|---|
 | Interlocks (dry-heater cutoff, overtemp, leak, overflow) | **Node** | Always enforced, even under manual override. See SAFETY.md |
-| Water thermostat, tent exhaust temp/RH control, (tent heater) | **Node** | ESPHome `thermostat`/threshold logic. Setpoints come from the Pi and persist in node flash |
-| Fallback schedules (lights, tower pump) | **Node** | Run only when the Pi heartbeat is lost |
-| Normal schedules, photoperiod, pump cycles | Pi | Sends ON/OFF commands |
-| Manual overrides and expiries | Pi | Expired overrides revert to AUTO |
+| All automation: light schedule, exhaust limits, water thermostat, tower pump cycle | **Node** | Runs all the time from settings stored on the node, with or without the hub (`firmware/common/control.h`) |
+| Fallback | **Node** | Same automation; manual modes are ignored and doses refused while the hub is silent |
+| Changing settings (light times, limits, setpoints) | Pi | Range-checked, then stored on the node |
+| Manual modes and their expiry | Pi | Asks the node for auto/on/off; reverts to auto when the timer runs out |
+| House-wide leak alarm (I-10) | Pi + node | The Pi latches it and tells every node; each node also acts on its own leak sensor |
+| Soil watering decisions | Pi | Dose-based, with the limits in SAFETY.md §4b. The node enforces run time, rest, daily cap, tank and leak |
 | Dosing decisions | Pi | Node enforces per-dose and per-day maximums (SAFETY.md §4) |
 | History, charts, alerts, journal, calibration records | Pi | |
 
@@ -65,7 +67,8 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | `notify` | ntfy delivery and the optional dead man's ping (standard library only) |
 | `calibration` | Two-point calibrations (soil moisture: volts → percent), applied to live values, history output and therefore alerts |
 | `background` | The periodic loop: alert ticks, notification retries, flush, rollup, pruning |
-| `controller` | Device modes (AUTO/ON/OFF + expiry), schedules, setpoint publishing, heartbeat |
+| `control` | Device modes (auto/on/off + expiry), node settings, dose requests, the latched leak alarm |
+| `watering` | Automatic soil watering per pot: soak wait, response check, strike lockout, daily cap |
 | `alerts` | Rule evaluation (threshold, on/off, node offline, fallback, silent sensor) with hold and clear delays, acknowledge, repeats, restart recovery |
 | `dosing` | Phase 4. Dosing state machine with limits |
 | `api` | REST routes + `/ws` WebSocket for live updates |
@@ -74,7 +77,7 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 ## 4. Data model (target)
 
 Tables are added by numbered migrations as each phase needs them. Built so far: `setting`
-(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1). Readings
+(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1); `device_override`, `dose_event`, `watering_pot` (Phase 2). Readings
 are keyed by a `series` row per MQTT entity instead of the `sensor` table sketched below, and
 alert rules live in `config.yaml`, not in an `alert_rule` table.
 

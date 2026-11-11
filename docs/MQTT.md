@@ -65,12 +65,31 @@ directly, without MQTT.
 | water | `res_temp`, `room_temp`, `room_rh`, `ph`, `ec` | `res_low`, `res_high`, `topoff_tank_low`, `leak_res`, `leak_topoff` | `water_heater`, `air_pump`, `rdwc_pump`, `top_off`; number `water_setpoint` |
 | dosing | — | `leak` | `dose_ph_down`, `dose_ph_up`, `dose_a`, `dose_b` (commands are **mL amounts** via `number`; the node converts mL → run time with a hard timeout) |
 
+## Control (Phase 2)
+
+```
+growshed/<node>/select/<dev>_mode/state        auto | on | off
+growshed/<node>/select/<dev>_mode/command      auto | on | off      (hub → node)
+growshed/<node>/text_sensor/<dev>_source/state auto | manual | fallback | interlock
+                                               (dose pumps: idle | dosing | refused)
+growshed/<node>/number/<setting>/command       new value            (hub → node)
+growshed/<node>/dose/<dev>/command             seconds to run       (hub → node, not retained)
+growshed/<node>/text_sensor/last_interlock/state   e.g. "I-4 lights"
+growshed/hub/leak_alarm                        ON | OFF  (retained)
+```
+
+- **Relays are never switched directly.** `switch/<dev>/state` reports the relay; commands sent to `switch/<dev>/command` are ignored by the node. The hub asks for a *mode*, and the node's control loop applies its interlocks before anything moves.
+- Mode devices: `lights`, `exhaust_fan` (every tent), `tower_pump` (tent3), `water_heater`, `air_pump`, `rdwc_pump` (water).
+- Dose pumps: `top_off` (water), `water_1..4` (tent2). The node caps the run time, enforces a rest and a daily cap, and refuses during a leak, with an empty tank or full reservoir, or without the hub.
+- Settings (`number`): `light_on_minute`, `light_off_minute`, `max_temp`, `max_rh` (tents), `tower_on_s`, `tower_off_s` (tent3), `water_setpoint` (water). Stored on the node.
+
 ## Simulator-only topics
 
 ```
 growshed/sim/<node>/fault     leak on|off, sensor_fail on|off, offline, online,
                               tower_low on|off (tent3), drain (water),
-                              soil_dry, soil_water (tent2)
+                              soil_dry, soil_water, soil_unplug, soil_replug,
+                              tank_low on|off (tent2)
 ```
 
 Real nodes ignore these. They exist so alerts and interlocks can be tested with no hardware.

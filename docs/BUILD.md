@@ -153,8 +153,42 @@ plate is dry and comes on with a single drop of your actual water on the plate.
 | Node keeps restarting | Weak USB charger or a short on the 3.3 V line: unplug sensors one at a time |
 | Readings freeze but the node is online | A "Sensor not reporting" alert follows after 10 minutes; check that sensor's wiring |
 
-## 8. What changes in Phase 2
+## 8. Phase 2: wiring the outputs
 
-Each node gains signal wires to the relay outlet boxes (lights, fans, heater, pumps), using
-the spare cable slots, and the water and dosing nodes gain a 12 V supply for small pumps. The
-sensor wiring above stays exactly as it is.
+Do this only after the node's sensors work. Output diagrams:
+[tent1](wiring/tent-outputs.svg), [tent2 with soil pots](wiring/tent-soil-outputs.svg),
+[tower tent](wiring/tower-tent-outputs.svg), [water node](wiring/water-outputs.svg).
+
+**Mains safety.** The node only ever touches the relay boxes' low-voltage signal terminals.
+Never open a relay box, plug every box into a GFCI outlet, and keep the boxes off the floor
+and away from the reservoirs.
+
+### Relay outlet boxes (lights, fans, heater, 120 V pumps)
+
+1. Each box has a two-terminal signal input marked `+` and `-`. Run a two-conductor wire from the node: the output terminal to `+`, GND to `-`. Polarity matters.
+2. Plug the load into the right kind of outlet on the box:
+   - **Normally OFF** for lights, exhaust fans, the water heater and the tower pump: off unless the node says on.
+   - **Normally ON** for the air pump and the circulation pump: they run unless the node says off, so they keep running if the node dies.
+3. Label each box with what it switches and which node output drives it.
+
+### 12 V pumps (soil watering, top-off)
+
+1. Use a MOSFET driver board (one channel per pump) rated for at least 2 A per channel, with flyback protection. Do not drive a pump directly from an ESP32 pin.
+2. Board signal inputs go to the node's outputs; board GND goes to node GND.
+3. A separate 12 V supply feeds the board's power terminals; each pump connects to one output channel. The 12 V supply's minus and the node's GND must be joined (most boards do this through their GND terminal).
+4. **Watering tank:** mount the low float so it opens when the tank is nearly empty, and wire it to Input 2 and GND on the tent2 node. Pumps refuse to run when it reads low, and also when it is unplugged.
+5. **Stop siphoning:** each pot's tube must end above the water level of the tank, or have an anti-siphon valve. Otherwise water can keep flowing after the pump stops.
+6. Stand every pot in a saucer, and put the tent's leak sensor where overflow would collect.
+
+### Check each output before trusting it
+
+Use the Controls page, with the load plugged in:
+
+- [ ] Each device turns on and off with **On** / **Off**, and the chip matches what the device is really doing.
+- [ ] Set a device to **On**, then unplug the node's USB power. Lights, fans, heater and tower pump go **off**; the air pump and circulation pump keep **running**. Plug the node back in.
+- [ ] Wet any leak sensor: every water pump on every node stops within a few seconds, the air pump keeps running, and the pumps stay stopped after you dry the sensor until you press **Clear the alarm**.
+- [ ] Lift the reservoir's low float out of the water: the heater and circulation pump stop.
+- [ ] **Water now** on one pot: the pump runs for about 8 seconds and stops by itself. Press it again straight away: it is refused.
+- [ ] Measure what one dose delivers (catch it in a cup) and adjust `dose_s` in `config/config.yaml` so a dose suits the pot size.
+- [ ] Unplug the Pi for 5 minutes: lights follow their schedule, the heater keeps regulating, and the System page shows the nodes went into fallback when the Pi is back.
+- [ ] Leave auto-watering **Off** for a pot until its sensor is calibrated and you have watched its readings for a few days.

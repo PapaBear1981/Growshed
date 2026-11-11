@@ -1,0 +1,112 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 920 853' width='920' height='853' role='img' aria-label='Tent node with soil pots (tent2): outputs wiring'><rect width='920' height='853' fill='#ffffff'/><text x='30' y='30' font-size='19' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Tent node with soil pots (tent2): outputs</text>
+<line x1='262' y1='158' x2='262' y2='736' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='293' y1='184' x2='293' y2='412' stroke='#2a78d6' stroke-width='3'/>
+<line x1='324' y1='210' x2='324' y2='522' stroke='#e0a800' stroke-width='3'/>
+<line x1='355' y1='236' x2='355' y2='632' stroke='#1b9e77' stroke-width='3'/>
+<line x1='386' y1='262' x2='386' y2='658' stroke='#d95f02' stroke-width='3'/>
+<line x1='417' y1='288' x2='417' y2='684' stroke='#8e44ad' stroke-width='3'/>
+<line x1='448' y1='314' x2='448' y2='710' stroke='#e7298a' stroke-width='3'/>
+<line x1='293' y1='412' x2='553' y2='412' stroke='#ffffff' stroke-width='7'/>
+<line x1='293' y1='412' x2='553' y2='412' stroke='#2a78d6' stroke-width='3'/>
+<line x1='262' y1='438' x2='553' y2='438' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='438' x2='553' y2='438' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='324' y1='522' x2='553' y2='522' stroke='#ffffff' stroke-width='7'/>
+<line x1='324' y1='522' x2='553' y2='522' stroke='#e0a800' stroke-width='3'/>
+<line x1='262' y1='548' x2='553' y2='548' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='548' x2='553' y2='548' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='355' y1='632' x2='553' y2='632' stroke='#ffffff' stroke-width='7'/>
+<line x1='355' y1='632' x2='553' y2='632' stroke='#1b9e77' stroke-width='3'/>
+<line x1='386' y1='658' x2='553' y2='658' stroke='#ffffff' stroke-width='7'/>
+<line x1='386' y1='658' x2='553' y2='658' stroke='#d95f02' stroke-width='3'/>
+<line x1='417' y1='684' x2='553' y2='684' stroke='#ffffff' stroke-width='7'/>
+<line x1='417' y1='684' x2='553' y2='684' stroke='#8e44ad' stroke-width='3'/>
+<line x1='448' y1='710' x2='553' y2='710' stroke='#ffffff' stroke-width='7'/>
+<line x1='448' y1='710' x2='553' y2='710' stroke='#e7298a' stroke-width='3'/>
+<line x1='262' y1='736' x2='553' y2='736' stroke='#ffffff' stroke-width='7'/>
+<line x1='262' y1='736' x2='553' y2='736' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='227' y1='158' x2='262' y2='158' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='158' x2='262' y2='158' stroke='#1a1a1a' stroke-width='3'/>
+<line x1='227' y1='184' x2='293' y2='184' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='184' x2='293' y2='184' stroke='#2a78d6' stroke-width='3'/>
+<line x1='227' y1='210' x2='324' y2='210' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='210' x2='324' y2='210' stroke='#e0a800' stroke-width='3'/>
+<line x1='227' y1='236' x2='355' y2='236' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='236' x2='355' y2='236' stroke='#1b9e77' stroke-width='3'/>
+<line x1='227' y1='262' x2='386' y2='262' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='262' x2='386' y2='262' stroke='#d95f02' stroke-width='3'/>
+<line x1='227' y1='288' x2='417' y2='288' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='288' x2='417' y2='288' stroke='#8e44ad' stroke-width='3'/>
+<line x1='227' y1='314' x2='448' y2='314' stroke='#ffffff' stroke-width='7'/>
+<line x1='227' y1='314' x2='448' y2='314' stroke='#e7298a' stroke-width='3'/>
+<circle cx='293' cy='412' r='4.5' fill='#2a78d6'/>
+<circle cx='262' cy='438' r='4.5' fill='#1a1a1a'/>
+<circle cx='324' cy='522' r='4.5' fill='#e0a800'/>
+<circle cx='262' cy='548' r='4.5' fill='#1a1a1a'/>
+<circle cx='355' cy='632' r='4.5' fill='#1b9e77'/>
+<circle cx='386' cy='658' r='4.5' fill='#d95f02'/>
+<circle cx='417' cy='684' r='4.5' fill='#8e44ad'/>
+<circle cx='448' cy='710' r='4.5' fill='#e7298a'/>
+<circle cx='262' cy='736' r='4.5' fill='#1a1a1a'/>
+<circle cx='262' cy='158' r='4.5' fill='#1a1a1a'/>
+<circle cx='293' cy='184' r='4.5' fill='#2a78d6'/>
+<circle cx='324' cy='210' r='4.5' fill='#e0a800'/>
+<circle cx='355' cy='236' r='4.5' fill='#1b9e77'/>
+<circle cx='386' cy='262' r='4.5' fill='#d95f02'/>
+<circle cx='417' cy='288' r='4.5' fill='#8e44ad'/>
+<circle cx='448' cy='314' r='4.5' fill='#e7298a'/>
+<rect x='560' y='354' width='340' height='96' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='374' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Relay outlet box: grow lights</text>
+<text x='572' y='390' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>plug the load into a &#x27;normally OFF&#x27; outlet</text>
+<rect x='553' y='405' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
+<text x='574' y='416' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>+ signal</text>
+<rect x='553' y='431' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='442' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>- signal</text>
+<rect x='560' y='464' width='340' height='96' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='484' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Relay outlet box: exhaust fan</text>
+<text x='572' y='500' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>plug the load into a &#x27;normally OFF&#x27; outlet</text>
+<rect x='553' y='515' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
+<text x='574' y='526' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>+ signal</text>
+<rect x='553' y='541' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='552' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>- signal</text>
+<rect x='560' y='574' width='340' height='194' rx='8' fill='#f6f8f4' stroke='#8a958c'/>
+<text x='572' y='594' font-size='14' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>4-channel MOSFET board: watering pumps</text>
+<text x='572' y='610' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>inside or beside the enclosure</text>
+<rect x='553' y='625' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
+<text x='574' y='636' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>IN1 (pot 1)</text>
+<rect x='553' y='651' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='574' y='662' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>IN2 (pot 2)</text>
+<rect x='553' y='677' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='574' y='688' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>IN3 (pot 3)</text>
+<rect x='553' y='703' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
+<text x='574' y='714' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>IN4 (pot 4)</text>
+<rect x='553' y='729' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='574' y='740' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<text x='572' y='759' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>Pumps and the 12 V supply go on the board&#x27;s power terminals.</text>
+<rect x='30' y='96' width='190' height='236' rx='8' fill='#e8f1ea' stroke='#2f7d4f' stroke-width='2'/>
+<text x='42' y='116' font-size='13' font-weight='bold' fill='#1a1a1a' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>ESP32 DevKit (WROOM-32)</text>
+<text x='42' y='132' font-size='11' font-weight='normal' fill='#5f6f65' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>screw-terminal breakout</text>
+<text x='206' y='162' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GND</text>
+<rect x='213' y='151' width='14' height='14' rx='3' fill='#ffffff' stroke='#1a1a1a' stroke-width='2'/>
+<text x='206' y='188' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO16</text>
+<rect x='213' y='177' width='14' height='14' rx='3' fill='#ffffff' stroke='#2a78d6' stroke-width='2'/>
+<text x='206' y='214' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO17</text>
+<rect x='213' y='203' width='14' height='14' rx='3' fill='#ffffff' stroke='#e0a800' stroke-width='2'/>
+<text x='206' y='240' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO18</text>
+<rect x='213' y='229' width='14' height='14' rx='3' fill='#ffffff' stroke='#1b9e77' stroke-width='2'/>
+<text x='206' y='266' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO19</text>
+<rect x='213' y='255' width='14' height='14' rx='3' fill='#ffffff' stroke='#d95f02' stroke-width='2'/>
+<text x='206' y='292' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO23</text>
+<rect x='213' y='281' width='14' height='14' rx='3' fill='#ffffff' stroke='#8e44ad' stroke-width='2'/>
+<text x='206' y='318' font-size='12' font-weight='bold' fill='#1a1a1a' text-anchor='end' font-family='Helvetica, Arial, sans-serif'>GPIO27</text>
+<rect x='213' y='307' width='14' height='14' rx='3' fill='#ffffff' stroke='#e7298a' stroke-width='2'/>
+<text x='266' y='88' font-size='11' fill='#1a1a1a' font-weight='bold' transform='rotate(-55 266 88)' font-family='Helvetica, Arial, sans-serif'>Ground</text>
+<text x='297' y='88' font-size='11' fill='#2a78d6' font-weight='bold' transform='rotate(-55 297 88)' font-family='Helvetica, Arial, sans-serif'>Output 1</text>
+<text x='328' y='88' font-size='11' fill='#e0a800' font-weight='bold' transform='rotate(-55 328 88)' font-family='Helvetica, Arial, sans-serif'>Output 2</text>
+<text x='359' y='88' font-size='11' fill='#1b9e77' font-weight='bold' transform='rotate(-55 359 88)' font-family='Helvetica, Arial, sans-serif'>Output 3</text>
+<text x='390' y='88' font-size='11' fill='#d95f02' font-weight='bold' transform='rotate(-55 390 88)' font-family='Helvetica, Arial, sans-serif'>Output 4</text>
+<text x='421' y='88' font-size='11' fill='#8e44ad' font-weight='bold' transform='rotate(-55 421 88)' font-family='Helvetica, Arial, sans-serif'>Output 5</text>
+<text x='452' y='88' font-size='11' fill='#e7298a' font-weight='bold' transform='rotate(-55 452 88)' font-family='Helvetica, Arial, sans-serif'>Output 6</text>
+<text x='30' y='790' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• Wires join only where there is a dot. Lines that simply cross are not connected.</text>
+<text x='30' y='809' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• These are low-voltage signal wires only. Mains stays inside the relay boxes.</text>
+<text x='30' y='828' font-size='12' font-weight='normal' fill='#3c4a41' text-anchor='start' font-family='Helvetica, Arial, sans-serif'>• The 12 V supply&#x27;s minus must connect to the node&#x27;s GND (the board does this).</text>
+</svg>

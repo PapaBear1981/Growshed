@@ -104,7 +104,20 @@ history, "Soil dry" alert). Four pots are assumed to be in tent 2 until the layo
 - Alerts: leak, reservoir low, tent too hot/cold, room RH high, node offline, sensor stale.
 - **Done when:** one week of real data, and a deliberately triggered leak alert (wet the sensor) reaches both phones within 30 s.
 
-### Phase 2 — Control
+### Phase 2 — Control (software built; waiting on hardware)
+
+Built and tested against the simulator: node firmware for lights, exhaust, water heater,
+pumps, top-off and soil watering with every interlock (compiled for the ESP32 DevKit, logic
+unit-tested natively); hub control with timed manual modes, settings, the latched leak
+alarm and automatic soil watering; the Controls page; output wiring diagrams.
+
+**Design change from the original plan:** schedules run on the nodes all the time instead
+of on the Pi with a node fallback copy. There is now one implementation of each behaviour,
+and it keeps working with the Pi off.
+
+**Not done:** nothing has run on real hardware, so the "done when" test below is only
+proven in simulation. No tent heater (I-6). Device on/off history is not charted yet.
+
 - Relay boxes connected to node GPIOs: lights and exhaust fan per tent, water heater, RDWC + air pumps, tower pump, top-off pump.
 - Node-local water thermostat with a setpoint pushed from the Pi. Node-local tent exhaust control on temp/RH thresholds.
 - Pi schedules: per-tent photoperiod, tower pump cycle.
