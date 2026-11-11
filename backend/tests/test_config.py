@@ -23,7 +23,7 @@ def sensor(**over):
 def test_repo_config_loads(settings):
     site = load_config(settings.config_path)
     assert {z.id for z in site.zones} >= {"tent1", "tent2", "tent3", "tower", "rdwc", "room"}
-    assert {n.id for n in site.nodes} == {"tent1", "tent2", "tent3", "water"}
+    assert {n.id for n in site.nodes} == {"tent1", "tent2", "tent3", "water", "dosing"}
     tower_pump = next(d for d in site.devices if d.key == "tower_pump")
     assert tower_pump.node == "tent3"  # the tower is run by its own tent's node
 

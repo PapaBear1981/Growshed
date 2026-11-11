@@ -42,6 +42,27 @@ class PotModeBody(BaseModel):
     mode: Literal["off", "auto"]
 
 
+class DosingModeBody(BaseModel):
+    mode: Literal["off", "suggest", "auto"]
+    # Must be true to switch to "auto": the person accepted the warning in the GUI.
+    acknowledged: bool = False
+
+
+class DoseKindBody(BaseModel):
+    kind: Literal["ph_down", "ph_up", "nutrients"]
+
+
+class PrimeBody(BaseModel):
+    pump: str
+    seconds: float
+
+
+class RateBody(BaseModel):
+    pump: str
+    ml: float
+    seconds: float
+
+
 class CalibrationBody(BaseModel):
     key: str
     label: Literal["dry", "wet", "ph", "ec", "offset"]
@@ -197,6 +218,58 @@ async def watering_unlock(body: KeyBody, request: Request) -> dict:
         state.watering.unlock(body.key)
 
     return await _control(request, action)
+
+
+def _dosing(state):
+    if state.dosing is None:
+        raise HTTPException(404, "dosing is not configured")
+    return state.dosing
+
+
+@router.post("/api/dosing/mode")
+async def dosing_mode(body: DosingModeBody, request: Request) -> dict:
+    async def action(state, now: float) -> None:
+        _dosing(state).set_mode(body.mode, body.acknowledged, now)
+
+    return await _control(request, action)
+
+
+@router.post("/api/dosing/approve")
+async def dosing_approve(request: Request) -> dict:
+    return await _control(request, lambda s, now: _dosing(s).approve(now))
+
+
+@router.post("/api/dosing/dismiss")
+async def dosing_dismiss(request: Request) -> dict:
+    async def action(state, now: float) -> None:
+        _dosing(state).dismiss(now)
+
+    return await _control(request, action)
+
+
+@router.post("/api/dosing/manual")
+async def dosing_manual(body: DoseKindBody, request: Request) -> dict:
+    return await _control(request, lambda s, now: _dosing(s).manual(body.kind, now))
+
+
+@router.post("/api/dosing/unlock")
+async def dosing_unlock(request: Request) -> dict:
+    async def action(state, now: float) -> None:
+        _dosing(state).unlock()
+
+    return await _control(request, action)
+
+
+@router.post("/api/dosing/prime")
+async def dosing_prime(body: PrimeBody, request: Request) -> dict:
+    return await _control(request, lambda s, now: _dosing(s).prime(body.pump, body.seconds))
+
+
+@router.post("/api/dosing/rate")
+async def dosing_rate(body: RateBody, request: Request) -> dict:
+    return await _control(
+        request, lambda s, now: _dosing(s).set_rate(body.pump, body.ml, body.seconds)
+    )
 
 
 @router.get("/api/alerts")

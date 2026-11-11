@@ -19,13 +19,18 @@ ROLLUP_EVERY_S = 300
 PRUNE_EVERY_S = 3600
 PING_EVERY_S = 300
 WATERING_EVERY_S = 30
+DOSING_EVERY_S = 5
 RETRY_DELAY_S = 30
 GIVE_UP_AFTER_S = 900
 
 
 def control_view(state, now: float) -> dict:
     """Everything the Controls page needs that is not already in the live values."""
-    return {**state.controller.snapshot(), "watering": state.watering.status(now)}
+    return {
+        **state.controller.snapshot(),
+        "watering": state.watering.status(now),
+        "dosing": state.dosing.snapshot(now) if state.dosing is not None else None,
+    }
 
 
 async def deliver(notifier: Notifier, queue: asyncio.Queue[Notification]) -> None:
@@ -48,7 +53,7 @@ async def run_background(app: FastAPI) -> None:
     state = app.state
     queue: asyncio.Queue[Notification] = asyncio.Queue()
     sender = asyncio.create_task(deliver(state.notifier, queue))
-    last = {"flush": 0.0, "rollup": 0.0, "prune": 0.0, "ping": 0.0, "watering": 0.0}
+    last = dict.fromkeys(("flush", "rollup", "prune", "ping", "watering", "dosing"), 0.0)
 
     def due(job: str, every_s: float, now: float) -> bool:
         if now - last[job] >= every_s:
@@ -64,6 +69,8 @@ async def run_background(app: FastAPI) -> None:
                     await state.controller.tick(now)
                     if due("watering", WATERING_EVERY_S, now):
                         await state.watering.tick(now)
+                    if state.dosing is not None and due("dosing", DOSING_EVERY_S, now):
+                        await state.dosing.tick(now)
                 except NotConnected:
                     pass  # broker down: nodes are in fallback anyway; retry next tick
                 if state.controller.changed:

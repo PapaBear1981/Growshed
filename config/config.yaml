@@ -16,6 +16,7 @@ nodes:
   - {id: tent1, name: "Tent 1 node"}
   - {id: tent2, name: "Tent 2 node"}
   - {id: tent3, name: "Tower tent node"}
+  - {id: dosing, name: "Dosing node"}
   - {id: water, name: "Water node"}
 
 sensors:
@@ -45,6 +46,7 @@ sensors:
   # calibration in the GUI. EC is corrected to 25 °C with the reservoir's temperature.
   - {node: water, key: ph, zone: rdwc, kind: ph, unit: "pH", name: "pH"}
   - {node: water, key: ec, zone: rdwc, kind: ec, unit: "µS/cm", name: "EC"}
+  - {node: dosing, key: leak, component: binary_sensor, zone: rdwc, kind: leak, name: "Leak under dosing pumps"}
   - {node: water, key: res_low, component: binary_sensor, zone: rdwc, kind: level_low, name: "Reservoir low"}
   - {node: water, key: res_high, component: binary_sensor, zone: rdwc, kind: level_high, name: "Reservoir full"}
   - {node: water, key: leak_res, component: binary_sensor, zone: rdwc, kind: leak, name: "Leak under reservoir"}
@@ -70,6 +72,12 @@ devices:
   - {node: tent2, key: water_2, zone: soil, kind: pump, name: "Pot 2 pump", control: dose, dose_s: 8}
   - {node: tent2, key: water_3, zone: soil, kind: pump, name: "Pot 3 pump", control: dose, dose_s: 8}
   - {node: tent2, key: water_4, zone: soil, kind: pump, name: "Pot 4 pump", control: dose, dose_s: 8}
+
+  # Chemical dosing pumps: driven only by the dosing logic below, in millilitres.
+  - {node: dosing, key: ph_down, zone: rdwc, kind: doser, name: "pH down pump", control: doser}
+  - {node: dosing, key: ph_up, zone: rdwc, kind: doser, name: "pH up pump", control: doser}
+  - {node: dosing, key: nutrient_a, zone: rdwc, kind: doser, name: "Nutrient A pump", control: doser}
+  - {node: dosing, key: nutrient_b, zone: rdwc, kind: doser, name: "Nutrient B pump", control: doser}
 
 # Values stored on the nodes that the Controls page can change. min/max must match the
 # firmware (firmware/common/*_control.yaml). Times are minutes after midnight; SI units.
@@ -101,6 +109,29 @@ watering:
     - {name: "Pot 2", sensor: tent2/sensor/soil_2, pump: tent2/switch/water_2, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
     - {name: "Pot 3", sensor: tent2/sensor/soil_3, pump: tent2/switch/water_3, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
     - {name: "Pot 4", sensor: tent2/sensor/soil_4, pump: tent2/switch/water_4, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
+
+# pH and nutrient dosing for the RDWC reservoir (docs/SAFETY.md §4). It starts OFF. On the
+# Water page it can be set to SUGGEST (you approve each dose) or, after a warning, AUTO.
+# These limits cannot be raised above the dosing node's own (2 mL per dose, 20 mL per day).
+# Start with small doses and watch what one dose does to YOUR reservoir before changing them.
+dosing:
+  zone: rdwc
+  ph_sensor: water/sensor/ph
+  ec_sensor: water/sensor/ec
+  circulation: water/switch/rdwc_pump
+  level_low: water/binary_sensor/res_low
+  ph_down: dosing/switch/ph_down
+  ph_up: dosing/switch/ph_up
+  nutrient_a: dosing/switch/nutrient_a
+  nutrient_b: dosing/switch/nutrient_b
+  ph_low: 5.6            # dose pH up below this
+  ph_high: 6.2           # dose pH down above this
+  ec_low: 1000           # µS/cm: add nutrients below this (nothing is ever diluted)
+  ph_dose_ml: 1.0
+  nutrient_dose_ml: 2.0  # of EACH of A and B
+  max_dose_ml: 2.0
+  max_day_ml: 20.0
+  wait_s: 900            # mixing time after any dose
 
 # Alert rules (docs/SAFETY.md §5). Each rule applies to every sensor of that kind, so a
 # new tent is covered automatically. Limits are SI (°C, %RH). for_s = how long the

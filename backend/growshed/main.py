@@ -18,6 +18,7 @@ from .background import run_background
 from .calibration import MAX_AGE_DAYS, Calibrations
 from .config import Settings, load_config
 from .control import Controller
+from .dosing import Dosing
 from .ingest import Ingest
 from .journal import router as journal_router
 from .mqtt import MqttLink, run_mqtt
@@ -79,6 +80,32 @@ def _calibration_conditions(cal: Calibrations, site) -> list[Condition]:
     return out
 
 
+def _dosing_conditions(dosing: Dosing | None) -> list[Condition]:
+    if dosing is None:
+        return []
+
+    def stopped(now: float) -> tuple[bool, str]:
+        return dosing.locked is not None, dosing.snapshot(now)["locked"] or ""
+
+    def waiting(now: float) -> tuple[bool, str]:
+        s = dosing.suggestion
+        return s is not None, f"add {s['ml']:g} mL of {s['label']} ({s['why']})" if s else ""
+
+    return [
+        Condition("dosing_stopped", "Dosing stopped", "Dosing pumps", "warning", 0, None, stopped),
+        # In SUGGEST mode a person has to approve each dose: tell them one is waiting.
+        Condition(
+            "dosing_suggestion",
+            "Dosing suggestion waiting",
+            "Open the Water page to approve",
+            "warning",
+            0,
+            None,
+            waiting,
+        ),
+    ]
+
+
 def _control_conditions(controller: Controller, watering: Watering) -> list[Condition]:
     """Alerts about the control layer itself: the leak latch and stopped auto-watering."""
     out = [
@@ -136,6 +163,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         watering = app.state.watering = Watering(
             conn, site, app.state.live, app.state.calibrations, controller
         )
+        dosing = app.state.dosing = (
+            Dosing(conn, site, app.state.live, app.state.calibrations, controller, link)
+            if site.dosing is not None
+            else None
+        )
         app.state.alerts = AlertEngine(
             conn,
             site,
@@ -145,6 +177,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             extra=[
                 *_control_conditions(controller, watering),
                 *_calibration_conditions(app.state.calibrations, site),
+                *_dosing_conditions(dosing),
             ],
         )
         tasks = []

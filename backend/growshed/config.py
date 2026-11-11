@@ -54,7 +54,8 @@ class Device(BaseModel):
     circuit: str | None = None  # which house breaker feeds it (for load budgeting)
     watts: float | None = None
     # "mode": auto/on/off relay. "dose": a pump that only runs briefly on request.
-    control: Literal["mode", "dose"] = "mode"
+    # "doser": a chemical dosing pump, driven only by the dosing logic (millilitres).
+    control: Literal["mode", "dose", "doser"] = "mode"
     dose_s: float = 8  # seconds requested per dose (the node enforces its own maximum)
 
     @property
@@ -136,6 +137,49 @@ class AlertConfig(BaseModel):
     clear_after_s: float = 60  # a condition must stay good this long before the alert clears
 
 
+class DosingConfig(BaseModel):
+    """Automatic pH and nutrient dosing for one reservoir (docs/SAFETY.md §4)."""
+
+    zone: str
+    ph_sensor: str
+    ec_sensor: str
+    circulation: str  # device key of the pump that mixes the reservoir
+    level_low: str  # sensor key of the reservoir's low float
+    ph_down: str  # device keys of the four pumps
+    ph_up: str
+    nutrient_a: str
+    nutrient_b: str
+    ph_low: float = 5.6  # dose pH up below this
+    ph_high: float = 6.2  # dose pH down above this
+    ec_low: float = 1000  # µS/cm: add nutrients below this. Nothing is ever diluted.
+    ph_dose_ml: float = 1.0
+    nutrient_dose_ml: float = 2.0  # of EACH of A and B
+    max_dose_ml: float = 2.0  # must not exceed the node's own limit (firmware/dosing.yaml)
+    max_day_ml: float = 20.0
+    wait_s: float = 900  # mixing time after any dose before measuring or dosing again
+
+    @model_validator(mode="after")
+    def _sane(self) -> DosingConfig:
+        if not self.ph_low < self.ph_high:
+            raise ValueError("dosing: ph_low must be below ph_high")
+        if self.ph_high - self.ph_low < 0.4:
+            raise ValueError("dosing: leave at least 0.4 pH between ph_low and ph_high")
+        if max(self.ph_dose_ml, self.nutrient_dose_ml) > self.max_dose_ml:
+            raise ValueError("dosing: a dose is larger than max_dose_ml")
+        if self.max_dose_ml > 2.0 or self.max_day_ml > 20.0:
+            raise ValueError("dosing: limits are above the node's hard limits (2 mL, 20 mL/day)")
+        if self.wait_s < 900:
+            raise ValueError("dosing: wait_s must be at least 900 (15 minutes)")
+        return self
+
+    @property
+    def pumps(self) -> dict[str, str]:
+        return {
+            "ph_down": self.ph_down, "ph_up": self.ph_up,
+            "nutrient_a": self.nutrient_a, "nutrient_b": self.nutrient_b,
+        }  # fmt: skip
+
+
 class SiteConfig(BaseModel):
     zones: list[Zone]
     nodes: list[Node]
@@ -143,6 +187,7 @@ class SiteConfig(BaseModel):
     devices: list[Device] = []
     settings: list[Setting] = []
     watering: WateringConfig = WateringConfig()
+    dosing: DosingConfig | None = None
     alerts: AlertConfig = AlertConfig()
 
     @model_validator(mode="after")
@@ -173,6 +218,16 @@ class SiteConfig(BaseModel):
                 raise ValueError(f"{setting.state_key}: min must be below max")
         sensors = {s.state_key: s for s in self.sensors}
         devices = {d.state_key: d for d in self.devices}
+        if self.dosing is not None:
+            d = self.dosing
+            for key in (d.ph_sensor, d.ec_sensor, d.level_low):
+                if key not in sensors:
+                    raise ValueError(f"dosing: unknown sensor {key!r}")
+            if d.circulation not in devices:
+                raise ValueError(f"dosing: unknown device {d.circulation!r}")
+            for name, key in d.pumps.items():
+                if devices.get(key) is None or devices[key].control != "doser":
+                    raise ValueError(f"dosing: {name} pump {key!r} is not a 'doser' device")
         for pot in self.watering.pots:
             if sensors.get(pot.sensor) is None or sensors[pot.sensor].kind != "soil_moisture":
                 raise ValueError(f"watering pot {pot.name!r}: {pot.sensor!r} is not a soil sensor")
