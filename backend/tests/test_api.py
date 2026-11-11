@@ -101,3 +101,75 @@ def test_alert_lifecycle_over_api_and_websocket(client):
 
 def test_test_notification_when_not_configured(client):
     assert client.post("/api/alerts/test").json() == {"configured": False, "sent": False}
+
+
+class _FakeLink:
+    def __init__(self):
+        self.sent = []
+        self.on_connect = None
+
+    async def publish(self, topic, payload, retain=False):
+        self.sent.append((topic, payload, retain))
+
+
+def _with_link(client):
+    link = _FakeLink()
+    client.app.state.link = link
+    client.app.state.controller.link = link
+    return link
+
+
+def test_control_endpoints(client):
+    link = _with_link(client)
+    body = client.get("/api/control").json()
+    assert body["leak_alarm"] is False and len(body["watering"]) == 4
+
+    res = client.post(
+        "/api/control/mode", json={"key": "tent1/switch/lights", "mode": "on", "hours": 2}
+    )
+    assert res.status_code == 200 and "tent1/switch/lights" in res.json()["overrides"]
+    assert link.sent[-1][:2] == ("growshed/tent1/select/lights_mode/command", "on")
+
+    ok = client.post(
+        "/api/control/number", json={"key": "tent1/number/light_on_minute", "value": 420}
+    )
+    assert ok.status_code == 200 and link.sent[-1][1] == "420"
+    bad = client.post("/api/control/number", json={"key": "tent1/number/max_temp", "value": 99})
+    assert bad.status_code == 409 and "between" in bad.json()["detail"]
+    assert (
+        client.post(
+            "/api/control/mode", json={"key": "tent1/switch/lights", "mode": "on", "hours": 500}
+        ).status_code
+        == 422
+    )
+
+    assert client.post("/api/control/dose", json={"key": "water/switch/top_off"}).status_code == 200
+    assert link.sent[-1][:2] == ("growshed/water/dose/top_off/command", "120")
+    # soil pumps go through the watering limits: the tank sensor has not reported, so no
+    refused = client.post("/api/control/dose", json={"key": "tent2/switch/water_1"})
+    assert refused.status_code == 409 and "tank" in refused.json()["detail"]
+
+
+def test_control_without_mqtt_says_so(client):
+    res = client.post("/api/control/mode", json={"key": "tent1/switch/lights", "mode": "on"})
+    assert res.status_code == 503
+
+
+def test_leak_alarm_and_watering_over_the_api(client):
+    link = _with_link(client)
+    state = client.app.state
+    now = state.alerts.started_at
+    state.live.set_value("tent1/binary_sensor/leak", True, now)
+    anyio.run(state.controller.tick, now)
+    assert link.sent[-1] == ("growshed/hub/leak_alarm", "ON", True)
+    assert client.post("/api/control/leak/clear").status_code == 409
+    state.live.set_value("tent1/binary_sensor/leak", False, now + 1)
+    assert client.post("/api/control/leak/clear").json()["leak_alarm"] is False
+
+    key = "tent2/sensor/soil_1"
+    assert client.post("/api/watering/mode", json={"key": key, "mode": "auto"}).status_code == 409
+    state.calibrations.set_point(key, "dry", 2.6, now)
+    state.calibrations.set_point(key, "wet", 1.2, now)
+    body = client.post("/api/watering/mode", json={"key": key, "mode": "auto"}).json()
+    assert body["watering"][0]["mode"] == "auto"
+    assert client.post("/api/watering/unlock", json={"key": key}).status_code == 200

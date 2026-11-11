@@ -37,6 +37,7 @@ sensors:
   - {node: tent2, key: soil_2, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 2"}
   - {node: tent2, key: soil_3, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 3"}
   - {node: tent2, key: soil_4, zone: soil, kind: soil_moisture, unit: "%", name: "Pot 4"}
+  - {node: tent2, key: water_tank_low, component: binary_sensor, zone: soil, kind: level_low, name: "Watering tank low"}
   - {node: tent3, key: tower_temp, zone: tower, kind: temperature, unit: "°C", name: "Water temperature"}
   - {node: tent3, key: tower_low, component: binary_sensor, zone: tower, kind: level_low, name: "Reservoir low"}
   - {node: water, key: res_temp, zone: rdwc, kind: temperature, unit: "°C", name: "Water temperature"}
@@ -59,7 +60,43 @@ devices:
   - {node: water, key: water_heater, zone: rdwc, kind: heater, name: "Water heater"}
   - {node: water, key: air_pump, zone: rdwc, kind: pump, name: "Air pump"}
   - {node: water, key: rdwc_pump, zone: rdwc, kind: pump, name: "Circulation pump"}
-  - {node: water, key: top_off, zone: rdwc, kind: pump, name: "Top-off pump"}
+  # Dose pumps only run briefly when asked. dose_s = seconds requested each time.
+  - {node: water, key: top_off, zone: rdwc, kind: pump, name: "Top-off pump", control: dose, dose_s: 120}
+  - {node: tent2, key: water_1, zone: soil, kind: pump, name: "Pot 1 pump", control: dose, dose_s: 8}
+  - {node: tent2, key: water_2, zone: soil, kind: pump, name: "Pot 2 pump", control: dose, dose_s: 8}
+  - {node: tent2, key: water_3, zone: soil, kind: pump, name: "Pot 3 pump", control: dose, dose_s: 8}
+  - {node: tent2, key: water_4, zone: soil, kind: pump, name: "Pot 4 pump", control: dose, dose_s: 8}
+
+# Values stored on the nodes that the Controls page can change. min/max must match the
+# firmware (firmware/common/*_control.yaml). Times are minutes after midnight; SI units.
+settings:
+  - {node: tent1, key: light_on_minute, zone: tent1, kind: time_of_day, name: "Lights on", min: 0, max: 1439}
+  - {node: tent1, key: light_off_minute, zone: tent1, kind: time_of_day, name: "Lights off", min: 0, max: 1439}
+  - {node: tent1, key: max_temp, zone: tent1, kind: temperature, name: "Exhaust above", min: 20, max: 30}
+  - {node: tent1, key: max_rh, zone: tent1, kind: humidity, name: "Exhaust above", min: 40, max: 90}
+  - {node: tent2, key: light_on_minute, zone: tent2, kind: time_of_day, name: "Lights on", min: 0, max: 1439}
+  - {node: tent2, key: light_off_minute, zone: tent2, kind: time_of_day, name: "Lights off", min: 0, max: 1439}
+  - {node: tent2, key: max_temp, zone: tent2, kind: temperature, name: "Exhaust above", min: 20, max: 30}
+  - {node: tent2, key: max_rh, zone: tent2, kind: humidity, name: "Exhaust above", min: 40, max: 90}
+  - {node: tent3, key: light_on_minute, zone: tent3, kind: time_of_day, name: "Lights on", min: 0, max: 1439}
+  - {node: tent3, key: light_off_minute, zone: tent3, kind: time_of_day, name: "Lights off", min: 0, max: 1439}
+  - {node: tent3, key: max_temp, zone: tent3, kind: temperature, name: "Exhaust above", min: 20, max: 30}
+  - {node: tent3, key: max_rh, zone: tent3, kind: humidity, name: "Exhaust above", min: 40, max: 90}
+  - {node: tent3, key: tower_on_s, zone: tower, kind: duration, name: "Pump on for", min: 0, max: 3600}
+  - {node: tent3, key: tower_off_s, zone: tower, kind: duration, name: "Pump off for", min: 0, max: 14400}
+  - {node: water, key: water_setpoint, zone: rdwc, kind: temperature, name: "Water temperature", min: 15, max: 24}
+
+# Automatic soil watering (docs/SAFETY.md §4b). Each pot pairs a sensor with its pump.
+# Every pot starts in OFF: turn AUTO on per pot on the Controls page.
+# below = water when moisture falls under this many percent.
+watering:
+  soak_s: 1800
+  max_doses_per_day: 6
+  pots:
+    - {name: "Pot 1", sensor: tent2/sensor/soil_1, pump: tent2/switch/water_1, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
+    - {name: "Pot 2", sensor: tent2/sensor/soil_2, pump: tent2/switch/water_2, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
+    - {name: "Pot 3", sensor: tent2/sensor/soil_3, pump: tent2/switch/water_3, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
+    - {name: "Pot 4", sensor: tent2/sensor/soil_4, pump: tent2/switch/water_4, tank_low: tent2/binary_sensor/water_tank_low, below: 35}
 
 # Alert rules (docs/SAFETY.md §5). Each rule applies to every sensor of that kind, so a
 # new tent is covered automatically. Limits are SI (°C, %RH). for_s = how long the

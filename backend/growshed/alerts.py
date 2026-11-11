@@ -58,6 +58,7 @@ class AlertEngine:
         live: LiveState,
         started_at: float,
         get_units: Callable[[], str] = lambda: "imperial",
+        extra: list[Condition] | None = None,
     ) -> None:
         self.conn = conn
         self.site = site
@@ -65,7 +66,7 @@ class AlertEngine:
         self.started_at = started_at
         self.get_units = get_units
         self.cfg = site.alerts
-        self.conditions = {c.key: c for c in self._build_conditions()}
+        self.conditions = {c.key: c for c in [*self._build_conditions(), *(extra or [])]}
         self.tracks = {key: _Track() for key in self.conditions}
         self.changed = False  # set whenever the active list changes; the caller resets it
         self._restore(started_at)
@@ -161,6 +162,60 @@ class AlertEngine:
                     fallback,
                 )
             )
+
+        for device in self.site.devices:
+            if device.control != "mode":
+                continue  # dose pumps report "refused", which the watering logic handles
+
+            def cutoff(now: float, d=device) -> CheckResult:
+                # SAFETY.md §3: whenever an interlock takes control of a device, say so.
+                if self.node_alive(d.node, now) is not True:
+                    return None, ""
+                source = self.live.values.get(d.source_key)
+                if source is None or source["value"] != "interlock":
+                    return False, ""
+                last = self.live.values.get(f"{d.node}/text_sensor/last_interlock")
+                rule = (last or {}).get("value") or ""
+                return True, f"rule {rule.split(' ')[0]}" if rule.endswith(d.key) else ""
+
+            out.append(
+                Condition(
+                    f"interlock:{device.state_key}",
+                    "Safety cutoff active",
+                    f"{zones[device.zone].name} · {device.name}",
+                    "warning",
+                    30,
+                    None,
+                    cutoff,
+                )
+            )
+            lux = next(
+                (s for s in self.site.sensors if s.zone == device.zone and s.kind == "illuminance"),
+                None,
+            )
+            if device.kind == "light" and lux is not None:
+
+                def dark(now: float, d=device, s=lux) -> CheckResult:
+                    # Catches a dead lamp, driver or relay: the node says ON, the tent is dark.
+                    state = self.live.values.get(d.state_key)
+                    level = self.live.values.get(s.state_key)
+                    if self.node_alive(d.node, now) is not True or state is None or level is None:
+                        return None, ""
+                    if level["value"] is None or now - level["ts"] > self.cfg.sensor_stale_after_s:
+                        return None, ""
+                    return state["value"] is True and level["value"] < 200, ""
+
+                out.append(
+                    Condition(
+                        f"dark:{device.state_key}",
+                        "Lights are on but the tent is dark",
+                        f"{zones[device.zone].name} · {device.name}",
+                        "warning",
+                        300,
+                        None,
+                        dark,
+                    )
+                )
 
         for sensor in self.site.sensors:
             if sensor.component != "sensor":

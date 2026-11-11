@@ -206,3 +206,34 @@ def test_rules_cover_every_tent_and_both_water_zones(engine):
     assert "rule:Water too cold:water/sensor/res_temp" in keys
     assert "rule:Tent too hot:water/sensor/room_temp" not in keys
     assert "rule:Basement humidity high:water/sensor/room_rh" in keys
+
+
+def test_interlock_taking_control_raises_an_alert(engine, live):
+    live.set_value("tent1/text_sensor/lights_source", "auto", T0)
+    assert engine.tick(T0) == []
+    live.set_value("tent1/text_sensor/lights_source", "interlock", T0 + 1)
+    live.set_value("tent1/text_sensor/last_interlock", "I-4 lights", T0 + 1)
+    engine.tick(T0 + 2)
+    notes = engine.tick(T0 + 40)
+    assert [(n.title, n.body) for n in notes] == [
+        ("Warning: Safety cutoff active", "Tent 1 · Lights: rule I-4")
+    ]
+
+
+def test_lights_on_but_dark_alert(engine, live):
+    live.set_value("tent2/switch/lights", True, T0)
+    for t in (0, 150, 290):
+        alive(live, T0 + t)
+        live.set_value("tent2/sensor/light_lux", 5.0, T0 + t)
+        assert engine.tick(T0 + t) == []
+    alive(live, T0 + 301)
+    live.set_value("tent2/sensor/light_lux", 5.0, T0 + 301)
+    assert titles(engine.tick(T0 + 301)) == ["Warning: Lights are on but the tent is dark"]
+    # lights off and dark is normal
+    for t in (301, 450, 620):
+        alive(live, T0 + t)
+        live.set_value("tent1/switch/lights", False, T0 + t)
+        live.set_value("tent1/sensor/light_lux", 0.0, T0 + t)
+        live.set_value("tent2/sensor/light_lux", 5.0, T0 + t)
+        notes = engine.tick(T0 + t + 1)
+        assert not [n for n in notes if "dark" in n.title and "Tent 1" in n.body]

@@ -9,6 +9,9 @@ from fastapi import APIRouter, HTTPException, Query, Request, WebSocket, WebSock
 from pydantic import BaseModel
 
 from . import db, recorder
+from .background import control_view
+from .control import Refused
+from .mqtt import NotConnected
 from .notify import Notification
 
 router = APIRouter()
@@ -17,6 +20,26 @@ DEFAULT_UNITS = "imperial"
 
 class SettingsBody(BaseModel):
     display_units: Literal["imperial", "metric"]
+
+
+class ModeBody(BaseModel):
+    key: str
+    mode: Literal["auto", "on", "off"]
+    hours: float | None = None  # how long a manual on/off lasts; None = until changed
+
+
+class NumberBody(BaseModel):
+    key: str
+    value: float
+
+
+class KeyBody(BaseModel):
+    key: str
+
+
+class PotModeBody(BaseModel):
+    key: str
+    mode: Literal["off", "auto"]
 
 
 class CalibrationBody(BaseModel):
@@ -91,6 +114,75 @@ async def set_calibration(body: CalibrationBody, request: Request) -> dict:
     return cal.summary()[body.key]
 
 
+async def _control(request: Request, action) -> dict:
+    """Run a control action, turning its refusals into answers the GUI can show."""
+    state = request.app.state
+    try:
+        await action(state, time.time())
+    except Refused as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except NotConnected as exc:
+        raise HTTPException(503, "The hub is not connected to the nodes right now.") from exc
+    state.controller.changed = False
+    view = control_view(state, time.time())
+    await state.hub.broadcast({"type": "control", **view})
+    return view
+
+
+@router.get("/api/control")
+async def get_control(request: Request) -> dict:
+    return control_view(request.app.state, time.time())
+
+
+@router.post("/api/control/mode")
+async def set_mode(body: ModeBody, request: Request) -> dict:
+    if body.hours is not None and not 0 < body.hours <= 72:
+        raise HTTPException(422, "hours must be between 0 and 72")
+    return await _control(
+        request, lambda s, now: s.controller.set_mode(body.key, body.mode, body.hours, now)
+    )
+
+
+@router.post("/api/control/number")
+async def set_number(body: NumberBody, request: Request) -> dict:
+    return await _control(request, lambda s, now: s.controller.set_number(body.key, body.value))
+
+
+@router.post("/api/control/dose")
+async def dose(body: KeyBody, request: Request) -> dict:
+    """Run a dose pump once. Soil pumps go through the watering limits."""
+
+    async def action(state, now: float) -> None:
+        pot = next((p for p in state.watering.pots.values() if p.pump == body.key), None)
+        if pot is not None:
+            await state.watering.water_now(pot.sensor, now)
+        else:
+            await state.controller.dose(body.key, "manual", now)
+
+    return await _control(request, action)
+
+
+@router.post("/api/control/leak/clear")
+async def clear_leak(request: Request) -> dict:
+    return await _control(request, lambda s, now: s.controller.clear_leak_alarm())
+
+
+@router.post("/api/watering/mode")
+async def watering_mode(body: PotModeBody, request: Request) -> dict:
+    async def action(state, now: float) -> None:
+        state.watering.set_mode(body.key, body.mode)
+
+    return await _control(request, action)
+
+
+@router.post("/api/watering/unlock")
+async def watering_unlock(body: KeyBody, request: Request) -> dict:
+    async def action(state, now: float) -> None:
+        state.watering.unlock(body.key)
+
+    return await _control(request, action)
+
+
 @router.get("/api/alerts")
 async def get_alerts(request: Request) -> dict:
     engine = request.app.state.alerts
@@ -157,6 +249,7 @@ async def websocket(ws: WebSocket) -> None:
             "settings": _settings(ws),
             "alerts": ws.app.state.alerts.active(),
             "calibration": ws.app.state.calibrations.summary(),
+            "control": control_view(ws.app.state, time.time()),
             "server_time": time.time(),
         }
     )

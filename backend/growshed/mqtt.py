@@ -21,6 +21,26 @@ log = logging.getLogger(__name__)
 RECONNECT_DELAY_S = 5.0
 
 
+class NotConnected(Exception):
+    """A command could not be sent because the hub has no MQTT connection right now."""
+
+
+class MqttLink:
+    """How the rest of the hub sends commands to nodes. Holds the live client, if any."""
+
+    def __init__(self) -> None:
+        self.client: aiomqtt.Client | None = None
+        self.on_connect = None  # optional async callback, e.g. to re-send retained state
+
+    async def publish(self, topic: str, payload: str, retain: bool = False) -> None:
+        if self.client is None:
+            raise NotConnected
+        try:
+            await self.client.publish(topic, payload, qos=1, retain=retain)
+        except aiomqtt.MqttError as exc:
+            raise NotConnected from exc
+
+
 async def _heartbeat(client: aiomqtt.Client, interval_s: float) -> None:
     while True:
         await client.publish(topics.HEARTBEAT_TOPIC, str(int(time.time())))
@@ -32,7 +52,7 @@ async def _set_connected(ingest: Ingest, connected: bool) -> None:
     await ingest.hub.broadcast({"type": "hub", "mqtt_connected": connected})
 
 
-async def run_mqtt(settings: Settings, ingest: Ingest) -> None:
+async def run_mqtt(settings: Settings, ingest: Ingest, link: MqttLink | None = None) -> None:
     """Run forever, reconnecting after any broker outage."""
     will = aiomqtt.Will(topics.HUB_STATUS_TOPIC, "offline", qos=1, retain=True)
     while True:
@@ -49,6 +69,10 @@ async def run_mqtt(settings: Settings, ingest: Ingest) -> None:
                 await client.publish(topics.HUB_STATUS_TOPIC, "online", qos=1, retain=True)
                 await client.subscribe(f"{topics.PREFIX}/#")
                 await _set_connected(ingest, True)
+                if link is not None:
+                    link.client = client
+                    if link.on_connect is not None:
+                        await link.on_connect()
                 beat = asyncio.create_task(_heartbeat(client, settings.heartbeat_interval_s))
                 try:
                     async for message in client.messages:
@@ -68,5 +92,7 @@ async def run_mqtt(settings: Settings, ingest: Ingest) -> None:
         except aiomqtt.MqttError as exc:
             log.warning("MQTT connection lost (%s); retrying in %ss", exc, RECONNECT_DELAY_S)
         finally:
+            if link is not None:
+                link.client = None
             await _set_connected(ingest, False)
         await asyncio.sleep(RECONNECT_DELAY_S)

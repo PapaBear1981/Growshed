@@ -9,10 +9,11 @@ PREFIX = "growshed"
 HUB = "hub"
 HEARTBEAT_TOPIC = f"{PREFIX}/{HUB}/heartbeat"
 HUB_STATUS_TOPIC = f"{PREFIX}/{HUB}/status"
+LEAK_ALARM_TOPIC = f"{PREFIX}/{HUB}/leak_alarm"
 
 NUMERIC_COMPONENTS = {"sensor", "number"}
 BOOLEAN_COMPONENTS = {"binary_sensor", "switch"}
-TEXT_COMPONENTS = {"text_sensor"}
+TEXT_COMPONENTS = {"text_sensor", "select"}
 COMPONENTS = NUMERIC_COMPONENTS | BOOLEAN_COMPONENTS | TEXT_COMPONENTS
 
 

@@ -53,10 +53,55 @@ class Device(BaseModel):
     name: str
     circuit: str | None = None  # which house breaker feeds it (for load budgeting)
     watts: float | None = None
+    # "mode": auto/on/off relay. "dose": a pump that only runs briefly on request.
+    control: Literal["mode", "dose"] = "mode"
+    dose_s: float = 8  # seconds requested per dose (the node enforces its own maximum)
 
     @property
     def state_key(self) -> str:
         return f"{self.node}/switch/{self.key}"
+
+    @property
+    def mode_key(self) -> str:
+        return f"{self.node}/select/{self.key}_mode"
+
+    @property
+    def source_key(self) -> str:
+        return f"{self.node}/text_sensor/{self.key}_source"
+
+
+class Setting(BaseModel):
+    """A value stored on a node that the hub may change (schedule times, limits, setpoints)."""
+
+    node: str
+    key: str  # ESPHome number id, e.g. "light_on_minute"
+    zone: str
+    kind: Literal["time_of_day", "temperature", "humidity", "duration"]
+    name: str
+    min: float
+    max: float
+
+    @property
+    def state_key(self) -> str:
+        return f"{self.node}/number/{self.key}"
+
+
+class WateringPot(BaseModel):
+    """Pairs a soil sensor with the pump that waters that pot (docs/SAFETY.md §4b)."""
+
+    name: str
+    sensor: str  # sensor key, e.g. tent2/sensor/soil_1
+    pump: str  # device key, e.g. tent2/switch/water_1
+    tank_low: str  # binary sensor key of the watering tank's low float
+    below: float = 35  # water when moisture drops below this many percent
+
+
+class WateringConfig(BaseModel):
+    pots: list[WateringPot] = []
+    soak_s: float = 1800  # wait after a dose before judging the result or dosing again
+    max_doses_per_day: int = 6
+    min_rise: float = 2.0  # percentage points the reading must rise after a dose
+    max_strikes: int = 2  # doses in a row without that rise before auto-watering stops
 
 
 class AlertRule(BaseModel):
@@ -96,6 +141,8 @@ class SiteConfig(BaseModel):
     nodes: list[Node]
     sensors: list[Sensor] = []
     devices: list[Device] = []
+    settings: list[Setting] = []
+    watering: WateringConfig = WateringConfig()
     alerts: AlertConfig = AlertConfig()
 
     @model_validator(mode="after")
@@ -113,7 +160,7 @@ class SiteConfig(BaseModel):
         if len(names) != len(set(names)):
             raise ValueError("alert rule names must be unique")
         seen: set[str] = set()
-        for item in [*self.sensors, *self.devices]:
+        for item in [*self.sensors, *self.devices, *self.settings]:
             if item.zone not in zone_ids:
                 raise ValueError(f"{item.state_key}: unknown zone {item.zone!r}")
             if item.node not in node_ids:
@@ -121,6 +168,18 @@ class SiteConfig(BaseModel):
             if item.state_key in seen:
                 raise ValueError(f"duplicate entity {item.state_key}")
             seen.add(item.state_key)
+        for setting in self.settings:
+            if setting.min >= setting.max:
+                raise ValueError(f"{setting.state_key}: min must be below max")
+        sensors = {s.state_key: s for s in self.sensors}
+        devices = {d.state_key: d for d in self.devices}
+        for pot in self.watering.pots:
+            if sensors.get(pot.sensor) is None or sensors[pot.sensor].kind != "soil_moisture":
+                raise ValueError(f"watering pot {pot.name!r}: {pot.sensor!r} is not a soil sensor")
+            if devices.get(pot.pump) is None or devices[pot.pump].control != "dose":
+                raise ValueError(f"watering pot {pot.name!r}: {pot.pump!r} is not a dose pump")
+            if pot.tank_low not in sensors:
+                raise ValueError(f"watering pot {pot.name!r}: unknown tank sensor {pot.tank_low!r}")
         return self
 
 

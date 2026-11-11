@@ -46,6 +46,14 @@ class Calibrations:
         # A reading slightly outside the two calibration points is normal: clamp it.
         return round(max(0.0, min(100.0, percent)), 1)
 
+    def raw_percent(self, key: str, raw: float | None) -> float | None:
+        """Like apply() but NOT clamped, so a reading far outside the calibrated range
+        (a sensor that fell out of its pot, a broken wire) can be recognised."""
+        if raw is None or not self.is_calibrated(key):
+            return None
+        point = self.points[key]
+        return (point["dry"] - raw) / (point["dry"] - point["wet"]) * 100
+
     def set_point(self, key: str, which: str, raw: float, now: float) -> None:
         if which not in ("dry", "wet"):
             raise ValueError(which)
