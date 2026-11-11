@@ -1,4 +1,5 @@
-# Tent node, Phase 1 (monitoring only): air temperature/humidity, light level, floor leak, clock.
+# Tent node sensors: light level, floor leak, clock. The air temperature/humidity sensor
+# comes from one of the common/air_*.yaml packages, chosen in the node file.
 
 i2c:
   sda: ${pin_sda}
@@ -6,16 +7,6 @@ i2c:
   scan: true # the boot log lists every I2C device found, handy for checking wiring
 
 sensor:
-  - platform: sht4x
-    update_interval: 30s
-    temperature:
-      id: air_temp
-      name: air_temp
-      state_topic: growshed/${node_id}/sensor/air_temp/state
-    humidity:
-      id: air_rh
-      name: air_rh
-      state_topic: growshed/${node_id}/sensor/air_rh/state
   - platform: bh1750
     name: light_lux
     state_topic: growshed/${node_id}/sensor/light_lux/state

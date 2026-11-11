@@ -41,6 +41,9 @@ export function formatReading(sensor, value, displayUnits) {
     return { text: value.toFixed(1), unit: '°C' };
   }
   if (sensor.kind === 'humidity' || sensor.kind === 'soil_moisture') return { text: value.toFixed(0), unit: '%' };
+  if (sensor.kind === 'ph') return { text: value.toFixed(1), unit: 'pH' };
+  // EC is stored in µS/cm and shown in mS/cm, the unit nutrient charts use.
+  if (sensor.kind === 'ec') return { text: (value / 1000).toFixed(2), unit: 'mS/cm' };
   if (sensor.kind === 'illuminance') {
     const text = value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value.toFixed(0);
     return { text, unit: 'lx' };

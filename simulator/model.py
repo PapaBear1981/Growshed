@@ -29,6 +29,19 @@ def first(*rules: tuple[object, str]) -> str | None:
     return next((rule for condition, rule in rules if condition), None)
 
 
+def tds_volts(ec_us: float) -> float:
+    """Voltage a cheap TDS board gives for a conductivity (at 25 °C): the inverse of the
+    curve the hub uses, found by bisection."""
+    low, high = 0.0, 3.0
+    for _ in range(40):
+        mid = (low + high) / 2
+        if 133.42 * mid**3 - 255.86 * mid**2 + 857.39 * mid < ec_us:
+            low = mid
+        else:
+            high = mid
+    return low
+
+
 def room_conditions(hour: float) -> tuple[float, float]:
     """Basement air (°C, %RH): steady, with a small daily swing."""
     phase = 2 * math.pi * (hour - 9) / 24
@@ -263,6 +276,11 @@ class WaterModel(NodeModel):
         self._heat_auto = False
         self._sensor_dead = c.Held()
         self._low_held = c.Held()
+        # Water chemistry, and what the probes are currently dipped in (None = the reservoir).
+        self.ph = 6.1
+        self.ec = 1500.0  # µS/cm
+        self.ph_probe_in: float | None = None  # a buffer solution's pH
+        self.ec_probe_in: float | None = None  # a calibration solution's EC
 
     @property
     def res_low(self) -> bool:
@@ -278,6 +296,21 @@ class WaterModel(NodeModel):
             return True
         if text == "drain":
             self.liters = self.LOW_L - 2
+            return True
+        word, _, arg = text.partition(" ")
+        if word in ("ph_buffer", "ec_solution", "ph_set", "ec_set"):
+            try:
+                value = None if arg == "off" else float(arg)
+            except ValueError:
+                return False
+            if word == "ph_buffer":
+                self.ph_probe_in = value  # probe moved into a buffer (or back with "off")
+            elif word == "ec_solution":
+                self.ec_probe_in = value
+            elif value is not None and word == "ph_set":
+                self.ph = value
+            elif value is not None:
+                self.ec = value
             return True
         return super().fault(text)
 
@@ -308,12 +341,26 @@ class WaterModel(NodeModel):
         self.liters -= 1.5 * dt_s / 86400  # plants drink ~1.5 L/day
         self.liters += 2.0 * ran / 60  # top-off pump: 2 L/min
         self.liters = max(0.0, min(self.CAPACITY_L, self.liters))
+        # Left alone, pH creeps up and the plants use up the nutrients.
+        self.ph = min(8.5, self.ph + 0.15 * dt_s / 86400)
+        self.ec = max(100.0, self.ec - 40.0 * dt_s / 86400)
+
+    def _probe_ph(self) -> float:
+        return self.ph if self.ph_probe_in is None else self.ph_probe_in
+
+    def _probe_ec_volts(self) -> float:
+        ec = self.ec if self.ec_probe_in is None else self.ec_probe_in
+        return tds_volts(ec) * (1 + 0.02 * (self.res_temp - 25.0))
 
     def entities(self) -> list[Entity]:
         return [
             ("sensor", "res_temp", self._noisy(self.res_temp, 0.03, 2)),
             ("sensor", "room_temp", self._noisy(self.room_temp, 0.05, 2)),
             ("sensor", "room_rh", self._noisy(self.room_rh, 0.2, 1)),
+            # Cheap analog probes: raw volts. pH boards read HIGHER volts for LOWER pH;
+            # the TDS board's volts rise with conductivity and with temperature.
+            ("sensor", "ph", self._noisy(2.5 + (7.0 - self._probe_ph()) * 0.18, 0.002, 3)),
+            ("sensor", "ec", self._noisy(self._probe_ec_volts(), 0.003, 3)),
             ("binary_sensor", "res_low", on_off(self.res_low)),
             ("binary_sensor", "res_high", on_off(self.res_high)),
             ("binary_sensor", "leak_res", on_off(self.leak_res)),

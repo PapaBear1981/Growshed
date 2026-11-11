@@ -8,5 +8,9 @@ packages:
   board: !include boards/esp32.yaml
   base: !include common/base.yaml
   water: !include common/water.yaml
+  # Room air sensor type: air_sht4x.yaml, air_aht20.yaml or air_bme280.yaml.
+  air: !include { file: common/air_sht4x.yaml, vars: { temp: room_temp, rh: room_rh } }
   # Phase 2 control. Remove this line for a sensor-only board (ESP8266, ESP32-C3).
   water_control: !include common/water_control.yaml
+  # Phase 3: cheap analog pH and EC probes in the control bucket.
+  chemistry: !include common/chemistry.yaml

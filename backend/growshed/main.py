@@ -19,6 +19,7 @@ from .calibration import MAX_AGE_DAYS, Calibrations
 from .config import Settings, load_config
 from .control import Controller
 from .ingest import Ingest
+from .journal import router as journal_router
 from .mqtt import MqttLink, run_mqtt
 from .notify import Notifier
 from .recorder import Recorder
@@ -167,6 +168,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.hub = WebSocketHub()
     app.state.ingest = Ingest(app.state.live, app.state.hub)
     app.include_router(router)
+    app.include_router(journal_router)
     if settings.static_dir.is_dir():
         # Built frontend. Mounted last so /api and /ws take priority.
         app.mount("/", StaticFiles(directory=settings.static_dir, html=True), name="frontend")

@@ -1,0 +1,77 @@
+# Water chemistry with cheap analog probes (Phase 3): pH and EC in the RDWC control bucket.
+# Needs common/water.yaml.
+#
+# Parts this is written for:
+#   pH: an analog pH kit (BNC probe + small amplifier board, analog output "Po").
+#   EC: an analog "TDS meter" board with its two-pin probe.
+#
+# The problem with cheap probes sharing one bucket: the EC probe passes a small current
+# through the water, which pushes the pH reading off. So the EC board is powered from an
+# output pin and switched on only for the couple of seconds it is being read. pH is
+# always measured with the EC board off.
+#
+# Both sensors publish RAW VOLTS. The hub turns them into pH and EC using calibrations
+# made in the GUI (and corrects EC for water temperature), so nothing here needs
+# changing when a probe is replaced or recalibrated.
+
+output:
+  - platform: gpio
+    id: ec_power
+    pin: ${pin_out5}
+
+sensor:
+  - platform: adc
+    id: ph_volts
+    pin: ${pin_adc1}
+    name: ph
+    state_topic: growshed/${node_id}/sensor/ph/state
+    attenuation: 12db
+    unit_of_measurement: V
+    accuracy_decimals: 3
+    update_interval: never # read only by the script below
+    filters:
+      - median:
+          window_size: 9
+          send_every: 9
+          send_first_at: 9
+  - platform: adc
+    id: ec_volts
+    pin: ${pin_adc2}
+    name: ec
+    state_topic: growshed/${node_id}/sensor/ec/state
+    attenuation: 12db
+    unit_of_measurement: V
+    accuracy_decimals: 3
+    update_interval: never
+    filters:
+      - median:
+          window_size: 9
+          send_every: 9
+          send_first_at: 9
+
+script:
+  - id: read_chemistry
+    mode: single
+    then:
+      # 1. pH, with the EC board off. Nine quick readings; the median filter publishes one.
+      - output.turn_off: ec_power
+      - delay: 500ms
+      - repeat:
+          count: 9
+          then:
+            - component.update: ph_volts
+            - delay: 100ms
+      # 2. EC: power its board, let it settle, read, power it off again.
+      - output.turn_on: ec_power
+      - delay: 2s
+      - repeat:
+          count: 9
+          then:
+            - component.update: ec_volts
+            - delay: 100ms
+      - output.turn_off: ec_power
+
+interval:
+  - interval: 20s
+    then:
+      - script.execute: read_chemistry

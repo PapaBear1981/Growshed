@@ -1,0 +1,15 @@
+# Air temperature and humidity: SHT40 / SHT41 / SHT45 (recommended: accurate and still cheap).
+# Pick ONE air_*.yaml per node (in the node file). All use the same four I2C wires, so
+# swapping sensor type is a one-line change. vars: temp / rh = the entity names to publish.
+
+sensor:
+  - platform: sht4x
+    update_interval: 30s
+    temperature:
+      id: ${temp}
+      name: ${temp}
+      state_topic: growshed/${node_id}/sensor/${temp}/state
+    humidity:
+      id: ${rh}
+      name: ${rh}
+      state_topic: growshed/${node_id}/sensor/${rh}/state

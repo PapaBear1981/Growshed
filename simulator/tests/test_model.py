@@ -149,6 +149,33 @@ def test_top_off_is_dose_only_and_stops_at_full_and_on_leak():
     )
 
 
+def test_chemistry_probes_report_volts_and_follow_buffers():
+    water = WaterModel()
+    water.step(1, 12)
+    in_reservoir = float(payloads(water)["ph"])
+    assert water.fault("ph_buffer 4")
+    acid = float(payloads(water)["ph"])
+    assert water.fault("ph_buffer 10")
+    alkaline = float(payloads(water)["ph"])
+    assert acid > in_reservoir > alkaline  # lower pH = higher volts on cheap boards
+    assert water.fault("ph_buffer off")
+    weak = float(payloads(water)["ec"])
+    assert water.fault("ec_solution 2500")
+    assert float(payloads(water)["ec"]) > weak
+    assert (
+        water.fault("ec_solution off") and water.fault("ph_set 7.5") and water.fault("ec_set 400")
+    )
+    assert water.ph == 7.5 and water.ec == 400
+    assert not water.fault("ph_buffer banana")
+
+
+def test_chemistry_drifts_slowly():
+    water = WaterModel()
+    ph, ec = water.ph, water.ec
+    run(water, 5 * 86400, hour=12, dt=600)
+    assert ph < water.ph < ph + 1 and ec - 300 < water.ec < ec
+
+
 def test_sensor_failure_publishes_nan():
     tent = TentModel()
     assert tent.fault("sensor_fail on")

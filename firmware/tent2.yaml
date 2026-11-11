@@ -8,6 +8,8 @@ packages:
   board: !include boards/esp32.yaml
   base: !include common/base.yaml
   tent: !include common/tent.yaml
+  # Air sensor type: air_sht4x.yaml, air_aht20.yaml or air_bme280.yaml.
+  air: !include { file: common/air_sht4x.yaml, vars: { temp: air_temp, rh: air_rh } }
   # Phase 2 control. Remove this line for a sensor-only board (ESP8266, ESP32-C3).
   tent_control: !include common/tent_control.yaml
   # Soil pots in this tent: one line per pot (up to the board's number of pin_adc pins).

@@ -14,11 +14,11 @@ sensor:
     attenuation: 12db # full 0-3.3 V range
     unit_of_measurement: V
     accuracy_decimals: 3
-    # Read every 10 s, publish the median of six readings once a minute: soil changes
-    # slowly, and the median throws away electrical noise spikes.
-    update_interval: 10s
+    # Read every 4 s, publish the median of five readings every 20 s. The median throws
+    # away electrical noise spikes; 20 s keeps calibration in the GUI quick.
+    update_interval: 4s
     filters:
       - median:
-          window_size: 6
-          send_every: 6
-          send_first_at: 6
+          window_size: 5
+          send_every: 5
+          send_first_at: 5

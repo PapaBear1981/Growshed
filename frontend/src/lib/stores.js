@@ -96,27 +96,11 @@ export async function ackAlert(id) {
   await fetch('/api/alerts/' + id + '/ack', { method: 'POST' });
 }
 
-// Ask the hub to store the sensor's current reading as its "dry" or "wet" point.
-// Returns '' on success or a message to show the user.
-export async function saveCalibration(key, point) {
-  try {
-    const res = await fetch('/api/calibration', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: key, point: point }),
-    });
-    if (res.ok) return '';
-    return res.status === 409 ? 'No fresh reading from this sensor. Is it connected?' : 'Could not save.';
-  } catch (err) {
-    return 'Could not reach the hub.';
-  }
-}
-
 // Send a control request. Returns '' on success, or the hub's reason for refusing.
-export async function command(path, body) {
+export async function command(path, body, method) {
   try {
     const res = await fetch(path, {
-      method: 'POST',
+      method: method || 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body || {}),
     });

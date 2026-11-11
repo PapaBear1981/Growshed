@@ -1,5 +1,5 @@
 # Water node, Phase 1 (monitoring only): RDWC reservoir temperature and level, leak
-# sensors, and the basement room climate.
+# sensors. The basement room climate comes from a common/air_*.yaml package in the node file.
 
 i2c:
   sda: ${pin_sda}
@@ -16,14 +16,6 @@ sensor:
     name: res_temp
     state_topic: growshed/${node_id}/sensor/res_temp/state
     update_interval: 30s
-  - platform: sht4x
-    update_interval: 30s
-    temperature:
-      name: room_temp
-      state_topic: growshed/${node_id}/sensor/room_temp/state
-    humidity:
-      name: room_rh
-      state_topic: growshed/${node_id}/sensor/room_rh/state
 
 binary_sensor:
   # Low float: closed (pin low) while floating. ON = level is LOW.

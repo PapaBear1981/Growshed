@@ -1,0 +1,16 @@
+# Air temperature and humidity: BME280 (also reports pressure, which is not used). Not BMP280: that has no humidity.
+# Pick ONE air_*.yaml per node (in the node file). All use the same four I2C wires, so
+# swapping sensor type is a one-line change. vars: temp / rh = the entity names to publish.
+
+sensor:
+  - platform: bme280_i2c
+    address: 0x76
+    update_interval: 30s
+    temperature:
+      id: ${temp}
+      name: ${temp}
+      state_topic: growshed/${node_id}/sensor/${temp}/state
+    humidity:
+      id: ${rh}
+      name: ${rh}
+      state_topic: growshed/${node_id}/sensor/${rh}/state

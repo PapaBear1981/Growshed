@@ -41,6 +41,10 @@ sensors:
   - {node: tent3, key: tower_temp, zone: tower, kind: temperature, unit: "°C", name: "Water temperature"}
   - {node: tent3, key: tower_low, component: binary_sensor, zone: tower, kind: level_low, name: "Reservoir low"}
   - {node: water, key: res_temp, zone: rdwc, kind: temperature, unit: "°C", name: "Water temperature"}
+  # Water chemistry: the node sends raw volts; the hub shows pH and EC (µS/cm) after
+  # calibration in the GUI. EC is corrected to 25 °C with the reservoir's temperature.
+  - {node: water, key: ph, zone: rdwc, kind: ph, unit: "pH", name: "pH"}
+  - {node: water, key: ec, zone: rdwc, kind: ec, unit: "µS/cm", name: "EC"}
   - {node: water, key: res_low, component: binary_sensor, zone: rdwc, kind: level_low, name: "Reservoir low"}
   - {node: water, key: res_high, component: binary_sensor, zone: rdwc, kind: level_high, name: "Reservoir full"}
   - {node: water, key: leak_res, component: binary_sensor, zone: rdwc, kind: leak, name: "Leak under reservoir"}
@@ -116,3 +120,9 @@ alerts:
     - {name: "Water too warm", sensor_kind: temperature, zone_kinds: [rdwc, tower], above: 24, for_s: 600}
     # 0 % = sensor in air, 100 % = sensor in water. Tune this limit to your soil and plants.
     - {name: "Soil dry", sensor_kind: soil_moisture, below: 30, for_s: 1800}
+    # Water chemistry targets for the RDWC reservoir. Tune these to your crops:
+    # leafy greens are happy around pH 5.5-6.5 and EC 0.8-1.6 mS/cm (800-1600 µS/cm).
+    - {name: "pH too low", sensor_kind: ph, below: 5.3, for_s: 1800}
+    - {name: "pH too high", sensor_kind: ph, above: 6.7, for_s: 1800}
+    - {name: "Nutrients weak (EC low)", sensor_kind: ec, below: 700, for_s: 3600}
+    - {name: "Nutrients strong (EC high)", sensor_kind: ec, above: 2200, for_s: 3600}
