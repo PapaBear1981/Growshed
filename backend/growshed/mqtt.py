@@ -8,6 +8,7 @@ task and never blocked by message handling.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
 
@@ -87,6 +88,12 @@ async def run_mqtt(settings: Settings, ingest: Ingest, link: MqttLink | None = N
                         except Exception:
                             # One malformed message must never take the ingest loop down.
                             log.exception("failed to handle %s", message.topic)
+                except asyncio.CancelledError:
+                    # Clean shutdown: the broker only sends the "offline" will after a crash,
+                    # so say goodbye explicitly.
+                    with contextlib.suppress(Exception):
+                        await client.publish(topics.HUB_STATUS_TOPIC, "offline", qos=1, retain=True)
+                    raise
                 finally:
                     beat.cancel()
         except aiomqtt.MqttError as exc:

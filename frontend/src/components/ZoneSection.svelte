@@ -45,8 +45,10 @@
       {@const entry = $values[keyOf(device, 'switch')]}
       {@const stale = !entry || nodeDown($nodes[device.node], $now)}
       {@const on = !stale && entry.value === true}
+      {@const source = $values[device.node + '/text_sensor/' + device.key + '_source']}
+      {@const cutoff = !stale && source && source.value === 'interlock'}
       <li>
-        <span>{device.name}</span>
+        <span>{device.name}{#if cutoff}<span class="cutoff">safety cutoff</span>{/if}</span>
         <span class="chip" class:on class:off={!stale && !on} class:unknown={stale}>
           {stale || entry.value === null ? 'No data' : on ? 'ON' : 'OFF'}
         </span>
@@ -114,6 +116,15 @@
     color: var(--good);
   }
   .chip.bad {
+    background: var(--bad);
+    color: #fff;
+  }
+  .cutoff {
+    margin-left: 8px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
     background: var(--bad);
     color: #fff;
   }

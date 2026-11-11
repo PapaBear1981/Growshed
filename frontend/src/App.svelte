@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { config, link, alerts, loadConfig, connect, ackAlert } from './lib/stores.js';
   import Dashboard from './routes/Dashboard.svelte';
+  import Controls from './routes/Controls.svelte';
   import History from './routes/History.svelte';
   import Alerts from './routes/Alerts.svelte';
   import System from './routes/System.svelte';
@@ -9,6 +10,7 @@
   // Tiny hash router: a handful of pages do not justify a routing library.
   const pages = [
     { hash: '#/', label: 'Dashboard', component: Dashboard },
+    { hash: '#/controls', label: 'Controls', component: Controls },
     { hash: '#/history', label: 'History', component: History },
     { hash: '#/alerts', label: 'Alerts', component: Alerts },
     { hash: '#/system', label: 'System', component: System },
@@ -83,6 +85,8 @@
   }
   nav {
     display: flex;
+    flex-wrap: wrap; /* five tabs do not fit on one phone-width row */
+    max-width: 100%;
   }
   nav a {
     display: flex;

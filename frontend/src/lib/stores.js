@@ -8,6 +8,8 @@ export const settings = writable({ display_units: 'imperial' });
 export const link = writable({ ws: false, mqtt: false });
 export const alerts = writable([]); // active alerts, critical first
 export const calibration = writable({}); // sensor key -> { dry, wet, calibrated }
+// Control view: manual-mode timers, the leak alarm latch, and each pot's watering status.
+export const control = writable({ overrides: {}, leak_alarm: false, watering: [] });
 
 // Hub time in seconds. We track the offset to the hub's clock because an old
 // tablet's own clock can be badly wrong, which would make fresh data look stale.
@@ -39,6 +41,7 @@ function handle(msg) {
     settings.set(msg.settings);
     alerts.set(msg.alerts || []);
     calibration.set(msg.calibration || {});
+    if (msg.control) control.set(msg.control);
     link.set({ ws: true, mqtt: msg.mqtt_connected });
   } else if (msg.type === 'value') {
     values.update((all) => {
@@ -60,6 +63,8 @@ function handle(msg) {
     });
   } else if (msg.type === 'settings') {
     settings.set({ display_units: msg.display_units });
+  } else if (msg.type === 'control') {
+    control.set({ overrides: msg.overrides, leak_alarm: msg.leak_alarm, watering: msg.watering });
   } else if (msg.type === 'calibration') {
     calibration.set(msg.calibration);
   } else if (msg.type === 'alerts') {
@@ -102,6 +107,22 @@ export async function saveCalibration(key, point) {
     });
     if (res.ok) return '';
     return res.status === 409 ? 'No fresh reading from this sensor. Is it connected?' : 'Could not save.';
+  } catch (err) {
+    return 'Could not reach the hub.';
+  }
+}
+
+// Send a control request. Returns '' on success, or the hub's reason for refusing.
+export async function command(path, body) {
+  try {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {}),
+    });
+    if (res.ok) return '';
+    const answer = await res.json().catch(() => ({}));
+    return typeof answer.detail === 'string' ? answer.detail : 'The hub refused that request.';
   } catch (err) {
     return 'Could not reach the hub.';
   }
