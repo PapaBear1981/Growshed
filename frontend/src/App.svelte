@@ -6,6 +6,9 @@
   import History from './routes/History.svelte';
   import Water from './routes/Water.svelte';
   import Journal from './routes/Journal.svelte';
+  import Grows from './routes/Grows.svelte';
+  import Settings from './routes/Settings.svelte';
+  import Kiosk from './routes/Kiosk.svelte';
   import Alerts from './routes/Alerts.svelte';
   import System from './routes/System.svelte';
 
@@ -14,13 +17,18 @@
     { hash: '#/', label: 'Dashboard', component: Dashboard },
     { hash: '#/controls', label: 'Controls', component: Controls },
     { hash: '#/water', label: 'Water', component: Water },
-    { hash: '#/history', label: 'History', component: History },
+    { hash: '#/history', label: 'Charts', component: History },
+    { hash: '#/grows', label: 'Grows', component: Grows },
     { hash: '#/journal', label: 'Journal', component: Journal },
     { hash: '#/alerts', label: 'Alerts', component: Alerts },
+    { hash: '#/settings', label: 'Settings', component: Settings },
     { hash: '#/system', label: 'System', component: System },
   ];
   let hash = location.hash || '#/';
-  $: page = pages.find((p) => p.hash === hash) || pages[0];
+  // A page may carry parameters after "?" (the charts take a date range that way).
+  $: route = hash.split('?')[0];
+  $: kiosk = route === '#/kiosk';
+  $: page = pages.find((p) => p.hash === route) || pages[0];
 
   // Unacknowledged critical alerts are shown on every page until someone taps Acknowledge.
   $: urgent = $alerts.filter((a) => a.severity === 'critical' && !a.acked_at);
@@ -34,6 +42,10 @@
     return () => window.removeEventListener('hashchange', onHash);
   });
 </script>
+
+{#if kiosk && $config}
+  <Kiosk />
+{/if}
 
 <header class="bar">
   <span class="brand">Growshed</span>

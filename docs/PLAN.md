@@ -157,14 +157,23 @@ Built and tested against the simulator:
 
 - **Done when:** two weeks in `SUGGEST` mode whose suggestions you agree with, then `AUTO` for a week without hitting a limit.
 
-### Phase 5 — Extras (pick and choose)
-- Pi/USB cameras per tent: snapshots, timelapse.
-- CO₂ sensor (SCD41) per tent.
-- Power monitoring per circuit (PZEM-004T or metering smart plugs) and electricity cost tracking.
-- Variable-speed exhaust (0–10 V or PWM inline fans) instead of on/off.
-- Dimmable lights with sunrise/sunset.
-- Richer journal: harvest weights, crop profiles, reminders.
-- Data export (CSV).
+### Phase 5 — Extras
+
+**Built** (tested against the simulator):
+- **Settings in the GUI:** alert limits per tent, dosing targets and dose sizes, watering thresholds. `config.yaml` now only supplies the defaults.
+- **Crop profiles** (lettuce and leafy greens, herbs, strawberries) that fill those limits in for one tent or reservoir.
+- **Grow history:** a record per grow with its conditions, additions, alerts, electricity and harvest, frozen when the grow ends and kept forever. Charts can show any past grow's whole period.
+- **Device on/off history** under the charts, and an electricity estimate from on-time × wattage.
+- **Maintenance reminders** and dosing **bottle levels**, with alerts.
+- **Daily summary** notification and **quiet hours** (critical alerts are never held).
+- **Backups:** a nightly snapshot of the database and config, and a one-tap full export.
+- **Kiosk view** for the wall tablet, and a **light / dark** choice per device.
+
+**Not built:**
+- Cameras: snapshots, timelapse, and AI plant checks (discussed; skipped for now).
+- A login for the GUI (needed before any remote access other than Tailscale).
+- CO₂ sensors, power-monitoring hardware, variable-speed fans, dimmable lights.
+- CSV export.
 
 ## 5. Open questions / TBD
 

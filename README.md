@@ -67,7 +67,7 @@ and `cd frontend && npm run dev` for live-reloading GUI work.
 
 ## Documentation
 
-- [Plan & phases](docs/PLAN.md)
+- [Plan & phases](docs/PLAN.md) (what is built, and what has only run in simulation)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Safety rules](docs/SAFETY.md)
 - [Hardware & power budget](docs/HARDWARE.md)

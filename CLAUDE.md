@@ -34,6 +34,7 @@ over cleverness.
 - `firmware/common/control.h`: the node control and interlock logic, pure C++, unit-tested natively by `firmware/tests/control_test.cpp` (run by `pytest`). Change the tests with it. `simulator/control.py` is its Python port: keep the two in step.
 - The hub never switches a relay. It asks a node for a mode, a setting or a dose (`backend/growshed/control.py`); only the node's control loop drives outputs.
 - **Dosing is OFF by default and must stay that way.** `AUTO` needs the explicit acknowledgement checked in `Dosing.set_mode`; never add a path that enables it silently, raises the limits above the node's, or acts on a reading the trust checks reject (`backend/growshed/dosing.py`, docs/SAFETY.md §4).
+- Limits a person may tune live in `backend/growshed/tunables.py` (GUI Settings page), with `config.yaml` as the default. Read them through `Tunables.get`, never straight from the config. Interlocks and node-side caps must never become tunables.
 - `simulator/`: fake nodes over MQTT that mirror the firmware's modes, interlocks and dose limits.
 - `hardware/enclosure/`: 3D-printable node enclosure (OpenSCAD source + exported STLs). Re-export the STLs whenever the `.scad` changes.
 

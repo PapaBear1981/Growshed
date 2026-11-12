@@ -321,10 +321,8 @@ def test_grow_lifecycle_and_frozen_summary(client):
         "/api/grows",
         json={"name": "Winter lettuce", "zone": "tent1", "crop": "Lettuce", "started_at": start},
     ).json()["id"]
-    plant_id = client.post(
-        "/api/plants", json={"zone": "tent1", "name": "Butterhead", "started_at": start}
-    ).json()["id"]
-    state.db.execute("UPDATE plant SET grow_id = ? WHERE id = ?", (grow_id, plant_id))
+    plant = {"zone": "tent1", "name": "Butterhead", "started_at": start, "grow_id": grow_id}
+    client.post("/api/plants", json=plant)
     for ts, value in ((start + 100, 18.0), (start + 200, 26.0)):
         state.recorder.add("tent1/sensor/air_temp", value, ts)
         state.recorder.add("tent2/sensor/air_temp", 99.0, ts)  # another tent: not this grow

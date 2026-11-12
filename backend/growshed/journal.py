@@ -50,6 +50,7 @@ class PlantBody(BaseModel):
     started_at: float | None = None
     ended_at: float | None = None
     notes: str = Field(default="", max_length=2000)
+    grow_id: int | None = None  # which grow this plant belongs to, if any
 
 
 class EntryBody(BaseModel):
@@ -121,10 +122,10 @@ async def add_plant(body: PlantBody, request: Request) -> dict:
     _check_zone(request, body.zone)
     conn = _conn(request)
     cur = conn.execute(
-        "INSERT INTO plant (zone, name, variety, started_at, ended_at, notes) "
-        "VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO plant (zone, name, variety, started_at, ended_at, notes, grow_id) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
         (body.zone, body.name.strip(), body.variety.strip(), int(body.started_at or time.time()),
-         int(body.ended_at) if body.ended_at else None, body.notes.strip()),
+         int(body.ended_at) if body.ended_at else None, body.notes.strip(), body.grow_id),
     )  # fmt: skip
     conn.commit()
     return {"id": cur.lastrowid}
@@ -139,10 +140,11 @@ async def update_plant(plant_id: int, body: PlantBody, request: Request) -> dict
         raise HTTPException(404, "no such plant")
     conn.execute(
         "UPDATE plant SET zone = ?, name = ?, variety = ?, started_at = ?, ended_at = ?, "
-        "notes = ? WHERE id = ?",
+        "notes = ?, grow_id = ? WHERE id = ?",
         (body.zone, body.name.strip(), body.variety.strip(),
          int(body.started_at or old["started_at"]),
-         int(body.ended_at) if body.ended_at else None, body.notes.strip(), plant_id),
+         int(body.ended_at) if body.ended_at else None, body.notes.strip(), body.grow_id,
+         plant_id),
     )  # fmt: skip
     conn.commit()
     return {"ok": True}

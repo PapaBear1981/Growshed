@@ -22,6 +22,21 @@
 
   let kind = 'temperature';
   let hours = 24;
+  // A fixed range from the page address (#/history?start=..&end=..), used to look back
+  // at a whole grow. Choosing one of the range buttons goes back to "the last N hours".
+  function rangeFromAddress() {
+    const query = (location.hash.split('?')[1] || '').split('&');
+    const get = (name) => Number((query.find((q) => q.indexOf(name + '=') === 0) || '').split('=')[1]);
+    const start = get('start');
+    const end = get('end');
+    return start > 0 && end > start ? { start, end } : null;
+  }
+  let fixed = rangeFromAddress();
+  const onAddress = () => (fixed = rangeFromAddress());
+  let range = { start: 0, end: 0 }; // what is currently drawn
+  let strips = []; // device on/off timelines under the chart
+  let plotBox = { left: 0, width: 0 };
+  const DEVICE_KINDS = { temperature: ['light', 'fan', 'heater'], humidity: ['fan', 'light'], illuminance: ['light'], soil_moisture: ['pump'], ph: ['doser'], ec: ['doser'] };
   let host;
   let plot = null;
   let status = 'Loading…';
@@ -84,7 +99,11 @@
         width: host.clientWidth,
         height: Math.max(240, Math.min(420, Math.round(window.innerHeight * 0.5))),
         cursor: { points: { size: 9 } },
-        hooks: { draw: [drawDoses] },
+        hooks: {
+          draw: [drawDoses],
+          ready: [(u) => (plotBox = { left: u.bbox.left / (devicePixelRatio || 1), width: u.bbox.width / (devicePixelRatio || 1) })],
+          setSize: [(u) => (plotBox = { left: u.bbox.left / (devicePixelRatio || 1), width: u.bbox.width / (devicePixelRatio || 1) })],
+        },
         scales: { x: { time: true } },
         axes: [axis, Object.assign({ size: 56, values: (u, ticks) => ticks.map((t) => t + ' ' + unit) }, axis)],
         series: [{}].concat(
@@ -109,26 +128,49 @@
       return;
     }
     const mine = ++requestId;
-    const end = Math.floor(Date.now() / 1000);
+    const end = fixed ? fixed.end : Math.floor(Date.now() / 1000);
+    const start = fixed ? fixed.start : end - hours * 3600;
     const keys = sensors.map((s) => s.node + '/sensor/' + s.key).join(',');
     try {
-      const res = await fetch('/api/history?keys=' + encodeURIComponent(keys) + '&start=' + (end - hours * 3600) + '&end=' + end);
+      const res = await fetch('/api/history?keys=' + encodeURIComponent(keys) + '&start=' + start + '&end=' + end);
       if (!res.ok) throw new Error('bad response');
       const body = await res.json();
       doses = [];
       if (chemistry) {
         const zones = sensors.map((s) => s.zone);
-        const all = await (await fetch('/api/doses?since=' + (end - hours * 3600))).json();
-        doses = all.filter((d) => zones.indexOf(d.zone) >= 0);
+        const all = await (await fetch('/api/doses?since=' + start)).json();
+        doses = all.filter((d) => zones.indexOf(d.zone) >= 0 && d.ts <= end);
       }
-      if (mine === requestId) draw(body); // ignore answers to an older selection
+      // Devices that explain this measure (lights and fans for temperature, and so on),
+      // in the same zones as the charted sensors or the tents those zones sit in.
+      const zoneIds = sensors.map((s) => s.zone);
+      const parents = $config.zones.filter((z) => zoneIds.indexOf(z.id) >= 0 && z.parent).map((z) => z.parent);
+      const devices = $config.devices.filter((d) => (DEVICE_KINDS[kind] || []).indexOf(d.kind) >= 0 && zoneIds.concat(parents).indexOf(d.zone) >= 0);
+      let history = {};
+      if (devices.length) {
+        const deviceKeys = devices.map((d) => d.node + '/switch/' + d.key).join(',');
+        history = await (await fetch('/api/device_history?keys=' + encodeURIComponent(deviceKeys) + '&start=' + start + '&end=' + end)).json();
+      }
+      if (mine !== requestId) return; // ignore answers to an older selection
+      range = { start, end };
+      strips = devices
+        .map((d) => ({ name: zoneName(d.zone) + ' · ' + d.name, on: history[d.node + '/switch/' + d.key] || [] }))
+        .filter((x) => x.on.length);
+      draw(body);
     } catch (err) {
       if (mine === requestId) status = 'Could not load history from the hub.';
     }
   }
 
+  const dateText = (ts) => new Date(ts * 1000).toLocaleDateString();
+  function pickHours(h) {
+    hours = h;
+    if (fixed) location.hash = '#/history'; // leave the fixed range
+    fixed = null;
+  }
+
   // Reload when the measure, range or units change.
-  $: kind, hours, $settings.display_units, host && load();
+  $: kind, hours, fixed, $settings.display_units, host && load();
 
   function onResize() {
     if (plot && host) plot.setSize({ width: host.clientWidth, height: plot.height });
@@ -153,14 +195,30 @@
   </div>
   <div class="segmented" role="group" aria-label="Time range">
     {#each RANGES as r (r.hours)}
-      <button class:selected={hours === r.hours} aria-pressed={hours === r.hours} on:click={() => (hours = r.hours)}>{r.label}</button>
+      <button class:selected={!fixed && hours === r.hours} aria-pressed={!fixed && hours === r.hours} on:click={() => pickHours(r.hours)}>{r.label}</button>
     {/each}
   </div>
 </div>
 
+<svelte:window on:hashchange={onAddress} />
+
 <section class="card">
+  {#if fixed}<p class="status">Showing {dateText(fixed.start)} to {dateText(fixed.end)}. Pick a range above to return to recent readings.</p>{/if}
   {#if status}<p class="status">{status}</p>{/if}
   <div class="chart" bind:this={host}></div>
+  {#if strips.length && plot}
+    <div class="strips" aria-label="When devices were on">
+      {#each strips as strip (strip.name)}
+        <div class="strip-name" style="padding-left: {plotBox.left}px">{strip.name}</div>
+        <div class="track" style="margin-left: {plotBox.left}px; width: {plotBox.width}px">
+          {#each strip.on as span (span[0])}
+            <i style="left: {((span[0] - range.start) / (range.end - range.start)) * 100}%; width: {Math.max(0.3, ((span[1] - span[0]) / (range.end - range.start)) * 100)}%"></i>
+          {/each}
+        </div>
+      {/each}
+      <p class="hint">Bars show when each device was on.</p>
+    </div>
+  {/if}
   {#if chemistry && doses.length}
     <p class="hint">Dashed lines mark what you added: {doses.slice(0, 6).map((d) => d.product + ' ' + d.amount + ' ' + d.unit).join(', ')}{doses.length > 6 ? ', …' : ''}.</p>
   {/if}
@@ -204,6 +262,27 @@
     margin: 6px 4px;
     color: var(--muted);
     font-size: 0.9rem;
+  }
+  .strips {
+    margin-top: 6px;
+  }
+  .strip-name {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .track {
+    position: relative;
+    height: 10px;
+    margin-bottom: 6px;
+    border-radius: 3px;
+    background: var(--off-bg);
+    overflow: hidden;
+  }
+  .track i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--accent);
   }
   .chart {
     width: 100%;

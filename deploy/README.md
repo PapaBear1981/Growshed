@@ -46,6 +46,22 @@ never passwords. Anyone who learns the topic name could read it, which is why it
 healthchecks.io (period 5 minutes, grace 10), put its ping URL in `GROWSHED_HEALTHCHECK_URL`,
 and restart with `docker compose up -d`. healthchecks.io then tells you when the hub goes silent.
 
+## Backups and restoring
+
+The hub saves a snapshot of its database and `config.yaml` every night into `data/backups/`
+(the last 14 are kept). Those live on the same SSD, so they protect against mistakes and
+corruption, not against the SSD dying.
+
+- **Keep a copy elsewhere:** on the Settings page, press **Download full backup** now and then.
+  It is one zip with the database, `config.yaml` and all journal photos.
+- **Or point the nightly snapshots at another disk** (a USB stick or a network share mounted on
+  the Pi): set `GROWSHED_BACKUP_DIR` in `.env` to a folder that is mounted into the backend
+  container, and add that folder to the `volumes:` of the `backend` service.
+
+To restore: stop the hub (`docker compose down`), put the saved `growshed.db` at
+`data/growshed.db` (remove any `growshed.db-wal` and `growshed.db-shm` files next to it), put
+photos back under `data/photos/`, and start it again (`docker compose up -d`).
+
 ## Updating
 
 ```bash

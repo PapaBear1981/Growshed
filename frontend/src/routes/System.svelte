@@ -1,5 +1,5 @@
 <script>
-  import { config, nodes, values, settings, link, now, saveUnits } from '../lib/stores.js';
+  import { config, nodes, values, link, now } from '../lib/stores.js';
   import Calibration from '../components/Calibration.svelte';
   import { formatDuration, nodeDown } from '../lib/format.js';
 
@@ -16,27 +16,7 @@
         .sort()
         .map((id) => ({ id, name: id, isNew: true }))
     );
-  const options = [
-    { id: 'imperial', label: '°F' },
-    { id: 'metric', label: '°C' },
-  ];
 </script>
-
-<section class="card">
-  <h2>Display units</h2>
-  <p class="hint">Applies to every screen, including the wall tablet.</p>
-  <div class="segmented">
-    {#each options as option (option.id)}
-      <button
-        class:selected={$settings.display_units === option.id}
-        aria-pressed={$settings.display_units === option.id}
-        on:click={() => saveUnits(option.id)}
-      >
-        {option.label}
-      </button>
-    {/each}
-  </div>
-</section>
 
 <section class="card">
   <h2>Hub</h2>

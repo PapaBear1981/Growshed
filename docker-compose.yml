@@ -32,6 +32,7 @@ services:
       GROWSHED_NTFY_URL: ${GROWSHED_NTFY_URL:-}
       GROWSHED_NTFY_TOKEN: ${GROWSHED_NTFY_TOKEN:-}
       GROWSHED_HEALTHCHECK_URL: ${GROWSHED_HEALTHCHECK_URL:-}
+      GROWSHED_BACKUP_DIR: ${GROWSHED_BACKUP_DIR:-}
     volumes:
       - ./config:/config:ro
       - ./data:/data

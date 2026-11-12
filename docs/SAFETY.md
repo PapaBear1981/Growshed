@@ -108,6 +108,18 @@ unplugged, failed) while the pump keeps answering it. So:
 - Every pot stands in a saucer or tray, and the tent's leak sensor sits where overflow would collect.
 - The watering tank holds **plain water** and is separate from the nutrient reservoirs. Its outlet tubes end **above** the tank's water level at the pot, or have anti-siphon valves, so a stopped pump cannot keep siphoning.
 
+## 4c. What can and cannot be changed from the GUI
+
+The Settings page can change alert limits, dosing targets, dose sizes and watering
+thresholds. Every value is range-checked by the hub (`backend/growshed/tunables.py`). Dose
+sizes cannot be set above `max_dose_ml`, which cannot be set above the node's own cap, and
+the two pH dosing limits must stay at least 0.4 pH apart. **None of the interlocks in §3, the
+fallback behaviour in §2, or the node-side dose caps can be changed from the GUI**: they live
+in the firmware and need a deliberate reflash.
+
+Quiet hours hold back **warnings** only. Critical alerts (leaks, low reservoirs) are always
+sent at once.
+
 ## 5. Alerts that must exist
 
 - **Leak detected (any sensor): critical**, repeated every 5 min until acknowledged.

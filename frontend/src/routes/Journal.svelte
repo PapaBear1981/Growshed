@@ -9,7 +9,8 @@
   let message = '';
   let saving = false;
   const today = () => new Date().toISOString().slice(0, 10);
-  let plantForm = { name: '', variety: '', zone: '', started: today() };
+  let grows = [];
+  let plantForm = { name: '', variety: '', zone: '', started: today(), grow_id: '' };
   let entryForm = { plant_id: '', text: '' };
   let fileInput;
 
@@ -29,6 +30,7 @@
     try {
       plants = await (await fetch('/api/plants')).json();
       entries = await (await fetch('/api/journal')).json();
+      grows = (await (await fetch('/api/grows')).json()).filter((g) => !g.ended_at);
     } catch (err) {
       // the banner already says the hub is unreachable
     }
@@ -45,16 +47,17 @@
       name: plantForm.name,
       variety: plantForm.variety,
       started_at: new Date(plantForm.started + 'T12:00:00').getTime() / 1000,
+      grow_id: plantForm.grow_id === '' ? null : Number(plantForm.grow_id),
     });
     if (!message) {
-      plantForm = { name: '', variety: '', zone: plantForm.zone, started: today() };
+      plantForm = { name: '', variety: '', zone: plantForm.zone, started: today(), grow_id: plantForm.grow_id };
       load();
     }
   }
 
   async function finish(plant) {
     await command('/api/plants/' + plant.id, {
-      zone: plant.zone, name: plant.name, variety: plant.variety, notes: plant.notes,
+      zone: plant.zone, name: plant.name, variety: plant.variety, notes: plant.notes, grow_id: plant.grow_id,
       started_at: plant.started_at, ended_at: Date.now() / 1000,
     }, 'PUT');
     load();
@@ -153,6 +156,14 @@
       </select>
     </label>
     <label>Started <input type="date" bind:value={plantForm.started} /></label>
+    {#if grows.length}
+      <label>Part of grow
+        <select bind:value={plantForm.grow_id}>
+          <option value="">none</option>
+          {#each grows as g (g.id)}<option value={g.id}>{g.name}</option>{/each}
+        </select>
+      </label>
+    {/if}
     <button on:click={addPlant}>Add</button>
   </div>
 </section>

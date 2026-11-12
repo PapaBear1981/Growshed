@@ -67,6 +67,13 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 | `notify` | ntfy delivery and the optional dead man's ping (standard library only) |
 | `calibration` | Calibration for soil (dry/wet), pH (2–3 buffers, fitted line), EC (one solution, temperature-corrected) and optional temperature/humidity offsets. Captures points itself once readings are steady. Applied to live values, history output and therefore alerts |
 | `journal` | Manual dosing log, plants, notes and photos (record-keeping only) |
+| `tunables`, `profiles` | Limits and targets editable from the GUI (config.yaml supplies defaults; values are range-checked and can never exceed the dosing caps), and crop profiles that fill them in per zone |
+| `devicelog` | When each device was on: chart timelines and the electricity estimate |
+| `grows` | One record per grow, with statistics frozen when it ends |
+| `maintenance` | Reminders and dosing bottle levels |
+| `digest` | Daily summary and quiet hours for notifications |
+| `backup` | Nightly database/config snapshots and the full zip export |
+| `qol` | API routes for the modules above |
 | `background` | The periodic loop: alert ticks, notification retries, flush, rollup, pruning |
 | `control` | Device modes (auto/on/off + expiry), node settings, dose requests, the latched leak alarm |
 | `watering` | Automatic soil watering per pot: soak wait, response check, strike lockout, daily cap |
@@ -78,7 +85,11 @@ If the Pi, the WiFi or the broker dies, each node keeps the plants alive on its 
 ## 4. Data model (target)
 
 Tables are added by numbered migrations as each phase needs them. Built so far: `setting`
-(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1); `device_override`, `dose_event`, `watering_pot` (Phase 2); `calibration_point` (replacing `calibration`), `dose_log`, `plant`, `journal_entry` (Phase 3); `chem_dose` (Phase 4). Readings
+(Phase 0); `series`, `reading`, `reading_5m`, `reading_1h`, `alert_event`, `calibration` (Phase 1); `device_override`, `dose_event`, `watering_pot` (Phase 2); `calibration_point` (replacing `calibration`), `dose_log`, `plant`, `journal_entry` (Phase 3); `chem_dose` (Phase 4); `state_change`, `reminder`, `bottle`, `grow` (Phase 5).
+
+**There is one database** (`data/growshed.db`). It is also the long-term archive: hourly sensor
+summaries, device on/off changes, doses, alerts, journal entries and grows are never deleted, so
+any past grow can be looked up years later. One file to back up. Readings
 are keyed by a `series` row per MQTT entity instead of the `sensor` table sketched below, and
 alert rules live in `config.yaml`, not in an `alert_rule` table.
 
@@ -126,6 +137,12 @@ Pages:
 6. **Alerts**: active + history, acknowledge, rule thresholds editor.
 7. **Journal**: plants, notes, photos.
 8. **System**: node health, Pi health (CPU temp, disk, uptime), units setting, backup/export.
+
+As built, the pages are: **Dashboard**, **Controls**, **Water** (chemistry, dosing, additions
+log), **Charts** (history with device timelines; any date range), **Grows** (grow history),
+**Journal**, **Alerts**, **Settings** (appearance, notifications, limits and crop profiles,
+reminders, electricity, backups), **System** (hub, calibration, nodes) and a **kiosk** view
+for the wall tablet (`#/kiosk`).
 
 ## 6. Deployment (`deploy/`)
 

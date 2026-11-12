@@ -2,7 +2,7 @@
   // pH and nutrient dosing pumps. The hub and the dosing node enforce every limit; this
   // page asks, shows what was refused and why, and makes turning on automatic dosing a
   // deliberate act.
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { control, values, nodes, now, command } from '../lib/stores.js';
   import { nodeDown } from '../lib/format.js';
 
@@ -30,6 +30,29 @@
   let cancelButton;
 
   $: d = $control.dosing;
+
+  // Bottle levels: capacity entered at refill, minus everything dosed since.
+  let bottles = [];
+  let capacity = {};
+  async function loadBottles() {
+    try {
+      bottles = await (await fetch('/api/bottles')).json();
+    } catch (err) {
+      bottles = [];
+    }
+  }
+  async function refill(pump) {
+    const ml = Number(capacity[pump]);
+    if (!(ml > 0)) {
+      pumpNote[pump] = 'Enter the bottle size in mL.';
+      return;
+    }
+    pumpNote[pump] = await command('/api/bottles', { pump: pump, capacity_ml: ml });
+    loadBottles();
+  }
+  const bottleOf = (list, pump) => list.find((b) => b.pump === pump) || {};
+  onMount(loadBottles);
+  $: $control, loadBottles();
   $: offline = nodeDown($nodes.dosing, $now);
 
   async function send(path, body) {
@@ -133,12 +156,17 @@
           <div class="hint">
             {p.rate > 0 ? p.rate.toFixed(2) + ' mL per second' : 'not calibrated'} · {p.day_ml} of {d.max_day_ml} mL used today
           </div>
+          <div class="hint" class:bad={bottleOf(bottles, p.pump).low}>
+            {bottleOf(bottles, p.pump).capacity_ml ? 'Bottle: about ' + bottleOf(bottles, p.pump).left_ml + ' of ' + bottleOf(bottles, p.pump).capacity_ml + ' mL left' : 'Bottle size not entered'}
+          </div>
         </div>
         <div class="buttons">
           <button class="plain" disabled={offline} on:click={() => runPump(p.pump, 5)}>Prime 5 s</button>
           <button class="plain" disabled={offline} on:click={() => runPump(p.pump, RUN_S)}>Run 30 s</button>
           <label>mL in 30 s <input type="number" min="0" step="0.5" bind:value={measured[p.pump]} /></label>
           <button class="plain" on:click={() => saveRate(p.pump)}>Save</button>
+          <label>Bottle mL <input type="number" min="0" step="50" bind:value={capacity[p.pump]} /></label>
+          <button class="plain" on:click={() => refill(p.pump)}>Refilled</button>
         </div>
       </div>
       {#if pumpNote[p.pump]}<p class="hint" class:bad={pumpNote[p.pump].indexOf('Saved') < 0 && pumpNote[p.pump].indexOf('Running') < 0}>{pumpNote[p.pump]}</p>{/if}
